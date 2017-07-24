@@ -2,13 +2,14 @@
 
 namespace actsmart\actsmart\Sensors;
 
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 interface SensorInterface
 {
-    /*
+    /**
      * Receive an input.
      */
-    public function receive($message);
+    public function receive(SymfonyRequest $message);
 
     /**
      * Process an input.
@@ -16,7 +17,7 @@ interface SensorInterface
     public function process();
 
     /**
-     * Store an input.
+     * Notify listeners of output
      */
-    public function store();
+    public function notify();
 }
