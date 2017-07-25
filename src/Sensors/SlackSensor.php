@@ -29,15 +29,7 @@ class SlackSensor implements SensorInterface
     public function receive(SymfonyRequest $message)
     {
         $slack_message = json_decode($message->getContent());
-
-        // Determine what type of message this is
-        try {
-            $e = $this->event_creator->createEvent($slack_message->type);
-            var_dump($e);
-            return $this->event_creator->createEvent($slack_message->type);
-        } catch (Exception $e) {
-
-        }
+        return $this->event_creator->createEvent($slack_message->type, $slack_message);
     }
 
         
