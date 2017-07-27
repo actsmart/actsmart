@@ -23,16 +23,22 @@ class URLVerificationController extends ReactiveController
     public function __construct(Agent $agent, $slack_verification_token)
     {
         $this->agent = $agent;
+        $this->slack_verification_token = $slack_verification_token;
 
     }
     public function execute(SensorEvent $e = null)
     {
-        $this->agent->setHttpReaction(
-            new Response('Contasdfsaent',
-            Response::HTTP_BAD_GATEWAY,
-                ['content-type' => 'texddt/html']
-            )
-        );
+        if ($e->getSubject = 'url_verification') {
+            if ($e->getArgument('token') == $this->slack_verification_token) {
+                $this->agent->setHttpReaction(
+                    new Response($e->getArgument('challenge'),
+                        Response::HTTP_OK,
+                        ['content-type' => 'text/html']
+                    )
+                );
+            }
+        }
+
     }
 
 }

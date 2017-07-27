@@ -4,9 +4,9 @@ namespace actsmart\actsmart\Sensors\Slack;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 
-class SlackEvent extends SensorEvent
+class SlackUrlVerificationEvent extends SlackEvent
 {
-    const EVENT_NAME = 'slack.generic';
+    const EVENT_NAME = 'slack.url_verification';
     /**
      * The original slack message - json encoded object
      * @var object
@@ -20,11 +20,8 @@ class SlackEvent extends SensorEvent
 
     public function __construct($type, $message)
     {
-        $this->type = $type;
+        parent::__construct($type, $message);
 
-        $this->message = $message;
-
-        parent::__construct($type, (array) $message);
     }
 
     public function getName()

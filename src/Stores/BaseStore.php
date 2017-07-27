@@ -14,7 +14,7 @@ class BaseStore implements StoreInterface
 
     public function store($e)
     {
-        var_dump('let us store');
+        
     }
 
     public function reply()

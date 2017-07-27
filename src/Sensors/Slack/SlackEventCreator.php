@@ -11,7 +11,7 @@ class SlackEventCreator
      * @var array
      */
     public $slack_event_map = [
-        'url_verification' => SlackEvent::class,
+        'url_verification' => SlackUrlVerificationEvent::class,
     ];
 
     /**
