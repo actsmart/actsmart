@@ -3,7 +3,9 @@
 namespace actsmart\actsmart;
 
 use actsmart\actsmart\Sensors\SensorInterface;
+use actsmart\actsmart\Controllers\ControllerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class Agent
@@ -13,6 +15,9 @@ class Agent
 
     /** @var EventDispatcher */
     protected $dispatcher;
+
+    /** @var  Response */
+    protected $http_response;
 
     public function __construct(EventDispatcher $dispatcher)
     {
@@ -35,9 +40,24 @@ class Agent
         $this->dispatcher->addListener($sensor->getEventName(), array($store, 'store'));
     }
 
+    public function bindSensorToController(SensorInterface $sensor, ControllerInterface $controller)
+    {
+        $this->dispatcher->addListener($sensor->getEventName(), array($controller, 'execute'));
+    }
+
 
     public function sensorReceive($sensor_name, $message)
     {
         return $this->sensors[$sensor_name]->receive($message);
+    }
+
+    public function setHttpReaction(Response $response)
+    {
+        $this->http_response = $response;
+    }
+
+    public function httpReact()
+    {
+        return $this->http_response;
     }
 }

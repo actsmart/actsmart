@@ -19,13 +19,6 @@ class SlackSensor implements SensorInterface
     const SENSOR_EVENT_NAME = 'slack.event';
 
     /**
-     * The slack token corresponding to the Slack application
-     *
-     * @var string
-     */
-    private $slack_token;
-
-    /**
      * The class that creates events based on the input.
      *
      * @var SlackEventCreator
@@ -38,9 +31,8 @@ class SlackSensor implements SensorInterface
      */
     private $event_dispatcher;
 
-    public function __construct($slack_token, SlackEventCreator $event_creator, EventDispatcher $dispatcher)
+    public function __construct(SlackEventCreator $event_creator, EventDispatcher $dispatcher)
     {
-        $this->slack_token = $slack_token;
         $this->event_creator = $event_creator;
         $this->event_dispatcher = $dispatcher;
     }
