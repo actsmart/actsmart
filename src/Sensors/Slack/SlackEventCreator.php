@@ -1,8 +1,8 @@
 <?php
 
-namespace actsmart\actsmart\Sensors;
+namespace actsmart\actsmart\Sensors\Slack;
 
-use actsmart\actsmart\Sensors\SlackEvents\SlackEvent;
+use actsmart\actsmart\Sensors\Slack\SlackEvent;
 
 class SlackEventCreator
 {
@@ -12,7 +12,7 @@ class SlackEventCreator
      */
     public $slack_event_map = [
         'url_verification' => SlackEvent::class,
-        ];
+    ];
 
     /**
      * @param $event_type

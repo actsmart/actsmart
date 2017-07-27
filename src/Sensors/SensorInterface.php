@@ -3,7 +3,15 @@
 namespace actsmart\actsmart\Sensors;
 
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use actsmart\actsmart\Sensors\SensorEvent;
 
+/**
+ * Sensors receive input from outside sources, process it and then notify and listeners (typically Stores) of that
+ * input.
+ *
+ * Interface SensorInterface
+ * @package actsmart\actsmart\Sensors
+ */
 interface SensorInterface
 {
     /**
@@ -12,12 +20,25 @@ interface SensorInterface
     public function receive(SymfonyRequest $message);
 
     /**
-     * Process an input.
+     * Process the input.
      */
-    public function process();
+    public function process($message);
 
     /**
-     * Notify listeners of output
+     * Notify listeners of output.
      */
-    public function notify();
+    public function notify(SensorEvent $event);
+
+    /**
+     * Returns the sensor's name.
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * Returns the sensor's event name.
+     * @return string.
+     */
+    public function getEventName();
 }

@@ -1,11 +1,12 @@
 <?php
 
+namespace actsmart\actsmart\Sensors\Slack;
 
-namespace actsmart\actsmart\Sensors\SlackEvents;
+use actsmart\actsmart\Sensors\SensorEvent;
 
-
-class SlackEvent
+class SlackEvent extends SensorEvent
 {
+    const EVENT_NAME = 'slack.generic';
     /**
      * The original slack message - json encoded object
      * @var object
@@ -22,6 +23,11 @@ class SlackEvent
         $this->type = $type;
 
         $this->message = $message;
+    }
+
+    public function getName()
+    {
+        return SELF::EVENT_NAME;
     }
 
 
