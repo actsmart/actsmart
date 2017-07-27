@@ -3,10 +3,8 @@
 namespace actsmart\actsmart\Interpreters;
 
 
-interface InterpretorInterface
+interface InterpreterInterface
 {
-    public function receive($e);
-
     public function interpret($e);
 
     public function notify();
