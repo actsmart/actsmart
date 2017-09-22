@@ -17,7 +17,7 @@ class Agent
     protected $dispatcher;
 
     /** @var  Response */
-    protected $http_response;
+    protected $http_response = null;
 
     public function __construct(EventDispatcher $dispatcher)
     {
@@ -58,6 +58,9 @@ class Agent
 
     public function httpReact()
     {
+        if ($this->http_response == null) {
+            return new Response('', Response::HTTP_OK, ['content-type' => 'text/html']);
+        }
         return $this->http_response;
     }
 }
