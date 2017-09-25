@@ -15,13 +15,15 @@ class SlackActuator implements ActuatorInterface
     {
         $client = new Client([
             'base_uri' => 'https://slack.com/api/',
-            'headers'  => [
-                'Authorization' => 'Bearer ' . 'xoxb-246060899542-Lu4bB78ZutZyvLeft8We5jew',
+            'form_params' => [
+                'token' => env('SLACK_OAUTH_TOKEN_TEST'),
+                'channel' => 'C5GA54NT0',
+                'text' =>   'zap',
             ],
         ]);
 
-        $ret = $client->get($path);
-        dd($ret);
+        $ret = $client->post('chat.postMessage');
+        dd(json_decode($ret->getBody()));
 
     }
 

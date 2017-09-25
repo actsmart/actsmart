@@ -36,7 +36,10 @@ class MessageController extends ActiveController
         if ($e->getSubject() == 'message') {
             if ($e->getArgument('token') == $this->slack_verification_token) {
                 $response = $this->interpreter->interpret($e);
-                $this->actuators['slack.actuator']->act($response);
+                // Once a response is translated to an intent, review context and instantiate a plan
+                if ($response) {
+                    $this->actuators['slack.actuator']->act($response);
+                } else {}
             }
         }
     }

@@ -9,7 +9,19 @@ class SlackMessageInterpreter implements InterpreterInterface
 {
     public function interpret($e)
     {
-        return $e->getArgument('event')->text.'zap';
+        // Check what team the message is coming from
+
+        // Check whether it is a bot user or a normal user
+
+        // Check whether it is a message we just sent
+
+        if ($e->getArgument('event')->text == 'tasks') {
+            return $e->getArgument('event')->text.'zap';
+        } else {
+            return false;
+        }
+
+
     }
 
     public function notify()
