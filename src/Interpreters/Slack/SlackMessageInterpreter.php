@@ -16,7 +16,7 @@ class SlackMessageInterpreter implements InterpreterInterface
         // Check whether it is a message we just sent
 
         if ($e->getArgument('event')->text == 'tasks') {
-            return $e->getArgument('event')->text.'zap';
+            return $e->getArgument('event')->text;
         } else {
             return false;
         }

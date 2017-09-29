@@ -25,16 +25,19 @@ class SlackSensor implements SensorInterface
      */
     private $event_creator;
 
+    private $token;
+
     /**
      * Use to notify
      * @var EventDispatcher;
      */
     private $event_dispatcher;
 
-    public function __construct(SlackEventCreator $event_creator, EventDispatcher $dispatcher)
+    public function __construct(SlackEventCreator $event_creator, EventDispatcher $dispatcher, $slack_verification_token)
     {
         $this->event_creator = $event_creator;
         $this->event_dispatcher = $dispatcher;
+        $this->token = $slack_verification_token;
     }
 
     /**
@@ -43,7 +46,16 @@ class SlackSensor implements SensorInterface
     public function receive(SymfonyRequest $message)
     {
         $slack_message = json_decode($message->getContent());
-        $this->notify($this->process($slack_message));
+
+        try {
+            if ($this->validateSlackMessage($slack_message)) {
+                $this->notify($this->process($slack_message));
+            }
+        } catch (\Exception $e) {
+            // @todo - log issue
+        }
+
+
     }
 
 
@@ -72,7 +84,6 @@ class SlackSensor implements SensorInterface
         $this->event_dispatcher->dispatch(self::SENSOR_EVENT_NAME, $e);
     }
 
-
     public function getName()
     {
         return self::SENSOR_NAME;
@@ -81,5 +92,19 @@ class SlackSensor implements SensorInterface
     public function getEventName()
     {
         return self::SENSOR_EVENT_NAME;
+    }
+
+    /**
+     * @param $slack_message
+     * @return bool
+     * @throws \Exception
+     */
+    private function validateSlackMessage($slack_message)
+    {
+        if ($slack_message->token != $this->token) {
+            throw new \Exception("Could not validate Slack Message");
+        } else {
+            return true;
+        }
     }
 }
