@@ -21,15 +21,15 @@ class SlackMessage
 
     private $channel;
 
-    private $text;
+    private $text = null;
 
     private $as_user = false;
 
     private $attachments= [];
 
-    private $icon_emoji;
+    private $icon_emoji = null;
 
-    private $icon_url;
+    private $icon_url = null;
 
     private $link_names = true;
 
@@ -38,11 +38,11 @@ class SlackMessage
 
     private $reply_broadcast = 'full';
 
-    private $thread_is = '';
+    private $thread_is = null;
 
     private $unfurl_link = true;
 
-    private $username = '';
+    private $username = null;
 
     public function __construct($token, $channel)
     {
@@ -95,10 +95,24 @@ class SlackMessage
         return $this->as_user;
     }
 
-    public function addAttachment(SlackMessageAttachmeent $attachment)
+    public function addAttachment(SlackMessageAttachment $attachment)
     {
         $this->attachments[] = $attachment;
         return $this;
+    }
+
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    public function getAttachmentsToPost()
+    {
+        $attachments_to_post = [];
+        foreach ($this->attachments as $attachment) {
+            $attachments_to_post[] = $attachment->getAttachmentToPost();
+        }
+        return $attachments_to_post;
     }
 
     /**
@@ -122,6 +136,17 @@ class SlackMessage
         return $message;
     }
 
+    public function prepareToPost()
+    {
+        $form_params = [
+            'token' => $this->getToken(),
+            'channel' => $this->getChannel(),
+            'text' => $this->getText(),
+            'as_user' => $this->sendingAsUser(),
+            'attachments' => json_encode($this->getAttachmentsToPost()),
+        ];
+        return $form_params;
+    }
 
 
 }

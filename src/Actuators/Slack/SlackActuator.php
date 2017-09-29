@@ -14,20 +14,10 @@ class SlackActuator implements ActuatorInterface
 
     public function act(SlackMessage $message)
     {
-        var_dump($message->getText());
+        var_dump($message->prepareToPost());
         $client = new Client([
             'base_uri' => 'https://slack.com/api/',
-            'form_params' => [
-                'token' => $message->getToken(),
-                'channel' => $message->getChannel(),
-                'text' => $message->getText(),
-                /*'attachments' => json_encode([
-                    [
-                        "text" => $message,
-                        "pretext" => "huh"
-                    ]
-                ]),*/
-            ],
+            'form_params' => $message->prepareToPost(),
         ]);
 
         $ret = $client->post('chat.postMessage');

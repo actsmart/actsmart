@@ -8,6 +8,7 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
+use actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentField;
 
 class SlackMessageAttachment
 {
@@ -226,6 +227,21 @@ class SlackMessageAttachment
         return $this;
     }
 
+    public function addField(SlackMessageAttachmentField $field)
+    {
+        $this->fields[] = $field;
+    }
+
+    public function getFieldsToPost()
+    {
+        $fields_to_post = [];
+        foreach ($this->fields as $field)
+        {
+            $fields_to_post[] = $field->getFieldToPost();
+        }
+        return $fields_to_post;
+    }
+
     /**
      * @return mixed
      */
@@ -314,6 +330,28 @@ class SlackMessageAttachment
     {
         $this->timestamp = $timestamp;
         return $this;
+    }
+
+    public function getAttachmentToPost()
+    {
+        $attachment = [
+            'fallback' => $this->getFallback(),
+            'color' => $this->getColor(),
+            'pretext' => $this->getPretext(),
+            'authorname' => $this->getAuthorname(),
+            'author_link' => $this->getAuthorLink(),
+            'author_icon' => $this->getAuthorIcon(),
+            'title' => $this->getTitle(),
+            'title_link' => $this->getTitleLink(),
+            'text' => $this->getText(),
+            'fields' =>$this->getFieldsToPost(),
+            'image_url' => $this->getImageUrl(),
+            'thumb_url' => $this->getThumbUrl(),
+            'footer' => $this->getFooter(),
+            'footer_icon' => $this->getFooterIcon(),
+            'timestamp' => $this->getTimestamp(),
+        ];
+        return $attachment;
     }
 
 
