@@ -9,8 +9,11 @@ use actsmart\actsmart\Interpreters\Slack\SlackMessageInterpreter;
 
 class GenericSlackController extends ActiveController
 {
-    protected $slack_verification_token;
+    const SLACK_ACTION_TYPE_BUTTON = 'button';
+    const SLACK_ACTION_TYPE_MENU = 'menu';
 
+
+    protected $slack_verification_token;
 
     protected $interpreter;
 

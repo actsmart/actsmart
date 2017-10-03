@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ronaldashri
- * Date: 28/09/2017
- * Time: 18:25
- */
 
 namespace actsmart\actsmart\Actuators\Slack;
 
 use actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentField;
+use actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentAction;
 
 class SlackMessageAttachment
 {
@@ -41,6 +36,12 @@ class SlackMessageAttachment
     private $footer_icon;
 
     private $timestamp;
+
+    private $callback_id;
+
+    private $actions = [];
+
+    private $attachment_type = 'default';
 
     public function __construct()
     {
@@ -227,9 +228,14 @@ class SlackMessageAttachment
         return $this;
     }
 
+    /**
+     * @param SlackMessageAttachmentField $field
+     * @return SlackMessageAttachment
+     */
     public function addField(SlackMessageAttachmentField $field)
     {
         $this->fields[] = $field;
+        return $this;
     }
 
     public function getFieldsToPost()
@@ -332,6 +338,74 @@ class SlackMessageAttachment
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCallbackId()
+    {
+        return $this->callback_id;
+    }
+
+    /**
+     * @param mixed $callback_id
+     */
+    public function setCallbackId($callback_id)
+    {
+        $this->callback_id = $callback_id;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActions()
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @param array $actions
+     */
+    public function setActions($actions)
+    {
+        $this->actions = $actions;
+        return $this;
+    }
+
+    public function addAction(SlackMessageAttachmentAction $action)
+    {
+        $this->actions[] = $action;
+        return $this;
+    }
+
+    public function getActionsToPost()
+    {
+        $actions_to_post = [];
+        foreach ($this->actions as $action)
+        {
+            $actions_to_post[] = $action->getActionToPost();
+        }
+        return $actions_to_post;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAttachmentType()
+    {
+        return $this->attachment_type;
+    }
+
+    /**
+     * @param string $attachment_type
+     */
+    public function setAttachmentType($attachment_type)
+    {
+        $this->attachment_type = $attachment_type;
+    }
+
+
+
     public function getAttachmentToPost()
     {
         $attachment = [
@@ -350,7 +424,11 @@ class SlackMessageAttachment
             'footer' => $this->getFooter(),
             'footer_icon' => $this->getFooterIcon(),
             'timestamp' => $this->getTimestamp(),
+            "callback_id" => $this->getCallbackId(),
+            'actions' => $this->getActionsToPost(),
         ];
+
+        // Need to handle callback values, differentiation of actions and make buttons idempotent
         return $attachment;
     }
 

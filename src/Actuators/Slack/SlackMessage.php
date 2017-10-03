@@ -44,6 +44,10 @@ class SlackMessage
 
     private $username = null;
 
+    private $replace_original = false;
+
+    private $delete_original = false;
+
     public function __construct($token, $channel)
     {
         $this->token = $token;
@@ -136,7 +140,7 @@ class SlackMessage
         return $message;
     }
 
-    public function prepareToPost()
+    public function getMessageToPost()
     {
         $form_params = [
             'token' => $this->getToken(),

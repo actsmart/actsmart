@@ -7,6 +7,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use actsmart\actsmart\Sensors\Slack\SlackEvent;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Class SlackSensor
@@ -46,6 +48,10 @@ class SlackSensor implements SensorInterface
     public function receive(SymfonyRequest $message)
     {
         $slack_message = json_decode($message->getContent());
+        if ($slack_message == null) {
+            // Let us try and see if it is one of those that come as a payload
+            $slack_message = json_decode(urldecode($message->get('payload')));
+        }
 
         try {
             if ($this->validateSlackMessage($slack_message)) {
@@ -53,6 +59,7 @@ class SlackSensor implements SensorInterface
             }
         } catch (\Exception $e) {
             // @todo - log issue
+            Log::debug('Slack message did not validate.');
         }
 
 
@@ -73,6 +80,10 @@ class SlackSensor implements SensorInterface
             return $this->event_creator->createEvent($slack_message->event->type, $slack_message);
         }
 
+        if ($slack_message->type == 'interactive_message') {
+            return $this->event_creator->createEvent($slack_message->type, $slack_message);
+        }
+
 
     }
 
@@ -84,11 +95,17 @@ class SlackSensor implements SensorInterface
         $this->event_dispatcher->dispatch(self::SENSOR_EVENT_NAME, $e);
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return self::SENSOR_NAME;
     }
 
+    /**
+     * @return string
+     */
     public function getEventName()
     {
         return self::SENSOR_EVENT_NAME;

@@ -7,6 +7,7 @@ use actsmart\actsmart\Sensors\SensorEvent;
 class SlackEvent extends SensorEvent
 {
     const EVENT_NAME = 'slack.generic';
+
     /**
      * The original slack message - json encoded object
      * @var object
@@ -31,6 +32,24 @@ class SlackEvent extends SensorEvent
     {
         return SELF::EVENT_NAME;
     }
+
+    /**
+     * @return object
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+
 
 
 }
