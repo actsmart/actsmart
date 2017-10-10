@@ -26,7 +26,7 @@ class Agent
 
     public function addSensor(SensorInterface $sensor)
     {
-        $this->sensors[$sensor->getName()] = $sensor;
+        $this->sensors[$sensor->getKey()] = $sensor;
     }
 
     /**
@@ -46,9 +46,9 @@ class Agent
     }
 
 
-    public function sensorReceive($sensor_name, $message)
+    public function sensorReceive($sensor_key, $message)
     {
-        return $this->sensors[$sensor_name]->receive($message);
+        return $this->sensors[$sensor_key]->receive($message);
     }
 
     public function setHttpReaction(Response $response)
