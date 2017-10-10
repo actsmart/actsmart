@@ -24,7 +24,6 @@ class URLVerificationController extends ReactiveController
     {
         $this->agent = $agent;
         $this->slack_verification_token = $slack_verification_token;
-
     }
 
     public function execute(SensorEvent $e = null)
@@ -40,5 +39,4 @@ class URLVerificationController extends ReactiveController
             }
         }
     }
-
 }

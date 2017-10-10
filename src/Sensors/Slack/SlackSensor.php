@@ -68,8 +68,8 @@ class SlackSensor implements SensorInterface
      * @todo - requesting Slack data
      */
     public function request()
-    {}
-
+    {
+    }
 
     /**
      * @param $slack_message

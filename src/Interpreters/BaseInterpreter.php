@@ -8,10 +8,8 @@
 
 namespace actsmart\actsmart\Interpreters;
 
-
 class BaseInterpreter implements InterpreterInterface
 {
-
     public function interpret($e)
     {
         // Interpret
@@ -21,7 +19,7 @@ class BaseInterpreter implements InterpreterInterface
         return $e;
     }
 
-    public function notify(){
-
+    public function notify()
+    {
     }
 }

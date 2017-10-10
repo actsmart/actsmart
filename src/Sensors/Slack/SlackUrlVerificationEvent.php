@@ -21,13 +21,10 @@ class SlackUrlVerificationEvent extends SlackEvent
     public function __construct($type, $message)
     {
         parent::__construct($type, $message);
-
     }
 
     public function getName()
     {
         return SELF::EVENT_NAME;
     }
-
-
 }

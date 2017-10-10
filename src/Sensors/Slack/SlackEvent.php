@@ -48,8 +48,4 @@ class SlackEvent extends SensorEvent
     {
         return $this->type;
     }
-
-
-
-
 }

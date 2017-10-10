@@ -12,7 +12,6 @@ class GenericSlackController extends ActiveController
     const SLACK_ACTION_TYPE_BUTTON = 'button';
     const SLACK_ACTION_TYPE_MENU = 'menu';
 
-
     protected $slack_verification_token;
 
     protected $interpreter;
@@ -23,6 +22,4 @@ class GenericSlackController extends ActiveController
         $this->slack_verification_token = $slack_verification_token;
         $this->interpreter = new SlackMessageInterpreter();
     }
-
-
 }

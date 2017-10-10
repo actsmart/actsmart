@@ -20,12 +20,9 @@ class SlackMessageInterpreter implements InterpreterInterface
         } else {
             return false;
         }
-
-
     }
 
     public function notify()
     {
-
     }
 }

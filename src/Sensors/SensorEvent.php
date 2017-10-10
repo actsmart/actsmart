@@ -5,5 +5,4 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 class SensorEvent extends GenericEvent
 {
-
 }

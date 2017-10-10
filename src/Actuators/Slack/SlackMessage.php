@@ -16,7 +16,6 @@ namespace actsmart\actsmart\Actuators\Slack;
  */
 class SlackMessage
 {
-
     private $token;
 
     private $channel;
@@ -52,7 +51,6 @@ class SlackMessage
     {
         $this->token = $token;
         $this->channel = $channel;
-
     }
 
     public function setToken($token)
@@ -130,7 +128,7 @@ class SlackMessage
     public function createMultilineTextMessage($lines, $set_as_text = false)
     {
         $message = "";
-        foreach ($lines as $line){
+        foreach ($lines as $line) {
             $message .= $line->name . "\n";
         }
 
@@ -151,6 +149,4 @@ class SlackMessage
         ];
         return $form_params;
     }
-
-
 }

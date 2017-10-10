@@ -7,10 +7,8 @@ use actsmart\actsmart\Actuators\Slack\SlackMessage;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 
-
 class SlackActuator implements ActuatorInterface
 {
-
     const SLACK_ACTUATOR_KEY = 'slack.actuator';
     const SLACK_BASE_URI = 'https://slack.com/api/';
 
@@ -44,5 +42,4 @@ class SlackActuator implements ActuatorInterface
     {
         return SELF::SLACK_ACTUATOR_KEY;
     }
-
 }

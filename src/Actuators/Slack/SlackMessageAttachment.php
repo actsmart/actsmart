@@ -45,7 +45,6 @@ class SlackMessageAttachment
 
     public function __construct()
     {
-
     }
 
     /**
@@ -241,8 +240,7 @@ class SlackMessageAttachment
     public function getFieldsToPost()
     {
         $fields_to_post = [];
-        foreach ($this->fields as $field)
-        {
+        foreach ($this->fields as $field) {
             $fields_to_post[] = $field->getFieldToPost();
         }
         return $fields_to_post;
@@ -381,8 +379,7 @@ class SlackMessageAttachment
     public function getActionsToPost()
     {
         $actions_to_post = [];
-        foreach ($this->actions as $action)
-        {
+        foreach ($this->actions as $action) {
             $actions_to_post[] = $action->getActionToPost();
         }
         return $actions_to_post;
@@ -431,8 +428,4 @@ class SlackMessageAttachment
         // Need to handle callback values, differentiation of actions and make buttons idempotent
         return $attachment;
     }
-
-
-
-
 }

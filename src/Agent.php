@@ -7,7 +7,6 @@ use actsmart\actsmart\Controllers\ControllerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class Agent
 {
     /** @var  SensorInterface */

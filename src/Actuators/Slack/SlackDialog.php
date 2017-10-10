@@ -18,7 +18,8 @@ class SlackDialog
         $this->callback_id = $callback_id;
     }
 
-    public function getDialogToPost(){
+    public function getDialogToPost()
+    {
         $form_params = [
             'token' => $this->getToken(),
             'trigger_id' => $this->getTriggerId(),

@@ -82,6 +82,4 @@ class SlackMessageAttachmentField
 
         return $field;
     }
-
-
 }

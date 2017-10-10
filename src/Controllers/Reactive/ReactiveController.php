@@ -16,6 +16,5 @@ class ReactiveController implements ControllerInterface
 {
     public function execute(SensorEvent $e = null)
     {
-
     }
 }

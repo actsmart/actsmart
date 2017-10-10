@@ -14,8 +14,6 @@ use actsmart\actsmart\Controllers\ControllerInterface;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
 
-
-
 class ActiveController implements ControllerInterface
 {
 
@@ -32,17 +30,14 @@ class ActiveController implements ControllerInterface
 
     public function act(ActuatorInterface $a)
     {
-
     }
 
     public function execute(SensorEvent $e = null)
     {
-
     }
 
     public function request(SensorInterface $s = null)
     {
-
     }
 
     public function addActuator(ActuatorInterface $actuator)

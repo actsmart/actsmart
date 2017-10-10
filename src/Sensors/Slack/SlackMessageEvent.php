@@ -18,6 +18,4 @@ class SlackMessageEvent extends SlackEvent
     {
         return SELF::EVENT_NAME;
     }
-
-
 }

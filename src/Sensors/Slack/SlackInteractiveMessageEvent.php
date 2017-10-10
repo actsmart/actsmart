@@ -17,16 +17,13 @@ class SlackInteractiveMessageEvent extends SlackEvent
         parent::__construct($type, $message);
 
         $this->callback_id = $message->callback_id;
-
         $this->trigger_id = $message->trigger_id;
-
     }
 
     public function getName()
     {
         return SELF::EVENT_NAME;
     }
-
 
     /**
      * @return mixed
@@ -43,8 +40,4 @@ class SlackInteractiveMessageEvent extends SlackEvent
     {
         return $this->trigger_id;
     }
-
-
-
-
 }

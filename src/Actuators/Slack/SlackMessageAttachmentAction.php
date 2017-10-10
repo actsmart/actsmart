@@ -10,7 +10,6 @@ namespace actsmart\actsmart\Actuators\Slack;
  */
 class SlackMessageAttachmentAction
 {
-
     private $name;
 
     private $text;
@@ -252,6 +251,4 @@ class SlackMessageAttachmentAction
         // Need to handle callback values, differentiation of actions and make buttons idempotent
         return $action;
     }
-
-
 }
