@@ -58,12 +58,17 @@ class SlackSensor implements SensorInterface
                 $this->notify($this->process($slack_message));
             }
         } catch (\Exception $e) {
-            // @todo - log issue
+            // @todo - log issue and make this more fine grained
+            dd($e);
             Log::debug('Slack message did not validate.');
         }
-
-
     }
+
+    /**
+     * @todo - requesting Slack data
+     */
+    public function request()
+    {}
 
 
     /**
@@ -83,8 +88,6 @@ class SlackSensor implements SensorInterface
         if ($slack_message->type == 'interactive_message') {
             return $this->event_creator->createEvent($slack_message->type, $slack_message);
         }
-
-
     }
 
     /**
@@ -98,7 +101,7 @@ class SlackSensor implements SensorInterface
     /**
      * @return string
      */
-    public function getName()
+    public function getKey()
     {
         return self::SENSOR_NAME;
     }

@@ -20,6 +20,11 @@ interface SensorInterface
     public function receive(SymfonyRequest $message);
 
     /**
+     * A proactive request to collect information
+     */
+    public function request();
+
+    /**
      * Process the input.
      */
     public function process($message);
@@ -34,7 +39,7 @@ interface SensorInterface
      *
      * @return string
      */
-    public function getName();
+    public function getKey();
 
     /**
      * Returns the sensor's event name.
