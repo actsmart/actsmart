@@ -232,9 +232,9 @@ class SlackMessageAttachment
      * @param SlackMessageAttachmentField $field
      * @return SlackMessageAttachment
      */
-    public function addField(SlackMessageAttachmentField $field)
+    public function addField($title, $value, $short)
     {
-        $this->fields[] = $field;
+        $this->fields[] = new SlackMessageAttachmentField($title, $value, $short);
         return $this;
     }
 
