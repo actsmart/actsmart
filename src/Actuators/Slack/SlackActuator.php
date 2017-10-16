@@ -34,7 +34,7 @@ class SlackActuator implements ActuatorInterface
 
     public function postDialog(SlackDialog $dialog)
     {
-        $ret = $client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
+        $ret = $this->client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
         // @todo - handle failures and throw appropriate exceptions.
         var_dump($ret->getBody()->getContents());
     }

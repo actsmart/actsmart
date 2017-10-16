@@ -1,6 +1,5 @@
 <?php
 
-
 namespace actsmart\actsmart\Stores;
 
 interface StoreInterface

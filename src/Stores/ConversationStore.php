@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Stores;
 
 
-class BaseStore implements StoreInterface
+class ConversationStore implements StoreInterface
 {
 
     public function store($e)
