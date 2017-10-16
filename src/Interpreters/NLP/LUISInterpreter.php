@@ -2,6 +2,7 @@
 namespace actsmart\actsmart\Interpreters\NLP;
 
 use actsmart\actsmart\Interpreters\InterpreterInterface;
+use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\Utterance;
 use GuzzleHttp\Client;
 
@@ -36,16 +37,16 @@ class LUISInterpreter implements InterpreterInterface
 
     public function interpret($e)
     {
-
         // Extract message
         $message = $e->getUtterance();
-        dd(json_decode($this->queryLUISapp($message)->getBody()->getContents()));
+        $response = json_decode($this->queryLUISapp($message)->getBody()->getContents());
+        $intent = new Intent(
+            $response->topScoringIntent->intent,
+            $e,
+            $response->topScoringIntent->score
+        );
 
-        if ($text->getArgument('event')->text == 'tasks') {
-            return $text->getArgument('event')->text;
-        } else {
-            return false;
-        }
+        return $intent;
     }
 
     public function notify()
