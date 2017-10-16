@@ -49,7 +49,7 @@ class SlackSensor implements SensorInterface
     {
         $slack_message = json_decode($message->getContent());
         if ($slack_message == null) {
-            // Let us try and see if it is one of those that come as a payload
+            // Let us try and see if it is one of those that come as a payload.
             $slack_message = json_decode(urldecode($message->get('payload')));
         }
 

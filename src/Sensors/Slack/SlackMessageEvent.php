@@ -3,8 +3,9 @@
 namespace actsmart\actsmart\Sensors\Slack;
 
 use actsmart\actsmart\Sensors\SensorEvent;
+use actsmart\actsmart\Sensors\Utterance;
 
-class SlackMessageEvent extends SlackEvent
+class SlackMessageEvent extends SlackEvent implements Utterance
 {
     const EVENT_NAME = 'slack.message';
 
@@ -17,5 +18,9 @@ class SlackMessageEvent extends SlackEvent
     public function getName()
     {
         return SELF::EVENT_NAME;
+    }
+
+    public function getUtterance() {
+        return $this->getArgument('event')->text;
     }
 }
