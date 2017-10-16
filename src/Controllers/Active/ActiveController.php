@@ -11,6 +11,7 @@ namespace actsmart\actsmart\Controllers\Active;
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Controllers\ControllerInterface;
+use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
 
@@ -21,6 +22,8 @@ class ActiveController implements ControllerInterface
     protected $agent;
 
     protected $actuators = [];
+
+    protected $interpreters = [];
 
     public function __construct(Agent $agent)
     {
@@ -48,5 +51,10 @@ class ActiveController implements ControllerInterface
     public function addSensor(SensorInterface $sensor)
     {
         $this->sensors[$sensor->getKey()] = $sensor;
+    }
+
+    public function addInterpreter(InterpreterInterface $interpreter)
+    {
+        $this->interpreters[$interpreter->getKey()] = $interpreter;
     }
 }

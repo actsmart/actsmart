@@ -7,6 +7,8 @@ use GuzzleHttp\Client;
 
 class LUISInterpreter implements InterpreterInterface
 {
+    const LUIS_INTERPRETER = 'luis.interpreter';
+
     private $client;
 
     private $app_url;
@@ -49,6 +51,11 @@ class LUISInterpreter implements InterpreterInterface
     public function notify()
     {
         // TODO: Implement notify() method.
+    }
+
+    public function getKey()
+    {
+        return SELF::LUIS_INTERPRETER;
     }
 
     private function queryLUISapp($message) {
