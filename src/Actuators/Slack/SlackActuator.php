@@ -12,14 +12,20 @@ class SlackActuator implements ActuatorInterface
     const SLACK_ACTUATOR_KEY = 'slack.actuator';
     const SLACK_BASE_URI = 'https://slack.com/api/';
 
-    public function postMessage(SlackMessage $message)
+    private $client;
+
+    public function __construct()
     {
         $client = new Client([
             'base_uri' => SELF::SLACK_BASE_URI,
-            'form_params' => $message->getMessageToPost(),
         ]);
 
-        $ret = $client->post('chat.postMessage');
+        $this->client = $client;
+    }
+
+    public function postMessage(SlackMessage $message)
+    {
+        $ret = $this->client->post('chat.postMessage', ['form_params' => $message->getMessageToPost()]);
 
         // @todo - handle failures and throw appropriate exceptions.
         var_dump($ret->getBody()->getContents());
@@ -28,12 +34,7 @@ class SlackActuator implements ActuatorInterface
 
     public function postDialog(SlackDialog $dialog)
     {
-        $client = new Client([
-            'base_uri' => SELF::SLACK_BASE_URI,
-            'form_params' => $dialog->getDialogToPost(),
-        ]);
-
-        $ret = $client->post('dialog.open');
+        $ret = $client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
         // @todo - handle failures and throw appropriate exceptions.
         var_dump($ret->getBody()->getContents());
     }
