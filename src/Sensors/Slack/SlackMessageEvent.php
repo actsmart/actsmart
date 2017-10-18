@@ -3,9 +3,9 @@
 namespace actsmart\actsmart\Sensors\Slack;
 
 use actsmart\actsmart\Sensors\SensorEvent;
-use actsmart\actsmart\Sensors\Utterance;
+use actsmart\actsmart\Sensors\UtteranceEvent;
 
-class SlackMessageEvent extends SlackEvent implements Utterance
+class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 {
     const EVENT_NAME = 'slack.message';
 

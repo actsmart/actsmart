@@ -8,7 +8,7 @@ namespace actsmart\actsmart\Sensors;
  *
  * @package actsmart\actsmart\Sensors
  */
-interface Utterance
+interface UtteranceEvent
 {
     public function getUtterance();
 }
