@@ -3,7 +3,7 @@ namespace actsmart\actsmart\Interpreters\NLP;
 
 use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\Utterance;
+use actsmart\actsmart\Sensors\UtteranceEvent;
 use GuzzleHttp\Client;
 
 class LUISInterpreter implements InterpreterInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace actsmart\actsmart;
+namespace actsmart\actsmart\Tests;
 
 class ExampleTest extends \PHPUnit_Framework_TestCase
 {
