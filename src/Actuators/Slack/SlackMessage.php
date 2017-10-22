@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ronaldashri
- * Date: 27/09/2017
- * Time: 17:23
- */
 
 namespace actsmart\actsmart\Actuators\Slack;
 
