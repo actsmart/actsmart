@@ -5,6 +5,16 @@ namespace actsmart\actsmart\Conversations;
 use Fhaculty\Graph\Graph as Graph;
 use Fhaculty\Graph\Set\Edges as Edges;
 
+/**
+ * A conversation is a Graph structure that describes the possible utterances
+ * participants in the conversation can exchange. Scenes within a conversation
+ * represent specific states of the conversation that are supposed to lead to some
+ * resolution. A resolution will either end the conversation or move the conversation
+ * to a new Scene.
+ *
+ * Class Conversation
+ * @package actsmart\actsmart\Conversations
+ */
 class Conversation extends Graph
 {
 
@@ -18,16 +28,20 @@ class Conversation extends Graph
     const ID = 'id';
 
     /**
+     * Creates a new Scene which will point to the participants,
+     * useful as a structure to easily access participants within a Scene.
      * @param $scene_id
      * @return $this
      */
     public function createScene($scene_id)
     {
-        $scene = new Scene($this, $scene_id);
+        new Scene($this, $scene_id);
         return $this;
     }
 
     /**
+     * Retrieve all Scenes associates with this conversation.
+     *
      * @return \Fhaculty\Graph\Set\Vertices
      */
     public function getScenes()
@@ -46,21 +60,40 @@ class Conversation extends Graph
         return $this->getVertex($scene_id);
     }
 
+    /**
+     * @param $scene_id
+     * @param $participant_id
+     * @return Participant
+     */
     public function createParticipant($scene_id, $participant_id)
     {
         return new Participant($this, $scene_id, $participant_id);
     }
 
+    /**
+     * @param $scene_id
+     * @return mixed
+     */
     public function getParticipantsToScene($scene_id)
     {
         return $this->getScene($scene_id)->getParticipants();
     }
 
+    /**
+     * @param $scene_id
+     * @param $participant_id
+     * @return mixed
+     */
     public function getParticipantToScene($scene_id, $participant_id)
     {
         return $this->getScene($scene_id)->getParticipant($participant_id);
     }
 
+    /**
+     * @param $scene_id
+     * @param $participant_id
+     * @return $this
+     */
     public function addParticipantToScene($scene_id, $participant_id)
     {
         // When adding a participant their id is prefixed with the scene_id indicating a
@@ -77,7 +110,17 @@ class Conversation extends Graph
 
     /**
      * An utterance is an edge between two vertices that are participants to a
-     * conversation. A simple utterance keeps participants within the same scene.
+     * conversation. If start and end scene are the same we are dealing with a simple
+     * utterance while if start scene and end scene are different we are dealing with an
+     * exit Utterance which moves the conversation to a new Scene.
+     *
+     * @param $start_scene
+     * @param $end_scene
+     * @param $sender_id
+     * @param $receiver_id
+     * @param Message $message
+     * @param $sequence - the overall expected order of this message in a conversation.
+     * @return $this
      */
     public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, Message $message, $sequence)
     {

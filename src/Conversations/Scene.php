@@ -28,9 +28,15 @@ class Scene extends Vertex
         return $this->scene_id;
     }
 
+    /**
+     * @return \Fhaculty\Graph\Set\Vertices - of type Participant
+     */
     public function getParticipants()
     {
-        return $this->getVerticesEdgeTo();
+        // Participants are Vertices of Type Participant
+        return $this->getVerticesEdgeTo()->getVerticesMatch( function($participant) {
+            if ($participant instanceof Participant) return $participant;
+        });
     }
 
     public function getParticipant($participant_id)
