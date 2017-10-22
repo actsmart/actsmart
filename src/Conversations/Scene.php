@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Conversations;
 
 use \Fhaculty\Graph\Graph as Graph;
 use \Fhaculty\Graph\Vertex;
+use \Fhaculty\Graph\Set\Edges;
 
 
 class Scene extends Vertex
@@ -12,5 +13,65 @@ class Scene extends Vertex
     private $preconditions = [];
 
     private $postconditions = [];
+
+    private $scene_id;
+
+    public function __construct(Graph $graph, $scene_id)
+    {
+        parent::__construct($graph, $scene_id);
+
+        $this->scene_id = $scene_id;
+    }
+
+    public function getSceneId()
+    {
+        return $this->scene_id;
+    }
+
+    public function getParticipants()
+    {
+        return $this->getVerticesEdgeTo();
+    }
+
+    public function getParticipant($participant_id)
+    {
+        $participants = $this->getParticipants();
+        return $participants->getVertexId($this->scene_id . '/' . $participant_id);
+    }
+
+    public function getAllUtterances()
+    {
+        $utterances = [];
+
+        foreach($this->getParticipants() as $participant)
+        {
+            foreach($participant->getUtterances() as $utterance)
+            {
+                $utterances[$utterance->getSequence()] = $utterance;
+            }
+        }
+        ksort($utterances);
+        return new Edges($utterances);
+    }
+
+    public function getExitUtterances()
+    {
+        $exit_utterances = [];
+        foreach($this->getAllUtterances() as $utterance)
+        {
+            if ($utterance->changesScene()) $exit_utterances[] = $utterance;
+        }
+        return new Edges($exit_utterances);
+    }
+
+    public function getInternalUtterances()
+    {
+        $internal_utterances = [];
+        foreach($this->getAllUtterances() as $utterance)
+        {
+            if (!$utterance->changesScene()) $internal_utterances[] = $utterance;
+        }
+        return new Edges($internal_utterances);
+    }
 
 }
