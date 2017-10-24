@@ -4,7 +4,7 @@ namespace actsmart\actsmart\Stores;
 
 interface StoreInterface
 {
-    public function store($e);
+    public function store($data);
 
     public function reply();
 }
