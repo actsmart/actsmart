@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Conversations;
 
 use Fhaculty\Graph\Graph as Graph;
 use Fhaculty\Graph\Set\Edges as Edges;
+use actsmart\actsmart\Interpreters\Intent;
 
 /**
  * A conversation is a Graph structure that describes the possible utterances
@@ -11,6 +12,9 @@ use Fhaculty\Graph\Set\Edges as Edges;
  * represent specific states of the conversation that are supposed to lead to some
  * resolution. A resolution will either end the conversation or move the conversation
  * to a new Scene.
+ *
+ * The initial scene of each conversation has a vertex with id 'init' - this makes it simpler
+ * to identify.
  *
  * Class Conversation
  * @package actsmart\actsmart\Conversations
@@ -26,6 +30,7 @@ class Conversation extends Graph
     const PARTICIPANT = 'participant';
     const PARTICIPATING = 'participating';
     const ID = 'id';
+    const INITIAL_SCENE = 'init';
 
     /**
      * Creates a new Scene which will point to the participants,
@@ -122,13 +127,17 @@ class Conversation extends Graph
      * @param $sequence - the overall expected order of this message in a conversation.
      * @return $this
      */
-    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, Message $message, $sequence)
+    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, $sequence, Message $message = null, Intent $intent = null)
     {
         $sender = $this->getParticipantToScene($start_scene, $sender_id);
         $receiver = $this->getParticipantToScene($end_scene, $receiver_id);
 
+        /* @var actsmart\actsmart\Conversations\Utterance $utterance */
         $utterance = $sender->talksTo($receiver, $sequence);
-        $utterance->addMessage($message);
+
+        if (isset($message)) $utterance->setMessage($message);
+
+        if (isset($intent)) $utterance->setIntent($intent);
 
         return $this;
     }
@@ -141,6 +150,11 @@ class Conversation extends Graph
     public function setCurrentUtterance($utterance)
     {
 
+    }
+
+    public function getInitialScene()
+    {
+        return $this->getScene(SELF::INITIAL_SCENE);
     }
 
 
