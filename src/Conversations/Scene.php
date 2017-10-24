@@ -80,4 +80,9 @@ class Scene extends Vertex
         return new Edges($internal_utterances);
     }
 
+    public function getInitialUtterance()
+    {
+        return $this->getAllUtterances()->getEdgeFirst();
+    }
+
 }
