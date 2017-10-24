@@ -94,22 +94,22 @@ class ConversationTest extends TestCase
         $conversation->createScene('init')
             ->addParticipantToScene('init', 'bot1')
             ->addParticipantToScene('init', 'bot2')
-            ->addUtterance('init', 'init', 'bot1', 'bot2', new Message('Create list'), 0)
-            ->addUtterance('init', 'init', 'bot2', 'bot1', new Message('Do you want a new list or a clone'), 1)
+            ->addUtterance('init', 'init', 'bot1', 'bot2', 0, new Message('Create list'))
+            ->addUtterance('init', 'init', 'bot2', 'bot1', 1, new Message('Do you want a new list or a clone'))
 
             // New scene for create new list dialog
             ->createScene('new_list')
             ->addParticipantToScene('new_list', 'bot1')
             ->addParticipantToScene('new_list', 'bot2')
-            ->addUtterance('init', 'new_list', 'bot1', 'bot2', new Message('A new list'), 2)
-            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', new Message('Call it MyList'), 4)
+            ->addUtterance('init', 'new_list', 'bot1', 'bot2', 2, new Message('A new list'))
+            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', 4, new Message('Call it MyList'))
 
             // New scene for clone list dialog
             ->createScene('clone_list')
             ->addParticipantToScene('clone_list', 'bot1')
             ->addParticipantToScene('clone_list', 'bot2')
-            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', new Message('Clone an existing list'), 5)
-            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', new Message('select a list'), 6);
+            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', 5, new Message('Clone an existing list'))
+            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 6, new Message('select a list'));
 
         $init_utterances = $conversation->getAllUtterancesForScene('init');
 
@@ -134,15 +134,15 @@ class ConversationTest extends TestCase
         $conversation->createScene('init')
             ->addParticipantToScene('init', 'bot1')
             ->addParticipantToScene('init', 'bot2')
-            ->addUtterance('init', 'init', 'bot1', 'bot2', new Message('Create list'), 0)
-            ->addUtterance('init', 'init', 'bot2', 'bot1', new Message('Do you want a new list or a clone'), 1)
+            ->addUtterance('init', 'init', 'bot1', 'bot2', 0, new Message('Create list'))
+            ->addUtterance('init', 'init', 'bot2', 'bot1', 1, new Message('Do you want a new list or a clone'))
 
             // New scene for create new list dialog
             ->createScene('new_list')
             ->addParticipantToScene('new_list', 'bot1')
             ->addParticipantToScene('new_list', 'bot2')
-            ->addUtterance('init', 'new_list', 'bot1', 'bot2', new Message('A new list'), 2)
-            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', new Message('Call it MyList'), 3);
+            ->addUtterance('init', 'new_list', 'bot1', 'bot2', 2, new Message('A new list'))
+            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', 3, new Message('Call it MyList'));
 
         // Get the utterances of of bot1
         $utterances = $conversation->getScene('init')->getParticipant('bot1')->getUtterances();
@@ -168,22 +168,22 @@ class ConversationTest extends TestCase
         $conversation->createScene('init')
             ->addParticipantToScene('init', 'bot1')
             ->addParticipantToScene('init', 'bot2')
-            ->addUtterance('init', 'init', 'bot1', 'bot2', new Message('Create list'), 0)
-            ->addUtterance('init', 'init', 'bot2', 'bot1', new Message('Do you want a new list or a clone'), 1)
+            ->addUtterance('init', 'init', 'bot1', 'bot2', 0, new Message('Create list'))
+            ->addUtterance('init', 'init', 'bot2', 'bot1', 1, new Message('Do you want a new list or a clone'))
 
             // New scene for create new list dialog
             ->createScene('new_list')
             ->addParticipantToScene('new_list', 'bot1')
             ->addParticipantToScene('new_list', 'bot2')
-            ->addUtterance('init', 'new_list', 'bot1', 'bot2', new Message('A new list'), 2)
-            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', new Message('Call it MyList'), 3)
+            ->addUtterance('init', 'new_list', 'bot1', 'bot2', 2, new Message('A new list'))
+            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', 3, new Message('Call it MyList'))
 
             // New scene for clone list dialog
             ->createScene('clone_list')
             ->addParticipantToScene('clone_list', 'bot1')
             ->addParticipantToScene('clone_list', 'bot2')
-            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', new Message('Clone an existing list'), 4)
-            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', new Message('select a list'), 5);
+            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', 4, new Message('Clone an existing list'))
+            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 5, new Message('select a list'));
 
 
         $exit_utterances = $conversation->getScene('init')->getExitUtterances();
@@ -199,22 +199,22 @@ class ConversationTest extends TestCase
         $conversation->createScene('init')
             ->addParticipantToScene('init', 'bot1')
             ->addParticipantToScene('init', 'bot2')
-            ->addUtterance('init', 'init', 'bot1', 'bot2', new Message('Create list'), 0)
-            ->addUtterance('init', 'init', 'bot2', 'bot1', new Message('Do you want a new list or a clone'), 1)
+            ->addUtterance('init', 'init', 'bot1', 'bot2', 0, new Message('Create list'))
+            ->addUtterance('init', 'init', 'bot2', 'bot1', 1, new Message('Do you want a new list or a clone'))
 
             // New scene for create new list dialog
             ->createScene('new_list')
             ->addParticipantToScene('new_list', 'bot1')
             ->addParticipantToScene('new_list', 'bot2')
-            ->addUtterance('init', 'new_list', 'bot1', 'bot2', new Message('A new list'), 2)
-            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', new Message('Call it MyList'), 3)
+            ->addUtterance('init', 'new_list', 'bot1', 'bot2', 2, new Message('A new list'))
+            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', 3, new Message('Call it MyList'))
 
             // New scene for clone list dialog
             ->createScene('clone_list')
             ->addParticipantToScene('clone_list', 'bot1')
             ->addParticipantToScene('clone_list', 'bot2')
-            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', new Message('Clone an existing list'), 4)
-            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', new Message('select a list'), 5);
+            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', 4, new Message('Clone an existing list'))
+            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 5, new Message('select a list'));
 
 
         $internal_utterances = $conversation->getScene('init')->getInternalUtterances();
