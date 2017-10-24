@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ronaldashri
- * Date: 27/07/2017
- * Time: 13:10
- */
 
 namespace actsmart\actsmart\Controllers\Active;
 
