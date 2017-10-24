@@ -18,17 +18,20 @@ class LUISInterpreter implements InterpreterInterface
 
     private $subscription_key;
 
+    private $staging = FALSE;
+
     private $timezone_offset;
 
     private $verbose = TRUE;
 
     private $spellcheck = TRUE;
 
-    public function __construct($app_url, $app_id, $subscription_key, $timezone_offset = 0, $verbose = TRUE, $spellcheck = TRUE)
+    public function __construct($app_url, $app_id, $subscription_key, $staging = false, $timezone_offset = 0, $verbose = TRUE, $spellcheck = TRUE)
     {
         $this->client = new Client();
         $this->app_url = $app_url;
         $this->app_id = $app_id;
+        $this->staging = FALSE;
         $this->subscription_key = $subscription_key;
         $this->timezone_offset = $timezone_offset;
         $this->verbose = $verbose;
@@ -66,6 +69,7 @@ class LUISInterpreter implements InterpreterInterface
                 'query' =>
                     [
                         'subscription-key' => $this->subscription_key,
+                        'staging' => $this->staging ? 'false' : 'true',
                         'timezone-offset' => $this->timezone_offset,
                         'verbose' => $this->verbose ? 'false' : 'true',
                         'spellcheck' => $this->spellcheck ? 'false' : 'true',
