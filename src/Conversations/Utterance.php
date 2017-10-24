@@ -2,8 +2,9 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use \Fhaculty\Graph\Edge\Directed as EdgeDirected;
-use \Fhaculty\Graph\Vertex;
+use actsmart\actsmart\Interpreters\Intent;
+use Fhaculty\Graph\Edge\Directed as EdgeDirected;
+use Fhaculty\Graph\Vertex;
 
 class Utterance extends EdgeDirected
 {
@@ -11,13 +12,15 @@ class Utterance extends EdgeDirected
 
     private $sequence;
 
+    private $intent;
+
     public function __construct(Vertex $from, Vertex $to, $sequence)
     {
         parent::__construct($from, $to);
         $this->sequence = $sequence;
     }
 
-    public function addMessage(Message $message)
+    public function setMessage(Message $message)
     {
         $this->message = $message;
         return $this;
@@ -26,6 +29,17 @@ class Utterance extends EdgeDirected
     public function getMessage()
     {
         return $this->message;
+    }
+
+    public function setIntent(Intent $intent)
+    {
+        $this->intent = $intent;
+        return $this;
+    }
+
+    public function getIntent()
+    {
+        return $this->intent;
     }
 
     /**
@@ -50,6 +64,11 @@ class Utterance extends EdgeDirected
         if ($this->getVertexStart()->getSceneId() != $this->getVertexEnd()->getSceneId()) return true;
 
         return false;
+    }
+
+    public function intentMatches(Intent $intent)
+    {
+        if ($intent->getLabel() == $this->intent->getLabel()) return true;
     }
 }
 
