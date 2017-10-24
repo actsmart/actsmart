@@ -15,7 +15,7 @@ class Message
 {
     public $text_response;
 
-    public function __construct($text_response)
+    public function __construct($text_response = null)
     {
         $this->text_response = $text_response;
     }
