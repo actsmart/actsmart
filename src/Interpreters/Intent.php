@@ -11,7 +11,7 @@ class Intent
 
     private $source_event;
 
-    public function __construct($label, $source_event, $confidence = 1)
+    public function __construct($label = null, $source_event = null, $confidence = 1)
     {
         $this->label = $label;
         $this->source_event = $source_event;
