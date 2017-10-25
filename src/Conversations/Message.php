@@ -20,7 +20,7 @@ class Message
         $this->text_response = $text_response;
     }
 
-    public function getResponse()
+    public function getTextResponse()
     {
         return $this->text_response;
     }

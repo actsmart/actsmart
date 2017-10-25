@@ -32,6 +32,28 @@ class Conversation extends Graph
     const ID = 'id';
     const INITIAL_SCENE = 'init';
 
+    private $conversation_template_id;
+
+    /**
+     * @return mixed
+     */
+    public function getConversationTemplateId()
+    {
+        return $this->conversation_template_id;
+    }
+
+    /**
+     * @param mixed $conversation_template_id
+     * @return Conversation
+     */
+    public function setConversationTemplateId($conversation_template_id)
+    {
+        $this->conversation_template_id = $conversation_template_id;
+        return $this;
+    }
+
+
+
     /**
      * Creates a new Scene which will point to the participants,
      * useful as a structure to easily access participants within a Scene.
@@ -127,7 +149,7 @@ class Conversation extends Graph
      * @param $sequence - the overall expected order of this message in a conversation.
      * @return $this
      */
-    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, $sequence, Message $message = null, Intent $intent = null)
+    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, $sequence, Intent $intent = null, Message $message = null)
     {
         $sender = $this->getParticipantToScene($start_scene, $sender_id);
         $receiver = $this->getParticipantToScene($end_scene, $receiver_id);

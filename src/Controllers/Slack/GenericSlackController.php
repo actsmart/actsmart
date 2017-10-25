@@ -7,6 +7,8 @@ use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Controllers\Active\ActiveController;
 use actsmart\actsmart\Stores\ConversationStore;
+use actsmart\actsmart\Conversations\Conversation;
+use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 
 class GenericSlackController extends ActiveController
@@ -45,10 +47,24 @@ class GenericSlackController extends ActiveController
         // init scene that matches that. If we have a conversation match instantiate conversation
         // and reply with the next message in the sequence.
         if ($e->getSubject() == 'message') {
+
             /* @var actsmart\actsmart\Interpreters\Intent $intent */
             $intent = $this->message_interpreter->interpret($e);
 
-            $this->conversation_store->getMatchingConversations($intent);
+            $matching_conversation_id = $this->conversation_store->getMatchingConversation($intent);
+
+            $ci = new ConversationInstance($matching_conversation_id,
+                $this->conversation_store,
+                $e->getWorkspaceId(),
+                $e->getUserId(),
+                $e->getChannelId(),
+                $e->getTimestamp());
+
+            $conversation = $ci->initConversation();
+
+
+            $this->actuators['slack.actuator']->postMessage($ci->getNextUtterance()->getMessage()->getSlackMessage($e));
+
         }
 
             // 2b. If there is an ongoing conversation instantiate that, determine the current scene

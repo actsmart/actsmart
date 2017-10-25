@@ -72,7 +72,7 @@ class SlackMessage
     public function setText($text)
     {
         // Escape &, <, > characters
-        $this->text = htmlspecialchars($text, [ENT_NOQUOTES]);
+        $this->text = htmlspecialchars($text, ENT_NOQUOTES);
         return $this;
     }
 
