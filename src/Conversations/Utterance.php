@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Conversations;
 use actsmart\actsmart\Interpreters\Intent;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
+use actsmart\actsmart\Interpreters\InterpreterInterface;
 
 class Utterance extends EdgeDirected
 {
@@ -14,7 +15,12 @@ class Utterance extends EdgeDirected
 
     private $intent;
 
-    public function __construct(Vertex $from, Vertex $to, $sequence)
+    private $completes;
+
+    /* @var actsmart\actsmart\Interpreters\InterpreterInterface $interpreter */
+    private $interpreter = null;
+
+    public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false)
     {
         parent::__construct($from, $to);
         $this->sequence = $sequence;
@@ -60,15 +66,49 @@ class Utterance extends EdgeDirected
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function isCompleting()
+    {
+        return $this->completes;
+    }
+
+    /**
+     * @param mixed $completes
+     */
+    public function setCompletes($completes)
+    {
+        $this->completes = $completes;
+        return $this;
+    }
+
     public function changesScene(){
         if ($this->getVertexStart()->getSceneId() != $this->getVertexEnd()->getSceneId()) return true;
-
         return false;
     }
 
     public function intentMatches(Intent $intent)
     {
-        if ($intent->getLabel() == $this->intent->getLabel()) return true;
+        if (($this->intent->getLabel() == $intent->getLabel()) &&
+            ($this->intent->getConfidence() <= $intent->getConfidence())) return true;
+        return false;
     }
+
+    public function setInterpreter(InterpreterInterface $interpreter)
+    {
+        $this->interpreter = $interpreter;
+    }
+
+    public function hasInterpreter()
+    {
+        return isset($this->interpreter);
+    }
+
+    public function interpret($e)
+    {
+        return $this->interpreter->interpret($e);
+    }
+
 }
 
