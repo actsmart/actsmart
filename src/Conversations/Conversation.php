@@ -149,7 +149,7 @@ class Conversation extends Graph
      * @param $sequence - the overall expected order of this message in a conversation.
      * @return $this
      */
-    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, $sequence, Intent $intent = null, Message $message = null)
+    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, $sequence, Intent $intent = null, Message $message = null, $completes = false, $interpreter = null)
     {
         $sender = $this->getParticipantToScene($start_scene, $sender_id);
         $receiver = $this->getParticipantToScene($end_scene, $receiver_id);
@@ -161,22 +161,31 @@ class Conversation extends Graph
 
         if (isset($intent)) $utterance->setIntent($intent);
 
+        if (isset($interpreter)) $utterance->setInterpreter($interpreter);
+
+        $utterance->setCompletes($completes);
+
         return $this;
     }
 
+    /**
+     * @param $scene_id
+     * @return mixed
+     */
     public function getAllUtterancesForScene($scene_id)
     {
         return $this->getScene($scene_id)->getAllUtterances();
     }
 
-    public function setCurrentUtterance($utterance)
-    {
-
-    }
-
     public function getInitialScene()
     {
         return $this->getScene(SELF::INITIAL_SCENE);
+    }
+
+    public function addPreconditionToScene($scene_id, Condition $condition)
+    {
+        $this->getScene($scene_id)->addPrecondition($condition);
+        return $this;
     }
 
 
