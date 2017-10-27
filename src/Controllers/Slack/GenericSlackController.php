@@ -21,6 +21,7 @@ class GenericSlackController extends ActiveController
     protected $slack_verification_token;
 
     /* Time in seconds that a conversation is still considered as ongoing */
+    // @todo - This is not actually used right now.
     protected $conversation_timeout = null;
 
     /* @var actsmart\actsmart\Interpreters\InterpreterInterface $message_interpreter */
@@ -88,11 +89,32 @@ class GenericSlackController extends ActiveController
             }
         }
 
-        // We could find any matching intent. Get out.
+        // We couldn't find any matching intent. Get out.
         if (count($matching_followups) == 0) return false;
 
         // At this point we definitely have a matching intent so let us post the corresponsing message.
-        // Keeping it simple - just the first matching utterance.
+        // Keeping it simple - just the first matching utterance. We are keeping it simple - just the first
+        // matching utterance.
+        $current_utterance = $matching_followups[0];
+        $next_utterance = null;
+
+        // The response will be the appropriate response for the message that matched.
+
+        // There are two possibilities.
+        // 1. We are in the same scene so we get the next message in that scene. Let's check.
+        if (!$current_utterance->changesScene()) {
+            $next_utterance = $ci->getNextUtterace();
+        } else {
+            // We *are* changing scenes! Set the current scene as the new scene.
+            $ci->setCurrentSceneId($current_utterance->getEndScene());
+
+            // Given the new scene the next message is going to be the first message of the scene that
+            // has a sequence higher than the current message and replies to the current message sender
+            // @todo - we have to improve get nextUtterance to be more generic than just the message with the next
+            // sequence id.
+            $ci->getNextUtterance();
+        }
+
         $response = $this->actuators['slack.actuator']->postMessage($matching_followups[0]->getMessage()->getSlackMessage($e));
 
 
