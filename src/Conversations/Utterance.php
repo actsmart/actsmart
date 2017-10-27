@@ -83,9 +83,20 @@ class Utterance extends EdgeDirected
         return $this;
     }
 
-    public function changesScene(){
-        if ($this->getVertexStart()->getSceneId() != $this->getVertexEnd()->getSceneId()) return true;
+    public function changesScene()
+    {
+        if ($this->getStartScene() != $this->getEndScene()) return true;
         return false;
+    }
+
+    public function getStartScene()
+    {
+        return $this->getVertexStart()->getSceneId();
+    }
+
+    public function getEndScene()
+    {
+        return $this->getVertexEnd()->getSceneId();
     }
 
     public function intentMatches(Intent $intent)
