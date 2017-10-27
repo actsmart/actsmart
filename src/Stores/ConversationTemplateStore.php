@@ -5,8 +5,9 @@ namespace actsmart\actsmart\Stores;
 use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Sensors\SensorEvent;
 
-class ConversationStore implements StoreInterface
+class ConversationTemplateStore
 {
 
     private $conversations = [];
@@ -24,6 +25,14 @@ class ConversationStore implements StoreInterface
         $this->conversations[$conversation->getConversationTemplateId()] = $conversation;
     }
 
+    /**
+     * @param array $conversations
+     */
+    public function addConversations($conversations)
+    {
+        $this->conversations = $conversations;
+    }
+
     public function getConversation($conversation_template_id)
     {
         return $this->conversations[$conversation_template_id];
@@ -34,18 +43,25 @@ class ConversationStore implements StoreInterface
      * matches the $intent.
      *
      * @param Intent $intent
-     * @return array
+     * @return array | boolean
      */
-    public function getMatchingConversations(Intent $intent)
+    public function getMatchingConversations(SensorEvent $e, Intent $intent)
     {
         $matches = [];
         foreach ($this->conversations as $conversation)
         {
-            $u = $conversation->getInitialScene()->getInitialUtterance();
-            if ($u->intentMatches($intent)) $matches[$conversation->getConversationTemplateId()] = $conversation;
+            $scene = $conversation->getInitialScene();
+
+            // Check preconditions
+            if ($scene->checkPreconditions($e)) {
+                $u = $conversation->getInitialScene()->getInitialUtterance();
+                if ($u->intentMatches($intent)) $matches[$conversation->getConversationTemplateId()] = $conversation;
+            }
         }
 
-        return array_keys($matches);
+        if (count($matches) > 0) return array_keys($matches);
+
+        return false;
     }
 
     /**
@@ -57,9 +73,12 @@ class ConversationStore implements StoreInterface
      * @param Intent $intent
      * @return mixed
      */
-    public function getMatchingConversation(Intent $intent)
+    public function getMatchingConversation(SensorEvent $e, Intent $intent)
     {
-        $matches = $this->getMatchingConversations($intent);
+        $matches = $this->getMatchingConversations($e, $intent);
+
+        if (!$matches) return false;
+
         // Have to do below to avoid a PHP_STRICT error for variables passed by reference
         // when operation happens in a single pass.
         $reversed_matches = array_reverse($matches);
@@ -67,15 +86,4 @@ class ConversationStore implements StoreInterface
 
         return $match;
     }
-
-    public function store($data)
-    {
-        
-    }
-
-    public function reply()
-    {
-
-    }
-
 }

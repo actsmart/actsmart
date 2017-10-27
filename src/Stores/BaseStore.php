@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Stores;
 
 
-class BaseStore implements StoreInterface
+class BaseStore
 {
 
     public function store($data)
@@ -11,7 +11,7 @@ class BaseStore implements StoreInterface
         
     }
 
-    public function reply()
+    public function retrieve()
     {
 
     }
