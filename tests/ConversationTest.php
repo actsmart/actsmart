@@ -4,7 +4,7 @@ namespace actsmart\actsmart\Tests;
 
 use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Conversations\Message;
-use actsmart\actsmart\Conversation\Intent;
+use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Conversations\Scene;
 use actsmart\actsmart\Conversations\Participant;
 use Fhaculty\Graph\Graph as Graph;
@@ -85,9 +85,6 @@ class ConversationTest extends TestCase
         $this->assertTrue($participant->getId() == 'init/bot2');
     }
 
-    /**
-     * @group focus
-     */
     public function testUtteranceAddition()
     {
         $conversation = new Conversation();
@@ -189,8 +186,8 @@ class ConversationTest extends TestCase
 
         $exit_utterances = $conversation->getScene('init')->getExitUtterances();
 
-        $this->assertTrue($exit_utterances->getEdgeFirst()->getMessage()->getResponse() == 'A new list');
-        $this->assertTrue($exit_utterances->getEdgeLast()->getMessage()->getResponse() == 'Clone an existing list');
+        $this->assertTrue($exit_utterances->getEdgeFirst()->getMessage()->getTextResponse() == 'A new list');
+        $this->assertTrue($exit_utterances->getEdgeLast()->getMessage()->getTextResponse() == 'Clone an existing list');
     }
 
     public function testInternalUtterances()
@@ -223,6 +220,48 @@ class ConversationTest extends TestCase
         $this->assertTrue($internal_utterances->getEdgeFirst()->getMessage()->getTextResponse() == 'Create list');
         $this->assertTrue($internal_utterances->getEdgeLast()->getMessage()->getTextResponse() == 'Do you want a new list or a clone');
     }
+
+    /**
+     * @group focus
+     */
+    public function testNextPossibleUtterances()
+    {
+        $conversation = new Conversation();
+
+        $conversation->createScene('init')
+            ->addParticipantToScene('init', 'bot1')
+            ->addParticipantToScene('init', 'bot2')
+            ->addUtterance('init', 'init', 'bot1', 'bot2', 0, new Intent(), new Message('Create list'))
+            ->addUtterance('init', 'init', 'bot2', 'bot1', 1, new Intent(), new Message('Do you want a new list or a clone'))
+
+            // New scene for create new list dialog
+            ->createScene('new_list')
+            ->addParticipantToScene('new_list', 'bot1')
+            ->addParticipantToScene('new_list', 'bot2')
+            ->addUtterance('init', 'new_list', 'bot1', 'bot2', 2, new Intent(), new Message('A new list'))
+            ->addUtterance('new_list', 'new_list', 'bot1', 'bot2', 4, new Intent(), new Message('Call it MyList'))
+
+            // New scene for clone list dialog
+            ->createScene('clone_list')
+            ->addParticipantToScene('clone_list', 'bot1')
+            ->addParticipantToScene('clone_list', 'bot2')
+            ->addUtterance('init', 'clone_list', 'bot1', 'bot2', 5, new Intent(), new Message('Clone an existing list'))
+            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 6, new Intent(), new Message('select a list'));
+
+        $current_sequence = 1;
+        $current_scene = 'init';
+
+        // Get the current scene
+        $current_scene = $conversation->getScene('init');
+
+        $followups = $current_scene->getPossibleFollowups($current_sequence);
+
+        $this->assertTrue(count($followups) == 2, 'Corrent number of followups.');
+
+        $this->assertTrue($followups[2]->getMessage()->getTextResponse() == 'A new list');
+        $this->assertTrue($followups[5]->getMessage()->getTextResponse() == 'Clone an existing list');
+    }
+
 
 
 }
