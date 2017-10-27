@@ -32,8 +32,15 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
         return SELF::EVENT_NAME;
     }
 
-    public function getUtterance() {
+    public function getUtterance()
+    {
         return $this->getArgument('event')->text;
+    }
+
+    public function mentions($user_id)
+    {
+        if (strpos($this->getUtterance(), $user_id)) return true;
+        return false;
     }
 
     /**
@@ -65,7 +72,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
      */
     public function getChannelId()
     {
-        return $this->channel_id    ;
+        return $this->channel_id;
     }
 
 
