@@ -25,7 +25,8 @@
         "symfony/cache" : "~3.3",
         "guzzlehttp/guzzle": "~6.0",
         "euautomation/graphql-client": "0.2",
-        "clue/graph": "0.9.0"
+        "clue/graph": "0.9.0",
+        "aws/aws-sdk-php": "2.*"
     },
     "require-dev": {
         "phpunit/phpunit" : "~6.0",

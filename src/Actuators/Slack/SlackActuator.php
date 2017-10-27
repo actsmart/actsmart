@@ -28,7 +28,7 @@ class SlackActuator implements ActuatorInterface
         $ret = $this->client->post('chat.postMessage', ['form_params' => $message->getMessageToPost()]);
 
         // @todo - handle failures and throw appropriate exceptions.
-        var_dump($ret->getBody()->getContents());
+        return json_decode($ret->getBody()->getContents());
     }
 
 
@@ -36,7 +36,7 @@ class SlackActuator implements ActuatorInterface
     {
         $ret = $this->client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
         // @todo - handle failures and throw appropriate exceptions.
-        var_dump($ret->getBody()->getContents());
+        $ret->getBody()->getContents();
     }
 
     public function getKey()
