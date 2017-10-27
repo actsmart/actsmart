@@ -54,5 +54,23 @@ class Intent
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getConfidence()
+    {
+        return $this->confidence;
+    }
+
+    /**
+     * @param int $confidence
+     */
+    public function setConfidence($confidence)
+    {
+        $this->confidence = $confidence;
+    }
+
+
+
 
 }
