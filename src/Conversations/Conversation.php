@@ -52,8 +52,6 @@ class Conversation extends Graph
         return $this;
     }
 
-
-
     /**
      * Creates a new Scene which will point to the participants,
      * useful as a structure to easily access participants within a Scene.
@@ -188,5 +186,78 @@ class Conversation extends Graph
         return $this;
     }
 
+    /**
+     * Returns possible followups based on sequence number supplied.
+     *
+     * Given a current utterance from a sender to a receiver the possible followups
+     * are all the replies within the scene from the receiver to the sender.
+     *
+     * @param $current_sequence
+     * @return array
+     */
+    public function getPossibleFollowUps($current_sequence, $current_scene)
+    {
+        $current_utterance = $this->getUtteranceWithSequence($current_sequence);
 
+        $current_sender = $current_utterance->getSender();
+
+        $possible_followups = [];
+
+        // We are interested in utterances where the receiver of the currenct utterance is replying to the
+        // current sender.
+        $sender_receiver_tracker = $current_utterance->getReceiver() . $current_utterance->getSender();
+        var_dump($sender_receiver_tracker);
+        foreach($this->getAllUtterancesKeyedBySequenceForScene($current_scene) as $utterance)
+        {
+            // If we are dealing with utterances before the current utterance just skip them
+            // @todo There should be a better way to get all the utterances after a certain sequence number.
+            if ($utterance->getSequence() <= $current_sequence) {
+                var_dump('This is not the one we care about' . $utterance->getSequence());
+                continue;
+            }
+
+            $sender_receiver_control = $utterance->getSender() . $utterance->getReceiver();
+            var_dump('We are checking against' . $sender_receiver_control);
+
+            // If we reached utterances where the sender and receiver are not what we expect get out.
+            if ($sender_receiver_control != $sender_receiver_tracker) {var_dump('bail!');break;}
+
+            // Now we are dealing with utterances that are after the current utterance and the receiver of the
+            // current utterance is replying to the sender of the previous utterance.
+            if (($utterance->getSender() != $current_sender) &&
+                $utterance->getReceiver() == $current_sender) {
+                var_dump($utterance->getMessage()->getTextResponse());
+                $possible_followups[$utterance->getSequence()] = $utterance;
+            }
+        }
+
+        return $possible_followups;
+    }
+
+    public function getUtteranceWithSequence($sequence)
+    {
+        $utterances = $this->getAllUtterancesKeyedBySequence();
+
+        if (isset($utterances[$sequence])) return $utterances[$sequence];
+
+        return false;
+    }
+
+    public function getAllUtterancesKeyedBySequence()
+    {
+        $scenes = $this->getScenes();
+
+        $utterances = [];
+
+        foreach ($scenes as $scene) {
+            $utterances = $utterances + $scene->getAllUtterancesKeyedBySequence();
+        }
+        ksort($utterances);
+        return $utterances;
+    }
+
+    public function getAllUtterancesKeyedBySequenceForScene($scene_id)
+    {
+        return $this->getScene($scene_id)->getAllUtterancesKeyedBySequence();
+    }
 }

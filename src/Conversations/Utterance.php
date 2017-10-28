@@ -99,6 +99,16 @@ class Utterance extends EdgeDirected
         return $this->getVertexEnd()->getSceneId();
     }
 
+    public function getSender()
+    {
+        return $this->getVertexStart()->getParticipantId();
+    }
+
+    public function getReceiver()
+    {
+        return $this->getVertexEnd()->getParticipantId();
+    }
+
     public function intentMatches(Intent $intent)
     {
         if (($this->intent->getLabel() == $intent->getLabel()) &&

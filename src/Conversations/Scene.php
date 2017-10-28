@@ -6,6 +6,8 @@ use \Fhaculty\Graph\Graph as Graph;
 use \Fhaculty\Graph\Vertex;
 use \Fhaculty\Graph\Set\Edges;
 use actsmart\actsmart\Interpreters\InterpreterInterface;
+use actsmart\actsmart\Interpeters\Intent;
+use actsmart\actsmart\Sensors\SensorEvent;
 
 
 class Scene extends Vertex
@@ -56,9 +58,9 @@ class Scene extends Vertex
     /**
      * Get all utterances exchanges in this Scene.
      *
-     * @return Edges
+     * @return array
      */
-    public function getAllUtterances()
+    public function getAllUtterancesKeyedBySequence()
     {
         $utterances = [];
 
@@ -70,7 +72,12 @@ class Scene extends Vertex
             }
         }
         ksort($utterances);
-        return new Edges($utterances);
+        return $utterances;
+    }
+
+    public function getAllUtterances()
+    {
+        return new Edges($this->getAllUtterancesKeyedBySequence());
     }
 
     /**
@@ -113,41 +120,63 @@ class Scene extends Vertex
         return $this->getAllUtterances()->getEdgeFirst();
     }
 
-    /**
-     * @param $sequence
-     * @return mixed
-     */
-    public function getUtteranceWithSequence($sequence){
-        $utterances = $this->getAllUtterances();
-        foreach ($utterances as $utterance){
-            if ($utterance->getSequence() == $sequence) return $utterance;
-        }
-        return false;
-    }
 
     /**
      * @param $current_sequence
+     * @param SensorEvent $e
+     * @param null $default_intent
      * @return array
      */
-    public function getPossibleFollowUps($current_sequence)
+    public function getMatchingUtterances($current_sequence, SensorEvent $e, $default_intent = null)
     {
-        $current_utterance = $this->getUtteranceWithSequence($current_sequence);
-        $current_sender = $current_utterance->getVertexStart()->getParticipantId();
-
-        $possible_followups = [];
-        foreach($this->getAllUtterances() as $utterance)
-        {
-            if ($utterance->getSequence() <= $current_sequence) {
-                continue;
-            }
-
-            if (($utterance->getVertexStart()->getParticipantId() != $current_sender) &&
-                $utterance->getVertexEnd()->getParticipantId() == $current_sender) {
-                $possible_followups[$utterance->getSequence()] = $utterance;
+        // Check each possible followup for a match
+        $matching_followups = [];
+        foreach ($this->getPossibleFollowUps($current_sequence) as $followup) {
+            if ($followup->hasInterpreter()) {
+                if ($followup->intentMatches($followup->interpret($e))) {$matching_followups[] = $followup;}
+            } else {
+                if ($followup->intentMatches($default_intent)) {$matching_followups[] = $followup;}
             }
         }
 
-        return $possible_followups;
+        return $matching_followups;
+    }
+
+    public function getNextUtterance($sequence, SensorEvent $e, Intent $default_intent)
+    {
+        $matching_utterances = $this->getMatchingUtterances($sequence, $e, $default_intent);
+
+        // We couldn't find any matching intent. Get out.
+        if (count($matching_utterances) == 0) return false;
+
+        // At this point we definitely have a matching intent so let us post the corresponsing message.
+        // Keeping it simple - just the first matching utterance. We are keeping it simple - just the first
+        // matching utterance.
+        $current_utterance = $matching_utterances[0];
+        $next_utterance = null;
+
+        // There are two possibilities.
+        // 1. We are in the same scene so we get the next message in that scene. Let's check.
+        if (!$current_utterance->changesScene()) {
+            $next_utterance = $this->getNextSequentialUtterance($sequence);
+        } else {
+            // We *are* changing scenes! Set the current scene as the new scene.
+
+            // Get the new scene and the first utterance that is a reply to this one.
+
+            //$ci->setCurrentSceneId($current_utterance->getEndScene());
+
+            // Given the new scene the next message is going to be the first message of the scene that
+            // has a sequence higher than the current message and replies to the current message sender
+            // @todo - we have to improve get nextUtterance to be more generic than just the message with the next
+            // sequence id.
+            //$ci->getNextUtterance();
+        }
+    }
+
+    public function getNextUtteranceInSequence($sequence)
+    {
+
     }
 
     /**
