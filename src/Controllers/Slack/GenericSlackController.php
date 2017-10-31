@@ -43,7 +43,11 @@ class GenericSlackController extends ActiveController
 
     public function execute(SensorEvent $e = null)
     {
-        if ($e->getSubject() == 'message') {
+        $message_types = ['message', 'interactive_message'];
+
+        if (in_array($e->getSubject(), $message_types)) {
+            // Check top level preconditions (bot mentioned, direct message to bot, etc)
+            // If none of our top level preconditions match then give up early
             if (!$this->handleOngoingConversation($e)) {
                 if (!$this->handleNewConversation($e)) $this->handleNothingMatched($e);
             }
@@ -55,28 +59,29 @@ class GenericSlackController extends ActiveController
         // If we don't get a CI object back there is no ongoing conversation that matches. Bail out.
         if (!$ci=$this->ongoingConversation($e)) return false;
 
-        // We have a conversation template id so let's thaw the actual conversation graph. We only
-        // have the id before this point.
-        $ci->setConversation();
-
-        $current_scene = $ci->getConversation()->getScene($ci->getCurrentSceneId());
-
         // Set up a default intent
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $default_intent = $this->message_interpreter->interpret($e);
 
-        if (!$next_utterance = $current_scene->getNextUtterance($ci->getCurrentUtteranceSequenceId(), $e, $default_intent)) return false;
+        // If we can't figure out what is the next utterance bail out.
+        if (!$next_utterance = $ci->getNextUtterance($e, $default_intent)) return false;
 
+        // We have an utterance - let's send it over.
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
-
-
-        $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
 
         // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
         if ($next_utterance->isCompleting()) {
+            // Remove the current ci state.
+            $this->conversation_instance_store->delete($ci);
             return true;
         }
 
+        // Remove the current ci state
+        // @todo - this can be done with an update as well potentially.
+        $this->conversation_instance_store->delete($ci);
+
+        // If the utterance we just sent does not end the conversation, store the CI instance.
+        $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
         $ci->setCurrentUtteranceSequenceId($next_utterance->getSequence());
         $this->conversation_instance_store->save($ci);
         return true;
@@ -84,10 +89,8 @@ class GenericSlackController extends ActiveController
 
     public function handleNewConversation(SensorEvent $e)
     {
-        var_dump('new');
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $intent = $this->message_interpreter->interpret($e);
-        var_dump($intent);
+        $intent = $this->determineEventIntent($e);
 
         $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
 
@@ -105,20 +108,18 @@ class GenericSlackController extends ActiveController
         $conversation = $ci->initConversation();
 
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance();
+        $next_utterance = $ci->getNextUtterance($e, $intent, false);
 
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
 
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
 
         if ($next_utterance->isCompleting()) {
-            var_dump('It completes');
             return true;
         }
 
         $ci->setCurrentUtteranceSequenceId($next_utterance->getSequence());
         $this->conversation_instance_store->save($ci);
-        var_dump('new true');
         return true;
     }
 
@@ -126,7 +127,7 @@ class GenericSlackController extends ActiveController
     {
         var_dump('nothing matched');
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $intent = new Intent('NoMatch');
+        $intent = new Intent('NoMatch', $e, 1);
 
         $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
 
@@ -140,10 +141,10 @@ class GenericSlackController extends ActiveController
             $e->getTimestamp(),
             $e->getTimestamp());
 
-        $conversation = $ci->initConversation();
+        $ci->initConversation();
 
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance();
+        $next_utterance = $ci->getNextUtterance($e, $intent, false);
 
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
 
@@ -187,6 +188,23 @@ class GenericSlackController extends ActiveController
 
         /* @var actsmart\actsmart\Conversations\ConversationInstans $ci */
         return $this->conversation_instance_store->retrieve($temp_conversation_instance);
+    }
+
+    private function determineEventIntent(SensorEvent $e)
+    {
+        $intent = null;
+        switch ($e->getSubject()) {
+            case 'interactive_message':
+                $intent = new Intent($e->getCallbackId(), $e, 1);
+                break;
+            case 'message':
+                $intent = $this->message_interpreter->interpret($e);
+                break;
+            default:
+                $intent = new Intent();
+        }
+
+        return $intent;
     }
 
 }
