@@ -63,10 +63,13 @@ class GenericSlackController extends ActiveController
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $default_intent = $this->message_interpreter->interpret($e);
 
+        // Before getting the next utterance let us perform any actions related to the current utterance
+        $ci->performCurrentAction($e);
+
         // If we can't figure out what is the next utterance bail out.
         if (!$next_utterance = $ci->getNextUtterance($e, $default_intent)) return false;
 
-        // We have an utterance - let's send it over.
+        // We have an utterance - let's post the message.
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
 
         // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
@@ -89,7 +92,7 @@ class GenericSlackController extends ActiveController
 
     public function handleNewConversation(SensorEvent $e)
     {
-        /* @var actsmart\actsmart\Interpreters\Intent $intent */
+        /* @var actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($e);
 
         $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
@@ -100,16 +103,18 @@ class GenericSlackController extends ActiveController
             $this->conversation_store,
             $e->getWorkspaceId(),
             $e->getUserId(),
-            $e->getChannelId(),
+            $e->getChannelid(),
             $e->getTimestamp(),
             $e->getTimestamp());
 
         /* @var actsmart\actsmart\Conversations\Conversation $conversation */
-        $conversation = $ci->initConversation();
+        $ci->initConversation();
+
+        // Before getting the next utterance let us perform any actions related to the current utterance
+        $ci->performCurrentAction($e);
 
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
-
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
 
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
@@ -190,6 +195,12 @@ class GenericSlackController extends ActiveController
         return $this->conversation_instance_store->retrieve($temp_conversation_instance);
     }
 
+    /**
+     * Builds an apporpriate Intent object based on the event that should generate the Intent.
+     *
+     * @param SensorEvent $e
+     * @return Intent|null
+     */
     private function determineEventIntent(SensorEvent $e)
     {
         $intent = null;
