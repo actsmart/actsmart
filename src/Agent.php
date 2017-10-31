@@ -44,7 +44,6 @@ class Agent
         $this->dispatcher->addListener($sensor->getEventName(), array($controller, 'execute'));
     }
 
-
     public function sensorReceive($sensor_key, $message)
     {
         return $this->sensors[$sensor_key]->receive($message);

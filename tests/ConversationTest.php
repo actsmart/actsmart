@@ -177,7 +177,7 @@ class ConversationTest extends TestCase
     {
 
         $conversation = $this->buildConversation();
-        
+
         $current_sequence = 1;
         $current_scene = 'init';
 
