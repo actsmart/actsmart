@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Conversations;
 use Fhaculty\Graph\Graph as Graph;
 use Fhaculty\Graph\Set\Edges as Edges;
 use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Sensors\SensorEvent;
 
 /**
  * A conversation is a Graph structure that describes the possible utterances
@@ -206,33 +207,75 @@ class Conversation extends Graph
         // We are interested in utterances where the receiver of the currenct utterance is replying to the
         // current sender.
         $sender_receiver_tracker = $current_utterance->getReceiver() . $current_utterance->getSender();
-        var_dump($sender_receiver_tracker);
+
         foreach($this->getAllUtterancesKeyedBySequenceForScene($current_scene) as $utterance)
         {
             // If we are dealing with utterances before the current utterance just skip them
             // @todo There should be a better way to get all the utterances after a certain sequence number.
             if ($utterance->getSequence() <= $current_sequence) {
-                var_dump('This is not the one we care about' . $utterance->getSequence());
                 continue;
             }
 
             $sender_receiver_control = $utterance->getSender() . $utterance->getReceiver();
-            var_dump('We are checking against' . $sender_receiver_control);
 
             // If we reached utterances where the sender and receiver are not what we expect get out.
-            if ($sender_receiver_control != $sender_receiver_tracker) {var_dump('bail!');break;}
+            if ($sender_receiver_control != $sender_receiver_tracker) break;
 
             // Now we are dealing with utterances that are after the current utterance and the receiver of the
             // current utterance is replying to the sender of the previous utterance.
             if (($utterance->getSender() != $current_sender) &&
                 $utterance->getReceiver() == $current_sender) {
-                var_dump($utterance->getMessage()->getTextResponse());
                 $possible_followups[$utterance->getSequence()] = $utterance;
             }
         }
 
         return $possible_followups;
     }
+
+    /**
+     * Matching utterances are the ones that are viable based on a match of intention.
+     *
+     * @param $current_sequence
+     * @param SensorEvent $e
+     * @param null $default_intent
+     * @return array
+     */
+    public function getMatchingUtterances($current_scene, $current_sequence, SensorEvent $e, $default_intent = null)
+    {
+        // Check each possible followup for a match
+        $matching_followups = [];
+
+        //@todo if we are checking against what the bot should say then matching intents might not be useful
+        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene) as $followup) {
+            if ($followup->hasInterpreter()) {
+                if ($followup->intentMatches($followup->interpret($e))) {$matching_followups[] = $followup;}
+            } else {
+                if ($followup->intentMatches($default_intent)) {$matching_followups[] = $followup;}
+            }
+        }
+
+        return $matching_followups;
+    }
+
+    /**
+     * @param $sequence
+     * @param SensorEvent $e
+     * @param Intent $default_intent
+     * @return bool
+     */
+    public function getNextUtterance($current_scene, $sequence, SensorEvent $e, Intent $default_intent, $ongoing = true)
+    {
+        $matching_utterances = $ongoing ? $this->getMatchingUtterances($current_scene, $sequence, $e, $default_intent)
+            :$this->getPossibleFollowUps($sequence, $current_scene);
+
+        // We couldn't find any matching intent. Get out.
+        if (count($matching_utterances) == 0) return false;
+
+        // For now we will just return the first of the matching utterances.
+        $matching_utterances = array_reverse(($matching_utterances));
+        return array_pop($matching_utterances);
+    }
+
 
     public function getUtteranceWithSequence($sequence)
     {

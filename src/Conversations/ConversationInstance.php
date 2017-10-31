@@ -3,6 +3,8 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Stores\ConversationTemplateStore;
+use actsmart\actsmart\Sensors\SensorEvent;
+use actsmart\actsmart\Interpreters\Intent;
 
 class ConversationInstance
 {
@@ -79,15 +81,6 @@ class ConversationInstance
     public function setConversation()
     {
         $this->conversation = $this->conversation_store->getConversation($this->conversation_template_id);
-    }
-
-    public function getNextUtterance()
-    {
-        /* @var actsmart\actsmart\Conversations\Scene $scene */
-        $scene = $this->conversation->getScene($this->current_scene_id);
-        $utterances = $scene->getAllUtterances();
-
-        return $utterances->getEdgeIndex($this->current_utterance_sequence_id+1);
     }
 
     public function getConversation()
@@ -254,6 +247,29 @@ class ConversationInstance
         $this->conversation_instance_store->save($this);
     }
 
+    public function getNextUtterance(SensorEvent $e, Intent $default_intent, $ongoing = true)
+    {
+        if (!$ongoing) return $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+
+        // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was
+        $user_current_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+
+        if (!$user_current_utterance) return false;
+
+        var_dump($this->current_scene_id);
+        var_dump($this->current_utterance_sequence_id);
+
+        // Having determined what the user just said, let us move the conversation to point to that utterance.
+        $this->current_scene_id = $user_current_utterance->getEndScene();
+        $this->current_utterance_sequence_id = $user_current_utterance->getSequence();
+        var_dump($this->current_scene_id);
+
+        //dd($user_current_utterance->getSequence());
+
+        // Now let us retrieve what the bot should reply given that user utterance. Treat this like a new conversation and just get the bot's next reply.
+        $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, false);
+        return $bot_next_utterance;
+    }
 
 
 }
