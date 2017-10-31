@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Interpreters\NLP;
 use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
+use actsmart\actsmart\Sensors\SensorEvent;
 use GuzzleHttp\Client;
 
 class LUISInterpreter implements InterpreterInterface
@@ -38,7 +39,7 @@ class LUISInterpreter implements InterpreterInterface
         $this->spellcheck = $spellcheck;
     }
 
-    public function interpret($e)
+    public function interpret(SensorEvent $e)
     {
         // Extract message
         $message = $e->getUtterance();
