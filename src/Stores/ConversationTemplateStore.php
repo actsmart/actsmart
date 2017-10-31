@@ -52,9 +52,12 @@ class ConversationTemplateStore
         {
             $scene = $conversation->getInitialScene();
 
-            // Check preconditions
+            // Check preconditions and if good then check interpreter
             if ($scene->checkPreconditions($e)) {
                 $u = $conversation->getInitialScene()->getInitialUtterance();
+
+                if ($u->hasInterpreter()) $intent = $u->interpret($e);
+
                 if ($u->intentMatches($intent)) $matches[$conversation->getConversationTemplateId()] = $conversation;
             }
         }

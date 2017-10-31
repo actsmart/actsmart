@@ -97,10 +97,34 @@ class ConversationInstanceStore
                     ->setCurrentSceneId($item['current_scene_id']['S'])
                     ->setStartTs($item['start_ts']['N'])
                     ->setUpdateTs($item['update_ts']['N']);
+                // Thaw the conversation object itself
+                $ci->setConversation();
                 return $ci;
             }
         }
 
         return false;
     }
+
+    public function delete(ConversationInstance $ci)
+    {
+        try {
+            $this->client->deleteItem(array(
+                'TableName' => $this->table_name,
+                'Key' => array(
+                    'update_ts' => array('N' => $ci->getUpdateTs()),
+                    'user_id' => array('S' => $ci->getUserId())
+                )
+            ));
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+    }
+
+    public function update(ConversationInstance $ci)
+    {
+        // Not sure we need an update.
+    }
+
+
 }
