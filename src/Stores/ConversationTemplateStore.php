@@ -7,15 +7,12 @@ use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 
-class ConversationTemplateStore
+abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface
 {
 
-    private $conversations = [];
+    protected $conversations = [];
 
-    public function __construct()
-    {
-        //
-    }
+    protected $event_dispatcher;
 
     /**
      * @param Conversation $conversation
