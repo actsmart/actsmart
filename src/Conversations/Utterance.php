@@ -6,6 +6,8 @@ use actsmart\actsmart\Interpreters\Intent;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
 use actsmart\actsmart\Interpreters\InterpreterInterface;
+use actsmart\actsmart\Actions\ActionInterface;
+use actsmart\actsmart\Sensors\SensorEvent;
 
 class Utterance extends EdgeDirected
 {
@@ -16,6 +18,8 @@ class Utterance extends EdgeDirected
     private $intent;
 
     private $completes;
+
+    private $action;
 
     /* @var actsmart\actsmart\Interpreters\InterpreterInterface $interpreter */
     private $interpreter = null;
@@ -82,6 +86,30 @@ class Utterance extends EdgeDirected
         $this->completes = $completes;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param ActionInterface $action
+     * @return Utterance
+     */
+    public function setAction(ActionInterface $action)
+    {
+        $this->action = $action;
+        return $this;
+    }
+
+    public function performAction(SensorEvent $event)
+    {
+        if (isset($this->action)) $this->action->perform($event);
+    }
+
 
     public function changesScene()
     {

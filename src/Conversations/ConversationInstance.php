@@ -99,6 +99,16 @@ class ConversationInstance
         return $this->current_utterance_sequence_id;
     }
 
+    public function getCurrentUtterance()
+    {
+        return $this->conversation->getUtteranceWithSequence($this->current_utterance_sequence_id);
+    }
+
+    public function performCurrentAction(SensorEvent $event)
+    {
+        $this->getCurrentUtterance()->performAction($event);
+    }
+
     /**
      * @return ConversationTemplateStore
      */
