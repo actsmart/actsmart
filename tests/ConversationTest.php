@@ -303,23 +303,32 @@ class ConversationTest extends TestCase
             ->addUtterance('init', 'clone_list', 'bot1', 'bot2', 6, new Intent(), new Message('Clone an existing list'))
             ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 7, new Intent(), new Message('Which list should we clone'))
             ->addUtterance('clone_list', 'clone_list', 'bot1', 'bot2', 8, new Intent(), new Message('Clone the onboarding list'))
-            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 8, new Intent(), new Message('Onboarding list cloned'));
+            ->addUtterance('clone_list', 'clone_list', 'bot2', 'bot1', 9, new Intent(), new Message('Onboarding list cloned'));
 
         $current_sequence = 1;
         $current_scene = 'init';
 
         $followups = $conversation->getPossibleFollowups($current_sequence, $current_scene);
 
+        $this->assertTrue($followups[2]->getMessage()->getTextResponse() == 'A new list');
+        $this->assertTrue($followups[6]->getMessage()->getTextResponse() == 'Clone an existing list');
+        $this->assertTrue(count($followups) == 2);
 
         $current_sequence = 2;
         $current_scene = 'new_list';
 
         $followups = $conversation->getPossibleFollowups($current_sequence, $current_scene);
 
-       // $this->assertTrue(count($followups) == 2, 'Corrent number of followups.');
+        $this->assertTrue($followups[3]->getMessage()->getTextResponse() == 'What do you want to call it?');
+        $this->assertTrue(count($followups) == 1);
 
-       // $this->assertTrue($followups[2]->getMessage()->getTextResponse() == 'A new list');
-       // $this->assertTrue($followups[5]->getMessage()->getTextResponse() == 'Clone an existing list');
+        $current_sequence = 7;
+        $current_scene = 'clone_list';
+
+        $followups = $conversation->getPossibleFollowups($current_sequence, $current_scene);
+
+        $this->assertTrue($followups[8]->getMessage()->getTextResponse() == 'Clone the onboarding list');
+        $this->assertTrue(count($followups) == 1);
     }
 
 
