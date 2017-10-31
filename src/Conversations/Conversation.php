@@ -35,6 +35,8 @@ class Conversation extends Graph
 
     private $conversation_template_id;
 
+    private $sequence = 0;
+
     /**
      * @return mixed
      */
@@ -140,29 +142,44 @@ class Conversation extends Graph
      * utterance while if start scene and end scene are different we are dealing with an
      * exit Utterance which moves the conversation to a new Scene.
      *
-     * @param $start_scene
-     * @param $end_scene
-     * @param $sender_id
-     * @param $receiver_id
-     * @param Message $message
-     * @param $sequence - the overall expected order of this message in a conversation.
+     * @param array $options
      * @return $this
      */
-    public function addUtterance($start_scene, $end_scene, $sender_id, $receiver_id, $sequence, Intent $intent = null, Message $message = null, $completes = false, $interpreter = null)
+    public function addUtterance($options)
     {
-        $sender = $this->getParticipantToScene($start_scene, $sender_id);
-        $receiver = $this->getParticipantToScene($end_scene, $receiver_id);
+        // @todo this is just minimally checking options for now.
+        $utterance = null;
 
-        /* @var actsmart\actsmart\Conversations\Utterance $utterance */
-        $utterance = $sender->talksTo($receiver, $sequence);
+        if (isset($options['scene'])) {
+            $sender = $this->getParticipantToScene($options['scene'], $options['sender']);
+            $receiver = $this->getParticipantToScene($options['scene'], $options['receiver']);
 
-        if (isset($message)) $utterance->setMessage($message);
+            /* @var actsmart\actsmart\Conversations\Utterance $utterance */
+            $utterance = $sender->talksTo($receiver, $this->sequence);
+            $this->sequence++;
+        }
 
-        if (isset($intent)) $utterance->setIntent($intent);
+        if (isset($options['starting_scene']) && isset($options['ending_scene'])) {
+            $sender = $this->getParticipantToScene($options['starting_scene'], $options['sender']);
+            $receiver = $this->getParticipantToScene($options['ending_scene'], $options['receiver']);
 
-        if (isset($interpreter)) $utterance->setInterpreter($interpreter);
+            /* @var actsmart\actsmart\Conversations\Utterance $utterance */
+            $utterance = $sender->talksTo($receiver, $this->sequence);
+            $this->sequence++;
+        }
 
-        $utterance->setCompletes($completes);
+
+        if (isset($utterance)) {
+            if (isset($options['message'])) $utterance->setMessage($options['message']);
+
+            if (isset($options['intent'])) $utterance->setIntent($options['intent']);
+
+            if (isset($options['interpreter'])) $utterance->setInterpreter($options['interpreter']);
+
+            if (isset($options['action'])) $utterance->setAction($options['action']);
+
+            if (isset($options['completes'])) $utterance->setCompletes($options['completes']);
+        }
 
         return $this;
     }
