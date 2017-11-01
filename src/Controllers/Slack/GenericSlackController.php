@@ -92,7 +92,7 @@ class GenericSlackController extends ActiveController
 
     public function handleNewConversation(SensorEvent $e)
     {
-        /* @var actsmart\actsmart\Interpreters\intent $intent */
+        /* @var \actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($e);
 
         $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
@@ -107,13 +107,13 @@ class GenericSlackController extends ActiveController
             $e->getTimestamp(),
             $e->getTimestamp());
 
-        /* @var actsmart\actsmart\Conversations\Conversation $conversation */
+        /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
         $ci->initConversation();
 
         // Before getting the next utterance let us perform any actions related to the current utterance
         $ci->performCurrentAction($e);
 
-        /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
+        /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
 
@@ -130,7 +130,6 @@ class GenericSlackController extends ActiveController
 
     public function handleNothingMatched($e)
     {
-        var_dump('nothing matched');
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $e, 1);
 
@@ -156,13 +155,11 @@ class GenericSlackController extends ActiveController
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
 
         if ($next_utterance->isCompleting()) {
-            var_dump('It completes');
             return true;
         }
 
         $ci->setCurrentUtteranceSequenceId($ci->getNextUtterance()->getSequence());
         $this->conversation_instance_store->save($ci);
-        var_dump('new true');
         return true;
     }
 
