@@ -22,6 +22,8 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     private $response_url;
 
+    private $attachments;
+
     public function __construct($type, $message)
     {
         parent::__construct($type, $message);
@@ -30,9 +32,10 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
         $this->workspace_id = $message->team->id;
         $this->user_id = $message->user->id;
-        $this->timestamp = $message->action_ts;
+        $this->timestamp = $message->message_ts;
         $this->channel_id = $message->channel->id;
         $this->response_url = $message->response_url;
+        $this->attachments = isset($message->original_message->attachments) ? $message->original_message->attachments : null;
     }
 
     public function getUtterance()
@@ -101,5 +104,21 @@ class SlackInteractiveMessageEvent extends SlackEvent
     {
         return $this->response_url;
     }
+
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    public function getActionPerformed()
+    {
+        return $this->getMessage()->actions;
+    }
+
+    public function getTextMessage()
+    {
+        return $this->getMessage()->original_message->text;
+    }
+
 
 }

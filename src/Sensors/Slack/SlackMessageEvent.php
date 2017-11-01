@@ -74,6 +74,4 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
     {
         return $this->channel_id;
     }
-
-
 }

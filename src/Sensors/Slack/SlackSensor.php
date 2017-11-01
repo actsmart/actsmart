@@ -60,7 +60,7 @@ class SlackSensor implements SensorInterface
             }
         } catch (\Exception $e) {
             // @todo - log issue and make this more fine grained
-            Log::debug('Slack message processing failed');
+            Log::debug($e->getMessage());
         }
     }
 
