@@ -179,6 +179,8 @@ class Conversation extends Graph
             if (isset($options['action'])) $utterance->setAction($options['action']);
 
             if (isset($options['completes'])) $utterance->setCompletes($options['completes']);
+
+            if (isset($options['precondition'])) $utterance->setPrecondition($options['precondition']);
         }
 
         return $this;
@@ -198,7 +200,7 @@ class Conversation extends Graph
         return $this->getScene(SELF::INITIAL_SCENE);
     }
 
-    public function addPreconditionToScene($scene_id, Condition $condition)
+    public function addPreconditionToScene($scene_id, ConditionInterface $condition)
     {
         $this->getScene($scene_id)->addPrecondition($condition);
         return $this;
@@ -213,7 +215,7 @@ class Conversation extends Graph
      * @param $current_sequence
      * @return array
      */
-    public function getPossibleFollowUps($current_sequence, $current_scene)
+    public function getPossibleFollowUps($current_sequence, $current_scene, SensorEvent $e)
     {
         $current_utterance = $this->getUtteranceWithSequence($current_sequence);
 
@@ -239,14 +241,21 @@ class Conversation extends Graph
             if ($sender_receiver_control != $sender_receiver_tracker) break;
 
             // Now we are dealing with utterances that are after the current utterance and the receiver of the
-            // current utterance is replying to the sender of the previous utterance.
+            // current utterance is replying to the sender of that utterance.
             if (($utterance->getSender() != $current_sender) &&
                 $utterance->getReceiver() == $current_sender) {
                 $possible_followups[$utterance->getSequence()] = $utterance;
             }
         }
 
-        return $possible_followups;
+        $followups_with_matching_preconditions = [];
+
+        // Before sending followups onwards check their preconditions
+        foreach ($possible_followups as $followup) {
+            if ($followup->checkPrecondition($e)) $followups_with_matching_preconditions[$followup->getSequence()] = $followup;
+        }
+
+        return $followups_with_matching_preconditions;
     }
 
     /**
@@ -263,7 +272,7 @@ class Conversation extends Graph
         $matching_followups = [];
 
         //@todo if we are checking against what the bot should say then matching intents might not be useful
-        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene) as $followup) {
+        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene, $e) as $followup) {
             if ($followup->hasInterpreter()) {
                 if ($followup->intentMatches($followup->interpret($e))) {$matching_followups[] = $followup;}
             } else {
@@ -283,7 +292,7 @@ class Conversation extends Graph
     public function getNextUtterance($current_scene, $sequence, SensorEvent $e, Intent $default_intent, $ongoing = true)
     {
         $matching_utterances = $ongoing ? $this->getMatchingUtterances($current_scene, $sequence, $e, $default_intent)
-            :$this->getPossibleFollowUps($sequence, $current_scene);
+            :$this->getPossibleFollowUps($sequence, $current_scene, $e);
 
         // We couldn't find any matching intent. Get out.
         if (count($matching_utterances) == 0) return false;

@@ -7,6 +7,7 @@ use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
 use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Actions\ActionInterface;
+use actsmart\actsmart\Conversations\ConditionInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
 
 class Utterance extends EdgeDirected
@@ -20,6 +21,8 @@ class Utterance extends EdgeDirected
     private $completes;
 
     private $action;
+
+    private $precondition;
 
     /* @var actsmart\actsmart\Interpreters\InterpreterInterface $interpreter */
     private $interpreter = null;
@@ -110,6 +113,32 @@ class Utterance extends EdgeDirected
         if (isset($this->action)) $this->action->perform($event);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPrecondition()
+    {
+        return $this->precondition;
+    }
+
+    /**
+     * @param ConditionInterface $precondition
+     * @return Utterance
+     */
+    public function setPrecondition(ConditionInterface $precondition)
+    {
+        $this->precondition = $precondition;
+        return $this;
+    }
+
+    public function checkPrecondition(SensorEvent $e)
+    {
+       if (isset($this->precondition)) {
+           return $this->precondition->check($e);
+       }
+
+       return true;
+    }
 
     public function changesScene()
     {

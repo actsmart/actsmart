@@ -124,7 +124,7 @@ class Scene extends Vertex
      * @param Condition $condition
      * @return $this
      */
-    public function addPrecondition(Condition $condition)
+    public function addPrecondition(ConditionInterface $condition)
     {
         $this->preconditions[$condition->getLabel()] = $condition;
         return $this;

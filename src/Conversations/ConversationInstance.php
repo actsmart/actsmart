@@ -259,22 +259,22 @@ class ConversationInstance
 
     public function getNextUtterance(SensorEvent $e, Intent $default_intent, $ongoing = true)
     {
+        // If the conversation is not ongoing we are dealing with a new conversation and just need to get
+        // the next thing the bot should say based on what the user just said.
+        // @todo Variable names and structure of this is too confusing.
+
         if (!$ongoing) return $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
 
-        // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was
+        // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was.
+        // The conversation model could support the user saying any number of things - so we need to get all of them,
+        // interpret them, decide which one was actually said and the move the converation forward based on that.
         $user_current_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
 
         if (!$user_current_utterance) return false;
 
-        var_dump($this->current_scene_id);
-        var_dump($this->current_utterance_sequence_id);
-
         // Having determined what the user just said, let us move the conversation to point to that utterance.
         $this->current_scene_id = $user_current_utterance->getEndScene();
         $this->current_utterance_sequence_id = $user_current_utterance->getSequence();
-        var_dump($this->current_scene_id);
-
-        //dd($user_current_utterance->getSequence());
 
         // Now let us retrieve what the bot should reply given that user utterance. Treat this like a new conversation and just get the bot's next reply.
         $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, false);
