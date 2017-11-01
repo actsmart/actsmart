@@ -29,6 +29,9 @@ class SlackMessage
     /* @see https://api.slack.com/docs/message-formatting#message_formatting */
     private $parse = 'none';
 
+    /* Currently only used for message updates */
+    private $response_url;
+
 
     public function __construct($token, $channel, $type)
     {
@@ -99,6 +102,22 @@ class SlackMessage
         return $this->as_user;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getResponseUrl()
+    {
+        return $this->response_url;
+    }
+
+    /**
+     * @param mixed $response_url
+     */
+    public function setResponseUrl($response_url)
+    {
+        $this->response_url = $response_url;
+    }
+
     public function addAttachment(SlackMessageAttachment $attachment)
     {
         $this->attachments[] = $attachment;
@@ -142,13 +161,12 @@ class SlackMessage
 
     public function getMessageToPost()
     {
-        $form_params = [
-            'token' => $this->getToken(),
+        $message = [
             'channel' => $this->getChannel(),
             'text' => $this->getText(),
             'as_user' => $this->sendingAsUser(),
-            'attachments' => json_encode($this->getAttachmentsToPost()),
+            'attachments' => $this->getAttachmentsToPost(),
         ];
-        return $form_params;
+        return $message;
     }
 }

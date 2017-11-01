@@ -16,9 +16,7 @@ class SlackActuator implements ActuatorInterface
 
     public function __construct()
     {
-        $client = new Client([
-            'base_uri' => SELF::SLACK_BASE_URI,
-        ]);
+        $client = new Client();
 
         $this->client = $client;
     }
@@ -38,10 +36,19 @@ class SlackActuator implements ActuatorInterface
 
     public function postStandard(SlackMessage $message)
     {
-        $ret = $this->client->post('chat.postMessage', ['form_params' => $message->getMessageToPost()]);
+        $headers = [
+            'Authorization' => 'Bearer ' . $message->getToken(),
+            'Accept'        => 'application/json',
+        ];
+
+        $response = $this->client->request('POST',
+            self::SLACK_BASE_URI . 'chat.postMessage', [
+                'headers' => $headers,
+                'json' => $message->getMessageToPost()
+            ]);
 
         // @todo - handle failures and throw appropriate exceptions.
-        return json_decode($ret->getBody()->getContents());
+        return json_decode($response->getBody()->getContents());
     }
 
     public function postEphemeral(SlackMessage $message)
@@ -60,11 +67,20 @@ class SlackActuator implements ActuatorInterface
         $ret->getBody()->getContents();
     }
 
-    public function postUpdate(SlackDialog $dialog)
+    public function postUpdate(SlackMessage $message)
     {
-        $ret = $this->client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
+        $headers = [
+            'Authorization' => 'Bearer ' . $message->getToken(),
+            'Accept'        => 'application/json',
+        ];
+
+        // Creating a separate client here since the URL is completely different
+        $response = $this->client->request('POST', $message->getResponseUrl(), [
+            'headers' => $headers,
+            'json' => $message->getMessageToPost()
+        ]);
         // @todo - handle failures and throw appropriate exceptions.
-        $ret->getBody()->getContents();
+        $response->getBody()->getContents();
     }
 
     public function getKey()

@@ -425,7 +425,6 @@ class SlackMessageAttachment
             'actions' => $this->getActionsToPost(),
         ];
 
-        // Need to handle callback values, differentiation of actions and make buttons idempotent
         return $attachment;
     }
 }
