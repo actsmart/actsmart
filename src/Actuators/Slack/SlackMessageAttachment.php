@@ -45,6 +45,7 @@ class SlackMessageAttachment
 
     public function __construct()
     {
+        //
     }
 
     /**
@@ -237,6 +238,12 @@ class SlackMessageAttachment
         return $this;
     }
 
+    public function addReadyField(SlackMessageAttachmentField $field)
+    {
+        $this->fields[] = $field;
+        return $this;
+    }
+
     public function getFieldsToPost()
     {
         $fields_to_post = [];
@@ -372,7 +379,7 @@ class SlackMessageAttachment
 
     public function addAction(SlackMessageAttachmentAction $action)
     {
-        $this->actions[] = $action;
+        $this->actions[$action->getValue()] = $action;
         return $this;
     }
 
@@ -401,7 +408,34 @@ class SlackMessageAttachment
         $this->attachment_type = $attachment_type;
     }
 
+    public function rebuildAttachment($attachment)
+    {
+        $this->callback_id = $attachment->callback_id;
+        $this->title = $attachment->title;
+        $this->fallback = $attachment->fallback;
 
+        foreach ($attachment->fields as $field) {
+            $new_field = new SlackMessageAttachmentField();
+            $new_field->rebuildField($field);
+            $this->addReadyField($new_field);
+        }
+
+        foreach ($attachment->actions as $action) {
+            $new_action = new SlackMessageAttachmentAction();
+            $new_action->rebuildAction($action);
+            $this->addAction($new_action);
+        }
+    }
+
+    public function removeAction($value)
+    {
+        if (isset($this->actions[$value])) {
+            unset($this->actions[$value]);
+            return true;
+        }
+
+        return false;
+    }
 
     public function getAttachmentToPost()
     {

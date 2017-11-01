@@ -33,7 +33,7 @@ class SlackMessageAttachmentAction
     private $min_query_length;
 
 
-    public function __construct($name, $text, $type, $value)
+    public function __construct($name = '', $text = '', $type = '', $value = '')
     {
         $this->name = $name;
         $this->text = $text;
@@ -237,6 +237,13 @@ class SlackMessageAttachmentAction
     {
         $this->min_query_length = $min_query_length;
         return $this;
+    }
+
+    public function rebuildAction($action){
+        $this->name = $action->name;
+        $this->text = $action->text;
+        $this->type = $action->type;
+        $this->value = $action->value;
     }
 
     public function getActionToPost()

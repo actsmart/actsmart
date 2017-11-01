@@ -10,7 +10,7 @@ class SlackMessageAttachmentField
 
     private $short;
 
-    public function __construct($title, $value, $short)
+    public function __construct($title = '', $value ='', $short ='')
     {
         $this->title = $title;
         $this->value = $value;
@@ -69,6 +69,13 @@ class SlackMessageAttachmentField
     {
         $this->short = $short;
         return $this;
+    }
+
+    public function rebuildField($field)
+    {
+        $this->title = $field->title;
+        $this->value = $field->value;
+        $this->short = $field->short;
     }
 
 
