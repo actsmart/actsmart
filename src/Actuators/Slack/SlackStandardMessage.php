@@ -8,7 +8,7 @@ namespace actsmart\actsmart\Actuators\Slack;
  *
  * @see https://api.slack.com/methods/chat.postMessage
  */
-class SlackMessage
+class SlackStandardMessage extends SlackMessage
 {
     // Message, Ephemeral, Update
     // @todo - other ways to handle this as well - keeping it simple for now.
@@ -29,6 +29,17 @@ class SlackMessage
     /* @see https://api.slack.com/docs/message-formatting#message_formatting */
     private $parse = 'none';
 
+    private $reply_broadcast = 'full';
+
+    private $thread_is = null;
+
+    private $unfurl_link = true;
+
+    private $username = null;
+
+    private $replace_original = false;
+
+    private $delete_original = false;
 
     public function __construct($token, $channel, $type)
     {

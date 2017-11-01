@@ -25,7 +25,28 @@ class SlackActuator implements ActuatorInterface
 
     public function postMessage(SlackMessage $message)
     {
+        // Determine the type
+        if ($message->getType() == 'Ephemeral') return $this->postEphemeral($message);
+
+        if ($message->getType() == 'Standard') return $this->postStandard($message);
+
+        if ($message->getType() == 'Update') return $this->postUpdate($message);
+
+        if ($message->getType() == 'Dialog') return $this->postDialog($message);
+    }
+
+
+    public function postStandard(SlackMessage $message)
+    {
         $ret = $this->client->post('chat.postMessage', ['form_params' => $message->getMessageToPost()]);
+
+        // @todo - handle failures and throw appropriate exceptions.
+        return json_decode($ret->getBody()->getContents());
+    }
+
+    public function postEphemeral(SlackMessage $message)
+    {
+        $ret = $this->client->post('chat.postEphemeral', ['form_params' => $message->getMessageToPost()]);
 
         // @todo - handle failures and throw appropriate exceptions.
         return json_decode($ret->getBody()->getContents());
@@ -33,6 +54,13 @@ class SlackActuator implements ActuatorInterface
 
 
     public function postDialog(SlackDialog $dialog)
+    {
+        $ret = $this->client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
+        // @todo - handle failures and throw appropriate exceptions.
+        $ret->getBody()->getContents();
+    }
+
+    public function postUpdate(SlackDialog $dialog)
     {
         $ret = $this->client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
         // @todo - handle failures and throw appropriate exceptions.
