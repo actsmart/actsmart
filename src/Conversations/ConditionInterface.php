@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Conversations;
 
-interface Condition
+interface ConditionInterface
 {
     public function check($e);
 
