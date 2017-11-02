@@ -19,6 +19,8 @@ class ActiveController implements ControllerInterface
 
     protected $interpreters = [];
 
+    protected $sensors = [];
+
     public function __construct(Agent $agent)
     {
         $this->agent = $agent;
