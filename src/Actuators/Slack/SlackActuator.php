@@ -50,6 +50,7 @@ class SlackActuator implements ActuatorInterface
             ]);
 
         // @todo - handle failures and throw appropriate exceptions.
+        Log::debug(json_decode($response->getBody()->getContents()));
         return json_decode($response->getBody()->getContents());
     }
 
@@ -79,7 +80,7 @@ class SlackActuator implements ActuatorInterface
         ];
 
         Log::debug('Attempting to post an update message.');
-        
+
         // Creating a separate client here since the URL is completely different
         $response = $this->client->request('POST', $message->getResponseUrl(), [
             'headers' => $headers,
