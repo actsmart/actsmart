@@ -50,7 +50,9 @@ class SlackActuator implements ActuatorInterface
             ]);
 
         // @todo - handle failures and throw appropriate exceptions.
-        Log::debug(json_decode($response->getBody()->getContents()));
+        Log::debug($response->getStatusCode());
+        Log::debug($response->getBody()->getContents());
+
         return json_decode($response->getBody()->getContents());
     }
 
