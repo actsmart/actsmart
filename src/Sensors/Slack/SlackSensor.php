@@ -77,7 +77,7 @@ class SlackSensor implements SensorInterface
      */
     public function process($slack_message)
     {
-        if ($slack_message->type == 'url_verification)') {
+        if ($slack_message->type == 'url_verification') {
             return $this->event_creator->createEvent($slack_message->type, $slack_message);
         }
 
