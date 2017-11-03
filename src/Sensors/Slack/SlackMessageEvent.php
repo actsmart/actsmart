@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Sensors\Slack;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
+use Illuminate\Support\Facades\Log;
 
 class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 {
@@ -39,6 +40,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     public function mentions($user_id)
     {
+        Log::debug('Check if ' . $user_id . 'is mentioned.');
         if (strpos($this->getUtterance(), $user_id)) return true;
         return false;
     }

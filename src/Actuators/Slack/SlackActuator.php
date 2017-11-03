@@ -41,6 +41,8 @@ class SlackActuator implements ActuatorInterface
             'Accept'        => 'application/json',
         ];
 
+        Log::debug('Attempting to post a Standard message.');
+
         $response = $this->client->request('POST',
             self::SLACK_BASE_URI . 'chat.postMessage', [
                 'headers' => $headers,
@@ -53,6 +55,8 @@ class SlackActuator implements ActuatorInterface
 
     public function postEphemeral(SlackMessage $message)
     {
+        Log::debug('Attempting to post an ephemeral message.');
+
         $ret = $this->client->post('chat.postEphemeral', ['form_params' => $message->getMessageToPost()]);
 
         // @todo - handle failures and throw appropriate exceptions.
@@ -74,6 +78,8 @@ class SlackActuator implements ActuatorInterface
             'Accept'        => 'application/json',
         ];
 
+        Log::debug('Attempting to post an update message.');
+        
         // Creating a separate client here since the URL is completely different
         $response = $this->client->request('POST', $message->getResponseUrl(), [
             'headers' => $headers,
