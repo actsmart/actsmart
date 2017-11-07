@@ -43,11 +43,6 @@ class SlackMessageAttachment
 
     private $attachment_type = 'default';
 
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * @return mixed
      */
@@ -229,21 +224,32 @@ class SlackMessageAttachment
     }
 
     /**
-     * @param SlackMessageAttachmentField $field
-     * @return SlackMessageAttachment
+     * Creates a new field and adds it to the attachment.
+     * @param $title
+     * @param $value
+     * @param $short
+     * @return $this
      */
-    public function addField($title, $value, $short)
+    public function createField($title, $value, $short)
     {
-        $this->fields[] = new SlackMessageAttachmentField($title, $value, $short);
+        $this->addField(new SlackMessageAttachmentField($title, $value, $short));
         return $this;
     }
 
-    public function addReadyField(SlackMessageAttachmentField $field)
+    /**
+     * Adds a field to the attachment.
+     * @param \actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentField $field
+     * @return $this
+     */
+    public function addField(SlackMessageAttachmentField $field)
     {
         $this->fields[] = $field;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getFieldsToPost()
     {
         $fields_to_post = [];
@@ -377,12 +383,19 @@ class SlackMessageAttachment
         return $this;
     }
 
+    /**
+     * @param \actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentAction $action
+     * @return $this
+     */
     public function addAction(SlackMessageAttachmentAction $action)
     {
         $this->actions[$action->getValue()] = $action;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getActionsToPost()
     {
         $actions_to_post = [];
@@ -408,25 +421,40 @@ class SlackMessageAttachment
         $this->attachment_type = $attachment_type;
     }
 
+    /**
+     * Rebuilds the attachment and cycles through fields and actions as well.
+     *
+     * @todo Support all parameters.
+     * @param $attachment
+     */
     public function rebuildAttachment($attachment)
     {
         $this->callback_id = $attachment->callback_id;
         $this->title = $attachment->title;
         $this->fallback = $attachment->fallback;
 
-        foreach ($attachment->fields as $field) {
-            $new_field = new SlackMessageAttachmentField();
-            $new_field->rebuildField($field);
-            $this->addReadyField($new_field);
+        if (isset($attachment->fields)) {
+            foreach ($attachment->fields as $field) {
+                $new_field = new SlackMessageAttachmentField();
+                $new_field->rebuildField($field);
+                $this->addField($new_field);
+            }
         }
 
-        foreach ($attachment->actions as $action) {
-            $new_action = new SlackMessageAttachmentAction();
-            $new_action->rebuildAction($action);
-            $this->addAction($new_action);
+        if (isset($attachment->actions)) {
+            foreach ($attachment->actions as $action) {
+                $new_action = new SlackMessageAttachmentAction();
+                $new_action->rebuildAction($action);
+                $this->addAction($new_action);
+            }
         }
     }
 
+    /**
+     * Removes the action with the given value from the Attachment.
+     * @param $value
+     * @return bool
+     */
     public function removeAction($value)
     {
         if (isset($this->actions[$value])) {
@@ -437,6 +465,9 @@ class SlackMessageAttachment
         return false;
     }
 
+    /**
+     * @return array
+     */
     public function getAttachmentToPost()
     {
         $attachment = [

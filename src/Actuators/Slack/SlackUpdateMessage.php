@@ -4,10 +4,21 @@ namespace actsmart\actsmart\Actuators\Slack;
 
 use actsmart\actsmart\Sensors\Slack\SlackInteractiveMessageEvent;
 
+/**
+ * When a user interacts with an action on a slack message attachement
+ * we can reply with an updated message to display changes to the user. This
+ * class provides functionality to "redraw" the original message and change it
+ * as required.
+ *
+ * Slack matches the message to be updated through the message timestamp/
+ *
+ * Class SlackUpdateMessage
+ * @package actsmart\actsmart\Actuators\Slack
+ */
 class SlackUpdateMessage extends SlackMessage
 {
 
-    // Timestamp of the message to be updated
+    /** @var String - timestamp of the message to be updated **/
     private $ts;
 
     public function __construct($token, $channel, $type, $ts)
@@ -45,10 +56,13 @@ class SlackUpdateMessage extends SlackMessage
         return $message;
     }
 
+    /**
+     * Rebuilds the original message this message is supposed to update.
+     *
+     * @param SlackInteractiveMessageEvent $e
+     */
     public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
     {
-        $this->setText('Change is awesome');
-
         foreach ($e->getAttachments() as $attachment)
         {
             $new_attachment = new SlackMessageAttachment();
@@ -57,6 +71,11 @@ class SlackUpdateMessage extends SlackMessage
         }
     }
 
+    /**
+     * Removes an action based on the action value.
+     * @param $value
+     * @return mixed
+     */
     public function removeAction($value) {
         foreach ($this->getAttachments() as $attachment)
         {
@@ -64,10 +83,15 @@ class SlackUpdateMessage extends SlackMessage
         }
     }
 
+    /**
+     * Removes an action and replaces it with a field.
+     * @param $value
+     * @param $field
+     */
     public function removeActionReplaceWithField($value, $field)
     {
         $attachment = $this->removeAction($value);
-        $attachment->addReadyField($field);
+        $attachment->addField($field);
     }
 
 }
