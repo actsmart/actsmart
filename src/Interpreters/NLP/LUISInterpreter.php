@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 
 class LUISInterpreter implements InterpreterInterface
 {
-    const LUIS_INTERPRETER = 'luis.interpreter';
+    const LUIS_INTERPRETER = 'interpreter.luis';
 
     private $client;
 

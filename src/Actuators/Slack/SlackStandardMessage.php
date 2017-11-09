@@ -158,7 +158,7 @@ class SlackStandardMessage extends SlackMessage
             'channel' => $this->getChannel(),
             'text' => $this->getText(),
             'as_user' => $this->sendingAsUser(),
-            'attachments' => json_encode($this->getAttachmentsToPost()),
+            'attachments' => $this->getAttachmentsToPost(),
         ];
         return $form_params;
     }

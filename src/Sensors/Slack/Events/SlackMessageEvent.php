@@ -1,6 +1,6 @@
 <?php
 
-namespace actsmart\actsmart\Sensors\Slack;
+namespace actsmart\actsmart\Sensors\Slack\Events;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
@@ -8,27 +8,27 @@ use Illuminate\Support\Facades\Log;
 
 class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 {
-    const EVENT_NAME = 'slack.message';
+    const EVENT_NAME = 'event.slack.message';
 
-    private $workspace_id;
+    private $workspace_id = null;
 
-    private $user_id;
+    private $user_id = null;
 
-    private $timestamp;
+    private $timestamp = null;
 
-    private $channel_id;
+    private $channel_id = null;
 
-    public function __construct($type, $message)
+    public function __construct($subject, $arguments)
     {
-        parent::__construct($type, $message);
+        parent::__construct($subject, $arguments);
 
-        $this->workspace_id = $message->team_id;
-        $this->user_id = $message->event->user;
-        $this->timestamp= $message->event_time;
-        $this->channel_id = $message->event->channel;
+        $this->workspace_id = isset($subject->team_id) ? $subject->team_id : null;
+        $this->user_id = isset($subject->event->user) ? $subject->event->user : null;
+        $this->timestamp= isset($subject->event_time) ? $subject->event_time : null;
+        $this->channel_id = isset($subject->event->channel) ? $subject->event->channel : null;
     }
 
-    public function getName()
+    public function getKey()
     {
         return SELF::EVENT_NAME;
     }
@@ -40,7 +40,6 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     public function mentions($user_id)
     {
-        Log::debug('Check if ' . $user_id . 'is mentioned.');
         if (strpos($this->getUtterance(), $user_id)) return true;
         return false;
     }

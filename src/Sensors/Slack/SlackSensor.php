@@ -2,23 +2,25 @@
 
 namespace actsmart\actsmart\Sensors\Slack;
 
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use actsmart\actsmart\Sensors\Slack\SlackEvent;
+use actsmart\actsmart\Utils\NotifierInterface;
+use actsmart\actsmart\Utils\NotifierTrait;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Sensors\SensorInterface;
-use actsmart\actsmart\Sensors\SensorEvent;
-use Illuminate\Support\Facades\Log;
-
+use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 /**
  * Class SlackSensor
  * @package actsmart\actsmart\Sensors
  */
-class SlackSensor implements SensorInterface
+class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterface, LoggerAwareInterface
 {
-    const SENSOR_NAME = 'SlackSensor';
+    use NotifierTrait, ComponentTrait, LoggerAwareTrait;
 
-    const SENSOR_EVENT_NAME = 'slack.event';
+    const SENSOR_NAME = 'sensor.slack';
 
     /**
      * The class that creates events based on the input.
@@ -27,19 +29,9 @@ class SlackSensor implements SensorInterface
      */
     private $event_creator;
 
-    private $token;
-
-    /**
-     * Use to notify
-     * @var EventDispatcher;
-     */
-    private $event_dispatcher;
-
-    public function __construct(SlackEventCreator $event_creator, EventDispatcher $dispatcher, $slack_verification_token)
+    public function __construct(SlackEventCreator $event_creator)
     {
         $this->event_creator = $event_creator;
-        $this->event_dispatcher = $dispatcher;
-        $this->token = $slack_verification_token;
     }
 
     /**
@@ -47,6 +39,7 @@ class SlackSensor implements SensorInterface
      */
     public function receive(SymfonyRequest $message)
     {
+        $this->logger->debug('Got a message: ' . $message->getContent());
         $slack_message = json_decode($message->getContent());
 
         if ($slack_message == null) {
@@ -54,21 +47,11 @@ class SlackSensor implements SensorInterface
             $slack_message = json_decode(urldecode($message->get('payload')));
         }
 
-        try {
-            if ($this->validateSlackMessage($slack_message)) {
-                $this->notify($this->process($slack_message));
-            }
-        } catch (\Exception $e) {
-            // @todo - log issue and make this more fine grained
-            Log::debug($e->getMessage());
+        if ($this->validateSlackMessage($slack_message)) {
+            $event = $this->process($slack_message);
+            $this->notify($event->getkey(), $event);
         }
-    }
 
-    /**
-     * @todo - requesting Slack data
-     */
-    public function request()
-    {
     }
 
     /**
@@ -77,25 +60,23 @@ class SlackSensor implements SensorInterface
      */
     public function process($slack_message)
     {
-        if ($slack_message->type == 'url_verification') {
-            return $this->event_creator->createEvent($slack_message->type, $slack_message);
+        try {
+            switch ($slack_message->type) {
+                case 'url_verification':
+                    return $this->event_creator->createEvent($slack_message->type, $slack_message);
+                    break;
+                case 'event_callback':
+                    // If it is an event callback then we need to check whether the message has a subtype as well
+                    $message_type = isset($slack_message->event->subtype) ? $slack_message->event->subtype : $slack_message->event_type;
+                    return $this->event_creator->createEvent($message_type, $slack_message);
+                    break;
+                case 'interactive_message':
+                    return $this->event_creator->createEvent($slack_message->type, $slack_message);
+                    break;
+            }
+        } catch (SlackEventTypeNotSupportedException $e) {
+            //
         }
-
-        if ($slack_message->type == 'event_callback') {
-            return $this->event_creator->createEvent($slack_message->event->type, $slack_message);
-        }
-
-        if ($slack_message->type == 'interactive_message') {
-            return $this->event_creator->createEvent($slack_message->type, $slack_message);
-        }
-    }
-
-    /**
-     * @param SensorEvent $e
-     */
-    public function notify(SensorEvent $e)
-    {
-        $this->event_dispatcher->dispatch(self::SENSOR_EVENT_NAME, $e);
     }
 
     /**
@@ -106,13 +87,6 @@ class SlackSensor implements SensorInterface
         return self::SENSOR_NAME;
     }
 
-    /**
-     * @return string
-     */
-    public function getEventName()
-    {
-        return self::SENSOR_EVENT_NAME;
-    }
 
     /**
      * @param $slack_message
@@ -121,8 +95,8 @@ class SlackSensor implements SensorInterface
      */
     private function validateSlackMessage($slack_message)
     {
-        if ($slack_message->token != $this->token) {
-            throw new \Exception("Could not validate Slack Message");
+        if ($slack_message->token != $this->agent->getStore('store.config')->get('token.slack')) {
+            throw new SlackMessageInvalidException("Could not validate Slack Message");
         } else {
             return true;
         }

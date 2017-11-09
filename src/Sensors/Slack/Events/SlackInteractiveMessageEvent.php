@@ -1,12 +1,12 @@
 <?php
 
-namespace actsmart\actsmart\Sensors\Slack;
+namespace actsmart\actsmart\Sensors\Slack\Events;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 
 class SlackInteractiveMessageEvent extends SlackEvent
 {
-    const EVENT_NAME = 'slack.interactive_message';
+    const EVENT_NAME = 'event.slack.interactive_message';
 
     private $callback_id;
 
@@ -24,18 +24,18 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     private $attachments;
 
-    public function __construct($type, $message)
+    public function __construct($subject, $arguments)
     {
-        parent::__construct($type, $message);
-        $this->callback_id = $message->callback_id;
-        $this->trigger_id = $message->trigger_id;
+        parent::__construct($subject, $arguments);
+        $this->callback_id = $subject->callback_id;
+        $this->trigger_id = $subject->trigger_id;
 
-        $this->workspace_id = $message->team->id;
-        $this->user_id = $message->user->id;
-        $this->timestamp = $message->message_ts;
-        $this->channel_id = $message->channel->id;
-        $this->response_url = $message->response_url;
-        $this->attachments = isset($message->original_message->attachments) ? $message->original_message->attachments : null;
+        $this->workspace_id = $subject->team->id;
+        $this->user_id = $subject->user->id;
+        $this->timestamp = $subject->message_ts;
+        $this->channel_id = $subject->channel->id;
+        $this->response_url = $subject->response_url;
+        $this->attachments = isset($subject->original_message->attachments) ? $subject->original_message->attachments : null;
     }
 
     public function getUtterance()
@@ -44,7 +44,7 @@ class SlackInteractiveMessageEvent extends SlackEvent
     }
 
 
-    public function getName()
+    public function getKey()
     {
         return SELF::EVENT_NAME;
     }

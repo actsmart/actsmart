@@ -1,8 +1,6 @@
 <?php
 
-namespace actsmart\actsmart\Sensors\Slack;
-
-use actsmart\actsmart\Sensors\Slack\SlackEvent;
+namespace actsmart\actsmart\Sensors\Slack\Events;
 
 class SlackEventCreator
 {
@@ -24,9 +22,9 @@ class SlackEventCreator
     public function createEvent($event_type, $message)
     {
         if ($this->supportsEvent($event_type)) {
-            return new $this->slack_event_map[$event_type]($event_type, $message);
+            return new $this->slack_event_map[$event_type]($message, [$event_type]);
         } else {
-            throw new \Exception("Unsupported Slack event type " . $event_type);
+            throw new SlackEventTypeNotSupportedException("Unsupported Slack event type " . $event_type);
         }
     }
 

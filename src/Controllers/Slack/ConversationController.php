@@ -8,13 +8,16 @@ use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Controllers\Active\ActiveController;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
 use actsmart\actsmart\Stores\ConversationInstanceStore;
-use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
-use Illuminate\Support\Facades\Log;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
-class GenericSlackController extends ActiveController
+class ConversationController extends ActiveController implements ComponentInterface, ListenerInterface
 {
+    use ComponentTrait;
+
     const SLACK_ACTION_TYPE_BUTTON = 'button';
     const SLACK_ACTION_TYPE_MENU = 'menu';
 
@@ -34,14 +37,19 @@ class GenericSlackController extends ActiveController
     protected $conversation_instance_store;
 
 
-    public function __construct(Agent $agent, $slack_verification_token, $conversation_timeout = 300)
+    public function __construct(Agent $agent, $slack_verification_token, $conversation_timeout = 300, $interpreter_key, $conversation_store_key, $conversation_instance_store_key)
     {
         parent::__construct($agent);
         $this->slack_verification_token = $slack_verification_token;
         $this->$conversation_timeout = $conversation_timeout;
+
+        $this->message_interpreter = $agent->getInterpreter($interpreter_key);
+        $this->conversation_store = $agent->getStore($conversation_store_key);
+        $this->conversation_instance_store = $agent->getStore($conversation_instance_store_key);
+
     }
 
-    public function execute(SensorEvent $e = null)
+    public function listen(GenericEvent $e)
     {
         $message_types = ['message', 'interactive_message'];
 
@@ -151,6 +159,8 @@ class GenericSlackController extends ActiveController
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
 
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
+
+        dd($response);
 
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
 

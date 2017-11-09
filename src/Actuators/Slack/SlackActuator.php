@@ -38,7 +38,8 @@ class SlackActuator implements ActuatorInterface
     {
         $headers = [
             'Authorization' => 'Bearer ' . $message->getToken(),
-            'Accept'        => 'application/json',
+            'Accept' => 'application/json',
+            'charset' => 'utf-8',
         ];
 
         Log::debug('Attempting to post a Standard message.');
@@ -52,6 +53,8 @@ class SlackActuator implements ActuatorInterface
         // @todo - handle failures and throw appropriate exceptions.
         Log::debug($response->getStatusCode());
         Log::debug($response->getBody()->getContents());
+
+        dd($response->getBody()->getContents());
 
         return json_decode($response->getBody()->getContents());
     }

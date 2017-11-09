@@ -8,35 +8,36 @@
 
 namespace actsmart\actsmart\Controllers\Slack;
 
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\ListenerInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Response;
-use actsmart\actsmart\Agent;
-use actsmart\actsmart\Sensors\SensorEvent;
-use actsmart\actsmart\Controllers\Reactive\ReactiveController;
 
-class URLVerificationController extends ReactiveController
+class URLVerificationController implements ListenerInterface, ComponentInterface
 {
-    private $slack_verification_token;
+    use ComponentTrait;
 
-    /** @var  Agent */
-    private $agent;
-
-    public function __construct(Agent $agent, $slack_verification_token)
+    public function listen(GenericEvent $e)
     {
-        $this->agent = $agent;
-        $this->slack_verification_token = $slack_verification_token;
+        if ($e->getSubject()->token == $this->agent->getStore('store.config')->get('token.slack')) {
+            $this->agent->setHttpReaction(
+                new Response($e->getSubject()->challenge,
+                    Response::HTTP_OK,
+                    ['content-type' => 'text/html']
+                )
+            );
+        }
+
+        // We have an actual response so let's stop propagation and allow the Agent to react directly.
+        $e->stopPropagation();
     }
 
-    public function execute(SensorEvent $e = null)
-    {
-        if ($e->getSubject() == 'url_verification') {
-            if ($e->getArgument('token') == $this->slack_verification_token) {
-                $this->agent->setHttpReaction(
-                    new Response($e->getArgument('challenge'),
-                        Response::HTTP_OK,
-                        ['content-type' => 'text/html']
-                    )
-                );
-            }
-        }
+    public function getKey() {
+        return 'controller.slack.url_verification';
+    }
+
+    public function listensForEvents() {
+        return ['event.slack.url_verification'];
     }
 }

@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use actsmart\actsmart\Sensors\SensorEvent;
 
 /**
- * Sensors receive input from outside sources, process it and then notify and listeners (typically Stores) of that
+ * Sensors receive input from outside sources, process it and then notify any listeners (typically Stores) of that
  * input.
  *
  * Interface SensorInterface
@@ -20,30 +20,7 @@ interface SensorInterface
     public function receive(SymfonyRequest $message);
 
     /**
-     * A proactive request to collect information
-     */
-    public function request();
-
-    /**
      * Process the input.
      */
     public function process($message);
-
-    /**
-     * Notify listeners of output.
-     */
-    public function notify(SensorEvent $event);
-
-    /**
-     * Returns the sensor's name.
-     *
-     * @return string
-     */
-    public function getKey();
-
-    /**
-     * Returns the sensor's event name.
-     * @return string.
-     */
-    public function getEventName();
 }
