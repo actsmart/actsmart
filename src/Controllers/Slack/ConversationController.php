@@ -136,6 +136,9 @@ class ConversationController extends ActiveController implements ComponentInterf
         return true;
     }
 
+    /**
+     * @param GenericEvent $e
+     */
     public function handleNothingMatched($e)
     {
         /* @var actsmart\actsmart\Interpreters\Intent $intent */

@@ -28,7 +28,7 @@ class SlackUpdateMessage extends SlackMessage
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTs()
     {
@@ -36,7 +36,6 @@ class SlackUpdateMessage extends SlackMessage
     }
 
     /**
-     * @param mixed $user
      */
     public function setTs($ts)
     {

@@ -64,7 +64,6 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @param mixed $order
      * @return Utterance
      */
     public function setSequence($sequence)
@@ -91,7 +90,7 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return mixed
+     * @return ActionInterface
      */
     public function getAction()
     {
@@ -114,7 +113,7 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return mixed
+     * @return ConditionInterface
      */
     public function getPrecondition()
     {
