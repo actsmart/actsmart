@@ -239,7 +239,8 @@ class SlackMessageAttachmentAction
         return $this;
     }
 
-    public function rebuildAction($action){
+    public function rebuildAction($action)
+    {
         $this->name = $action->name;
         $this->text = $action->text;
         $this->type = $action->type;

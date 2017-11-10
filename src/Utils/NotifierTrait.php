@@ -35,6 +35,8 @@ trait NotifierTrait
      */
     public function notify($event_key, GenericEvent $e)
     {
-        if ($e) $this->dispatcher->dispatch($event_key, $e);
+        if ($e) {
+            $this->dispatcher->dispatch($event_key, $e);
+        }
     }
 }

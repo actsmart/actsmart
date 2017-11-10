@@ -39,8 +39,5 @@ class SlackAgent extends Agent
 
         // A simple reactive controller for URL Verification.
         $this->addComponent(new URLVerificationController());
-
-
-
     }
 }

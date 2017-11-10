@@ -62,8 +62,7 @@ class SlackUpdateMessage extends SlackMessage
      */
     public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
     {
-        foreach ($e->getAttachments() as $attachment)
-        {
+        foreach ($e->getAttachments() as $attachment) {
             $new_attachment = new SlackMessageAttachment();
             $new_attachment->rebuildAttachment($attachment);
             $this->addAttachment($new_attachment);
@@ -75,10 +74,12 @@ class SlackUpdateMessage extends SlackMessage
      * @param $value
      * @return mixed
      */
-    public function removeAction($value) {
-        foreach ($this->getAttachments() as $attachment)
-        {
-            if ($attachment->removeAction($value)) return $attachment;
+    public function removeAction($value)
+    {
+        foreach ($this->getAttachments() as $attachment) {
+            if ($attachment->removeAction($value)) {
+                return $attachment;
+            }
         }
     }
 
@@ -92,5 +93,4 @@ class SlackUpdateMessage extends SlackMessage
         $attachment = $this->removeAction($value);
         $attachment->addField($field);
     }
-
 }

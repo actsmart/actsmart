@@ -109,7 +109,9 @@ class Utterance extends EdgeDirected
 
     public function performAction(SensorEvent $event)
     {
-        if (isset($this->action)) $this->action->perform($event);
+        if (isset($this->action)) {
+            $this->action->perform($event);
+        }
     }
 
     /**
@@ -132,16 +134,18 @@ class Utterance extends EdgeDirected
 
     public function checkPrecondition(SensorEvent $e)
     {
-       if (isset($this->precondition)) {
-           return $this->precondition->check($e);
-       }
+        if (isset($this->precondition)) {
+            return $this->precondition->check($e);
+        }
 
-       return true;
+        return true;
     }
 
     public function changesScene()
     {
-        if ($this->getStartScene() != $this->getEndScene()) return true;
+        if ($this->getStartScene() != $this->getEndScene()) {
+            return true;
+        }
         return false;
     }
 
@@ -168,7 +172,9 @@ class Utterance extends EdgeDirected
     public function intentMatches(Intent $intent)
     {
         if (($this->intent->getLabel() == $intent->getLabel()) &&
-            ($this->intent->getConfidence() <= $intent->getConfidence())) return true;
+            ($this->intent->getConfidence() <= $intent->getConfidence())) {
+            return true;
+        }
         return false;
     }
 
@@ -186,6 +192,4 @@ class Utterance extends EdgeDirected
     {
         return $this->interpreter->interpret($e);
     }
-
 }
-

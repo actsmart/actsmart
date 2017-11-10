@@ -6,7 +6,6 @@ use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Stores\ContextStore;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-
 abstract class AbstractAction implements ActionInterface
 {
 

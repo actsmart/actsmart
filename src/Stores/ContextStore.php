@@ -6,7 +6,6 @@ use actsmart\actsmart\Actions\ActionEvent;
 
 class ContextStore
 {
-
     private $context_info = [];
 
     public function __construct()
@@ -23,5 +22,4 @@ class ContextStore
     {
         return $this->context_info[$label];
     }
-
 }

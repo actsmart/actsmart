@@ -59,8 +59,9 @@ class Agent
      *
      * @param ComponentInterface $component
      */
-    public function addComponent(ComponentInterface $component) {
-        switch(true) {
+    public function addComponent(ComponentInterface $component)
+    {
+        switch (true) {
             case $component instanceof SensorInterface:
                 $this->sensors[$component->getKey()] = $component;
                 break;
@@ -122,8 +123,9 @@ class Agent
     /**
      * @param ComponentInterface $component
      */
-    private function bindListener($component){
-        if ($component instanceoF ListenerInterface) {
+    private function bindListener($component)
+    {
+        if ($component instanceof ListenerInterface) {
             $this->listenForEvents($component);
         }
     }
@@ -138,15 +140,15 @@ class Agent
         foreach ($listener->listensForEvents() as $event_key) {
             $this->dispatcher->addListener($event_key, array($listener, 'listen'));
         }
-
     }
 
     /**
      * Adds the logger to classes that are LaggerAware
      * @param ComponentInterface $component
      */
-    private function bindLogger($component) {
-        if ($component instanceOf LoggerAwareInterface) {
+    private function bindLogger($component)
+    {
+        if ($component instanceof LoggerAwareInterface) {
             $component->setLogger($this->logger);
         }
     }
@@ -155,10 +157,10 @@ class Agent
      * Adds the dispatcher to classes that are Notifiers
      * @param ComponentInterface $component
      */
-    private function bindDispatcher($component) {
-        if ($component instanceOf NotifierInterface) {
+    private function bindDispatcher($component)
+    {
+        if ($component instanceof NotifierInterface) {
             $component->setDispatcher($this->dispatcher);
         }
     }
-
 }

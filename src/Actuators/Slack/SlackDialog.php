@@ -2,7 +2,6 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-
 class SlackDialog
 {
     private $token;
@@ -90,6 +89,4 @@ class SlackDialog
         $this->callback_id = $callback_id;
         return $this;
     }
-
-
 }
