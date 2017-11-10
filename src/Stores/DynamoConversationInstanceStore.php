@@ -7,7 +7,7 @@ use actsmart\actsmart\Utils\ComponentTrait;
 use Aws\DynamoDb\DynamoDbClient;
 use actsmart\actsmart\Conversations\ConversationInstance;
 
-class DynamoConversationInstanceStore implements ComponentInterface
+class DynamoConversationInstanceStore implements ComponentInterface, StoreInterface
 {
     use ComponentTrait;
 
