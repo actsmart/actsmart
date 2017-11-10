@@ -7,6 +7,7 @@ use actsmart\actsmart\Sensors\Slack\SlackSensor;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
 use actsmart\actsmart\Controllers\Slack\ConversationController;
 use actsmart\actsmart\Controllers\Slack\URLVerificationController;
+use actsmart\actsmart\Stores\ContextStore;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Psr\Log\LoggerInterface;
 
@@ -43,8 +44,12 @@ class SlackAgent extends Agent
         // A simple controller for URL Verification.
         $this->addComponent(new URLVerificationController());
 
-        // A more complex controller that handles conversations
+        // A more complex controller that handles conversations.
         $this->addComponent(new ConversationController());
+
+        // A simple key:value context store to share state.
+        $this->addComponent(new ContextStore());
+
     }
 
 }
