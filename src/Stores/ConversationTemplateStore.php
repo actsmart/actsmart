@@ -1,4 +1,4 @@
- <?php
+<?php
 
 namespace actsmart\actsmart\Stores;
 
@@ -9,7 +9,7 @@ use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 
-abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface
+abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
 {
     use ComponentTrait;
 
@@ -43,7 +43,7 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(UtteranceEvent $e, Intent $intent)
+    public function getMatchingConversations(SensorEvent $e, Intent $intent)
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {
