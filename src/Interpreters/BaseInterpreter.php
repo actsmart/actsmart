@@ -1,25 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ronaldashri
- * Date: 27/07/2017
- * Time: 08:47
- */
-
 namespace actsmart\actsmart\Interpreters;
 
-class BaseInterpreter implements InterpreterInterface
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
+
+abstract class BaseInterpreter implements InterpreterInterface, ComponentInterface
 {
-    public function interpret($e)
-    {
-        // Interpret
-        //...
+    use ComponentTrait;
 
-        $this->notify();
-        return $e;
-    }
-
-    public function notify()
-    {
-    }
 }
