@@ -89,14 +89,14 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var \actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($e);
 
-        $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
+        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($e, $intent);
 
         if (!$matching_conversation_id) {
             return false;
         }
 
         $ci = new ConversationInstance($matching_conversation_id,
-            $this->conversation_store,
+            $this->getAgent()->getStore('store.conversation_templates'),
             $e->getWorkspaceId(),
             $e->getUserId(),
             $e->getChannelid(),
@@ -107,11 +107,14 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $ci->initConversation();
 
         // Before getting the next utterance let us perform any actions related to the current utterance
-        $ci->performCurrentAction($e);
+        // !!!!!Get the current utterance, derive the action name and call on the agent to perform the action.
+        if ($action = $ci->getCurrentAction($e)) {
+            $this->getAgent()->performAction($action);
+        }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
-        $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->getAgent()->getActuator('slack.actuator')->perform($next_utterance->getMessage()->getSlackMessage($e));
 
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
 
@@ -195,7 +198,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
                 $intent = new Intent($e->getCallbackId(), $e, 1);
                 break;
             case 'message':
-                $intent = $this->message_interpreter->interpret($e);
+                $intent = $this->getAgent()->getInterpreter('interpreter.luis')->interpret($e);
                 break;
             default:
                 $intent = new Intent();
