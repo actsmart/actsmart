@@ -1,28 +1,27 @@
 <?php
-namespace actsmart\actsmart\Actions;
+namespace actsmart\actsmart\Actuators;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
 
+/**
+ * Class ActionEvent
+ * @package actsmart\actsmart\Actions
+ *
+ * Some actuators may raise ActionEvents that will carry information about what the actuator just did to store within
+ * the application context.
+ */
 class ActionEvent extends GenericEvent
 {
-    private $type;
+    protected $event_key;
 
-    private $action_status;
-
-    public function __construct($type, $action_status)
+    public function __construct($subject, $arguments, $event_key = 'event.action.generic')
     {
-        $this->action_status = $action_status;
-        parent::__construct($type, (array) $action_status);
+        parent::__construct($subject, $arguments);
+        $this->event_key = $event_key;
     }
 
-
-    public function getActionStatus()
+    public function getKey()
     {
-        return $this->action_status;
-    }
-
-    public function getType()
-    {
-        return $this->type;
+        return $this->event_key;
     }
 }
