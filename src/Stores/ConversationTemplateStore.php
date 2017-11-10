@@ -9,7 +9,6 @@ use actsmart\actsmart\Sensors\SensorEvent;
 
 abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface
 {
-
     protected $conversations = [];
 
     protected $event_dispatcher;
@@ -45,21 +44,26 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
     public function getMatchingConversations(SensorEvent $e, Intent $intent)
     {
         $matches = [];
-        foreach ($this->conversations as $conversation)
-        {
+        foreach ($this->conversations as $conversation) {
             $scene = $conversation->getInitialScene();
 
             // Check preconditions and if good then check interpreter
             if ($scene->checkPreconditions($e)) {
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
-                if ($u->hasInterpreter()) $intent = $u->interpret($e);
+                if ($u->hasInterpreter()) {
+                    $intent = $u->interpret($e);
+                }
 
-                if ($u->intentMatches($intent)) $matches[$conversation->getConversationTemplateId()] = $conversation;
+                if ($u->intentMatches($intent)) {
+                    $matches[$conversation->getConversationTemplateId()] = $conversation;
+                }
             }
         }
 
-        if (count($matches) > 0) return array_keys($matches);
+        if (count($matches) > 0) {
+            return array_keys($matches);
+        }
 
         return false;
     }
@@ -77,7 +81,9 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
     {
         $matches = $this->getMatchingConversations($e, $intent);
 
-        if (!$matches) return false;
+        if (!$matches) {
+            return false;
+        }
 
         // Have to do below to avoid a PHP_STRICT error for variables passed by reference
         // when operation happens in a single pass.

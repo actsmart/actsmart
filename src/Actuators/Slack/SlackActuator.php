@@ -24,13 +24,21 @@ class SlackActuator implements ActuatorInterface
     public function postMessage(SlackMessage $message)
     {
         // Determine the type
-        if ($message->getType() == 'Ephemeral') return $this->postEphemeral($message);
+        if ($message->getType() == 'Ephemeral') {
+            return $this->postEphemeral($message);
+        }
 
-        if ($message->getType() == 'Standard') return $this->postStandard($message);
+        if ($message->getType() == 'Standard') {
+            return $this->postStandard($message);
+        }
 
-        if ($message->getType() == 'Update') return $this->postUpdate($message);
+        if ($message->getType() == 'Update') {
+            return $this->postUpdate($message);
+        }
 
-        if ($message->getType() == 'Dialog') return $this->postDialog($message);
+        if ($message->getType() == 'Dialog') {
+            return $this->postDialog($message);
+        }
     }
 
 

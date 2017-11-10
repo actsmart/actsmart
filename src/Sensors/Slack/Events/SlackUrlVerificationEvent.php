@@ -17,5 +17,4 @@ class SlackUrlVerificationEvent extends SlackEvent
     {
         return SELF::EVENT_KEY;
     }
-
 }

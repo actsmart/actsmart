@@ -106,7 +106,8 @@ class SlackStandardMessage extends SlackMessage
         return $this;
     }
 
-    public function sendingAsUser(){
+    public function sendingAsUser()
+    {
         return $this->as_user;
     }
 

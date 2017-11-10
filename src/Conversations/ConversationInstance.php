@@ -263,14 +263,18 @@ class ConversationInstance
         // the next thing the bot should say based on what the user just said.
         // @todo Variable names and structure of this is too confusing.
 
-        if (!$ongoing) return $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+        if (!$ongoing) {
+            return $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+        }
 
         // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was.
         // The conversation model could support the user saying any number of things - so we need to get all of them,
         // interpret them, decide which one was actually said and the move the converation forward based on that.
         $user_current_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
 
-        if (!$user_current_utterance) return false;
+        if (!$user_current_utterance) {
+            return false;
+        }
 
         // Having determined what the user just said, let us move the conversation to point to that utterance.
         $this->current_scene_id = $user_current_utterance->getEndScene();
@@ -280,6 +284,4 @@ class ConversationInstance
         $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, false);
         return $bot_next_utterance;
     }
-
-
 }

@@ -51,7 +51,6 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
             $event = $this->process($slack_message);
             $this->notify($event->getkey(), $event);
         }
-
     }
 
     /**

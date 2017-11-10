@@ -27,11 +27,13 @@ class URLVerificationController implements ListenerInterface, ComponentInterface
         $e->stopPropagation();
     }
 
-    public function getKey() {
+    public function getKey()
+    {
         return 'controller.slack.url_verification';
     }
 
-    public function listensForEvents() {
+    public function listensForEvents()
+    {
         return ['event.slack.url_verification'];
     }
 }
