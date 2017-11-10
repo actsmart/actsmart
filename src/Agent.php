@@ -2,18 +2,18 @@
 
 namespace actsmart\actsmart;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\Response;
 use actsmart\actsmart\Actuators\ActuatorInterface;
+use actsmart\actsmart\Controllers\ControllerInterface;
 use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Sensors\SensorInterface;
-use actsmart\actsmart\Controllers\ControllerInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\NotifierInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\HttpFoundation\Response;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerAwareInterface;
 
 class Agent
 {
@@ -120,7 +120,7 @@ class Agent
     }
 
     /**
-     * @param $component
+     * @param ComponentInterface $component
      */
     private function bindListener($component){
         if ($component instanceoF ListenerInterface) {
@@ -143,7 +143,7 @@ class Agent
 
     /**
      * Adds the logger to classes that are LaggerAware
-     * @param $component
+     * @param ComponentInterface $component
      */
     private function bindLogger($component) {
         if ($component instanceOf LoggerAwareInterface) {
@@ -153,7 +153,7 @@ class Agent
 
     /**
      * Adds the dispatcher to classes that are Notifiers
-     * @param $component
+     * @param ComponentInterface $component
      */
     private function bindDispatcher($component) {
         if ($component instanceOf NotifierInterface) {

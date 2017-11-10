@@ -2,8 +2,8 @@
 
 namespace actsmart\actsmart\Stores;
 
-use actsmart\actsmart\Conversations\ConversationInstance;
 use Aws\DynamoDb\DynamoDbClient;
+use actsmart\actsmart\Conversations\ConversationInstance;
 
 class ConversationInstanceStore
 {

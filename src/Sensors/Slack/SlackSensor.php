@@ -2,15 +2,15 @@
 
 namespace actsmart\actsmart\Sensors\Slack;
 
-use actsmart\actsmart\Utils\NotifierInterface;
-use actsmart\actsmart\Utils\NotifierTrait;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
-use actsmart\actsmart\Sensors\SensorInterface;
-use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use actsmart\actsmart\Sensors\SensorInterface;
+use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\NotifierInterface;
+use actsmart\actsmart\Utils\NotifierTrait;
 
 /**
  * Class SlackSensor
@@ -56,7 +56,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
 
     /**
      * @param $slack_message
-     * @return actsmart\actsmart\Sensors\Slack\SlackEvent
+     * @return Events\SlackEvent|null
      */
     public function process($slack_message)
     {

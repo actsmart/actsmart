@@ -3,7 +3,6 @@
 namespace actsmart\actsmart\Interpreters\Slack;
 
 use actsmart\actsmart\Interpreters\InterpreterInterface;
-use actmsart\actsmart\Sensors\Slack\SlackEvent;
 
 class SlackMessageInterpreter implements InterpreterInterface
 {

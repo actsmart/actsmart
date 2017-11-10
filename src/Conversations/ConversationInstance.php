@@ -2,9 +2,9 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use actsmart\actsmart\Stores\ConversationTemplateStore;
-use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Sensors\SensorEvent;
+use actsmart\actsmart\Stores\ConversationTemplateStore;
 
 class ConversationInstance
 {

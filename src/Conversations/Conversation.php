@@ -3,7 +3,6 @@
 namespace actsmart\actsmart\Conversations;
 
 use Fhaculty\Graph\Graph as Graph;
-use Fhaculty\Graph\Set\Edges as Edges;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 
@@ -263,7 +262,7 @@ class Conversation extends Graph
      *
      * @param $current_sequence
      * @param SensorEvent $e
-     * @param null $default_intent
+     * @param Intent $default_intent
      * @return array
      */
     public function getMatchingUtterances($current_scene, $current_sequence, SensorEvent $e, $default_intent = null)

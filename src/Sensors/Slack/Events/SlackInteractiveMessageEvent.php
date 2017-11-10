@@ -2,8 +2,6 @@
 
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
-use actsmart\actsmart\Sensors\SensorEvent;
-
 class SlackInteractiveMessageEvent extends SlackEvent
 {
     const EVENT_NAME = 'event.slack.interactive_message';

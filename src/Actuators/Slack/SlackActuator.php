@@ -2,10 +2,10 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Actuators\Slack\SlackMessage;
-use Illuminate\Support\Facades\Log;
-use GuzzleHttp\Client;
 
 class SlackActuator implements ActuatorInterface
 {
