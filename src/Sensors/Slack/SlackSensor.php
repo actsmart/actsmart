@@ -66,7 +66,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                     break;
                 case 'event_callback':
                     // If it is an event callback then we need to check whether the message has a subtype as well
-                    $message_type = isset($slack_message->event->subtype) ? $slack_message->event->subtype : $slack_message->event_type;
+                    $message_type = isset($slack_message->event->subtype) ? $slack_message->event->subtype : $slack_message->event->type;
                     return $this->event_creator->createEvent($message_type, $slack_message);
                     break;
                 case 'interactive_message':
