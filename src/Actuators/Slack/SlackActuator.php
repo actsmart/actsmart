@@ -2,14 +2,17 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
 use actsmart\actsmart\Actuators\ActuatorInterface;
-use actsmart\actsmart\Actuators\Slack\SlackMessage;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
+use Psr\Log\LoggerAwareInterface;
+use GuzzleHttp\Client;
+use Psr\Log\LoggerAwareTrait;
 
-class SlackActuator implements ActuatorInterface
+class SlackActuator implements ComponentInterface, LoggerAwareInterface, ActuatorInterface
 {
-    const SLACK_ACTUATOR_KEY = 'slack.actuator';
+    use LoggerAwareTrait, ComponentTrait;
+
     const SLACK_BASE_URI = 'https://slack.com/api/';
 
     private $client;
@@ -21,22 +24,22 @@ class SlackActuator implements ActuatorInterface
         $this->client = $client;
     }
 
-    public function postMessage(SlackMessage $message)
+    public function perform($action, $message)
     {
         // Determine the type
-        if ($message->getType() == 'Ephemeral') {
+        if ($message instanceof SlackEphemeralMessage) {
             return $this->postEphemeral($message);
         }
 
-        if ($message->getType() == 'Standard') {
+        if ($message instanceof SlackStandardMessage) {
             return $this->postStandard($message);
         }
 
-        if ($message->getType() == 'Update') {
+        if ($message instanceof SlackUpdateMessage) {
             return $this->postUpdate($message);
         }
 
-        if ($message->getType() == 'Dialog') {
+        if ($message instanceof SlackDialog) {
             return $this->postDialog($message);
         }
     }
@@ -45,12 +48,12 @@ class SlackActuator implements ActuatorInterface
     public function postStandard(SlackMessage $message)
     {
         $headers = [
-            'Authorization' => 'Bearer ' . $message->getToken(),
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.context')->get('token.slack'),
             'Accept' => 'application/json',
             'charset' => 'utf-8',
         ];
 
-        Log::debug('Attempting to post a Standard message.');
+        $this->logger->debug('Attempting to post a Standard message.');
 
         $response = $this->client->request('POST',
             self::SLACK_BASE_URI . 'chat.postMessage', [
@@ -59,17 +62,16 @@ class SlackActuator implements ActuatorInterface
             ]);
 
         // @todo - handle failures and throw appropriate exceptions.
-        Log::debug($response->getStatusCode());
-        Log::debug($response->getBody()->getContents());
+        $this->logger->debug($response->getStatusCode());
+        $this->logger->debug($response->getBody()->getContents());
 
-        dd($response->getBody()->getContents());
 
         return json_decode($response->getBody()->getContents());
     }
 
     public function postEphemeral(SlackMessage $message)
     {
-        Log::debug('Attempting to post an ephemeral message.');
+        $this->logger->debug('Attempting to post an ephemeral message.');
 
         $ret = $this->client->post('chat.postEphemeral', ['form_params' => $message->getMessageToPost()]);
 
@@ -92,7 +94,7 @@ class SlackActuator implements ActuatorInterface
             'Accept'        => 'application/json',
         ];
 
-        Log::debug('Attempting to post an update message.');
+        $this->logger->debug('Attempting to post an update message.');
 
         // Creating a separate client here since the URL is completely different
         $response = $this->client->request('POST', $message->getResponseUrl(), [
@@ -105,6 +107,11 @@ class SlackActuator implements ActuatorInterface
 
     public function getKey()
     {
-        return SELF::SLACK_ACTUATOR_KEY;
+        return 'actuator.slack';
+    }
+
+    public function performsActions()
+    {
+        return ['action.slack.postmessage'];
     }
 }
