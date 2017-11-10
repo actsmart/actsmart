@@ -23,6 +23,9 @@ class Agent
     /** @var  array */
     protected $actuators = [];
 
+    /** @var array - the set of actions that actuators can perform */
+    protected $actions = [];
+
     /** @var  array */
     protected $controllers = [];
 
@@ -67,6 +70,8 @@ class Agent
                 break;
             case $component instanceof ActuatorInterface:
                 $this->actuators[$component->getKey()] = $component;
+                // Register all the actions as well
+                $this->actions[$component->getKey()] = $component->performsActions();
                 break;
             case $component instanceof ControllerInterface:
                 $this->controllers[$component->getKey()] = $component;
@@ -105,6 +110,19 @@ class Agent
     public function getSensor($key)
     {
         return $this->sensors[$key];
+    }
+
+    public function getInterpreter($key)
+    {
+        return $this->interpreters[$key];
+    }
+
+    /**
+     * @return EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        return $this->dispatcher;
     }
 
     public function setHttpReaction(Response $response)
