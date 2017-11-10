@@ -2,11 +2,15 @@
 
 namespace actsmart\actsmart\Stores;
 
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
 use Aws\DynamoDb\DynamoDbClient;
 use actsmart\actsmart\Conversations\ConversationInstance;
 
-class ConversationInstanceStore
+class DynamoConversationInstanceStore implements ComponentInterface
 {
+    use ComponentTrait;
+
     private $client;
 
     private $table_name;
@@ -122,5 +126,10 @@ class ConversationInstanceStore
     public function update(ConversationInstance $ci)
     {
         // Not sure we need an update.
+    }
+
+    public function getKey()
+    {
+        return 'store.conversation_instance';
     }
 }
