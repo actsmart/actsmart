@@ -98,10 +98,10 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @param ActionInterface $action
+     * @param  string - $action
      * @return Utterance
      */
-    public function setAction(ActionInterface $action)
+    public function setAction($action)
     {
         $this->action = $action;
         return $this;
