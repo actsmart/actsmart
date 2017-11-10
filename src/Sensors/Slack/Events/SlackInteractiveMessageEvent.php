@@ -118,6 +118,4 @@ class SlackInteractiveMessageEvent extends SlackEvent
     {
         return $this->getMessage()->original_message->text;
     }
-
-
 }

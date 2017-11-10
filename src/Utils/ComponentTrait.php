@@ -12,7 +12,8 @@ trait ComponentTrait
      */
     private $agent;
 
-    public function setAgent(Agent $agent){
+    public function setAgent(Agent $agent)
+    {
         $this->agent = $agent;
     }
 }

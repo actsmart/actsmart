@@ -19,20 +19,20 @@ class LUISInterpreter implements InterpreterInterface
 
     private $subscription_key;
 
-    private $staging = FALSE;
+    private $staging = false;
 
     private $timezone_offset;
 
-    private $verbose = TRUE;
+    private $verbose = true;
 
-    private $spellcheck = TRUE;
+    private $spellcheck = true;
 
-    public function __construct($app_url, $app_id, $subscription_key, $staging = false, $timezone_offset = 0, $verbose = TRUE, $spellcheck = TRUE)
+    public function __construct($app_url, $app_id, $subscription_key, $staging = false, $timezone_offset = 0, $verbose = true, $spellcheck = true)
     {
         $this->client = new Client();
         $this->app_url = $app_url;
         $this->app_id = $app_id;
-        $this->staging = FALSE;
+        $this->staging = false;
         $this->subscription_key = $subscription_key;
         $this->timezone_offset = $timezone_offset;
         $this->verbose = $verbose;
@@ -63,7 +63,8 @@ class LUISInterpreter implements InterpreterInterface
         return SELF::LUIS_INTERPRETER;
     }
 
-    private function queryLUISapp($message) {
+    private function queryLUISapp($message)
+    {
         return $this->client->request('GET',
             $this->app_url . '/' . $this->app_id,
             [

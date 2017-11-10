@@ -47,8 +47,8 @@ class ConversationTest extends TestCase
         $notfound = false;
         try {
             $scenes->getVertexId('notascene');
-        } catch(\Exception $e) {
-          $notfound = true;
+        } catch (\Exception $e) {
+            $notfound = true;
         }
 
         $this->assertTrue($notfound);
@@ -67,7 +67,6 @@ class ConversationTest extends TestCase
         $this->assertTrue($scenes->hasVertexId('init'));
         $this->assertTrue($scenes->hasVertexId('two'));
         $this->assertFalse($scenes->hasVertexId('somethingelse'));
-
     }
 
     public function testParticipantAddition()
@@ -114,7 +113,6 @@ class ConversationTest extends TestCase
 
         // Check the last utterance of init scene
         $this->assertTrue($init_utterances->getEdgeLast()->getMessage()->getTextResponse() == 'Clone an existing list', 'Checking last utterance', 'Last utterance of init scene');
-
     }
 
     public function testSceneChange()
@@ -124,14 +122,12 @@ class ConversationTest extends TestCase
         // Get the utterances of of bot1
         $utterances = $conversation->getScene('init')->getParticipant('bot1')->getUtterances();
 
-        foreach ($utterances as $utterance){
-            if ($utterance->getMessage()->getTextResponse() == 'Create list')
-            {
+        foreach ($utterances as $utterance) {
+            if ($utterance->getMessage()->getTextResponse() == 'Create list') {
                 $this->assertFalse($utterance->changesScene());
             }
 
-            if ($utterance->getMessage()->getTextResponse() == 'A new list')
-            {
+            if ($utterance->getMessage()->getTextResponse() == 'A new list') {
                 $this->assertTrue($utterance->changesScene());
             }
         }
@@ -175,7 +171,6 @@ class ConversationTest extends TestCase
      */
     public function testPossibleFollowUps()
     {
-
         $conversation = $this->buildConversation();
 
         $current_sequence = 1;
@@ -280,7 +275,4 @@ class ConversationTest extends TestCase
 
         return $conversation;
     }
-
-
-
 }

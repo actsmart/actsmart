@@ -2,7 +2,6 @@
 
 namespace actsmart\actsmart\Interpreters;
 
-
 class Intent
 {
     private $label;
@@ -69,8 +68,4 @@ class Intent
     {
         $this->confidence = $confidence;
     }
-
-
-
-
 }

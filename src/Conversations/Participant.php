@@ -42,15 +42,15 @@ class Participant extends Vertex
     public function getExitUtterances()
     {
         $exit_utterances = [];
-        foreach($this->getUtterances() as $utterance)
-        {
-            if ($utterance->changesScene()) $exit_utterances[] = $utterance;
+        foreach ($this->getUtterances() as $utterance) {
+            if ($utterance->changesScene()) {
+                $exit_utterances[] = $utterance;
+            }
         }
         return new Edges($exit_utterances);
     }
 
     public function getExitUtteranceToScene($scene_id)
     {
-
     }
 }

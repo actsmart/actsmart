@@ -7,7 +7,6 @@ use actsmart\actsmart\Conversations\ConversationInstance;
 
 class ConversationInstanceStore
 {
-
     private $client;
 
     private $table_name;
@@ -43,7 +42,7 @@ class ConversationInstanceStore
                 'TableName' => $this->table_name,
                 'Item' => $ci_record,
             ]);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             ($e->getMessage());
             return false;
         }
@@ -83,15 +82,14 @@ class ConversationInstanceStore
                     ],
                 ]
             ]);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             //$e->getMessage();
             return false;
         }
 
         // Each item will contain the attributes we added
-        foreach ($iterator as $item)
-        {
-            if ($item){
+        foreach ($iterator as $item) {
+            if ($item) {
                 $ci->setConversationTemplateId($item['conversation_template_id']['S'])
                     ->setCurrentUtteranceSequenceId($item['current_utterance_sequence_id']['N'])
                     ->setCurrentSceneId($item['current_scene_id']['S'])
@@ -125,6 +123,4 @@ class ConversationInstanceStore
     {
         // Not sure we need an update.
     }
-
-
 }

@@ -2,7 +2,6 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-
 class SlackEphemeralMessage extends SlackMessage
 {
 
@@ -44,5 +43,4 @@ class SlackEphemeralMessage extends SlackMessage
         ];
         return $form_params;
     }
-
 }

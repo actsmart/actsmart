@@ -46,7 +46,6 @@ class ConversationController extends ActiveController implements ComponentInterf
         $this->message_interpreter = $agent->getInterpreter($interpreter_key);
         $this->conversation_store = $agent->getStore($conversation_store_key);
         $this->conversation_instance_store = $agent->getStore($conversation_instance_store_key);
-
     }
 
     public function listen(GenericEvent $e)
@@ -57,7 +56,9 @@ class ConversationController extends ActiveController implements ComponentInterf
             // Check top level preconditions (bot mentioned, direct message to bot, etc)
             // If none of our top level preconditions match then give up early
             if (!$this->handleOngoingConversation($e)) {
-                if (!$this->handleNewConversation($e)) $this->handleNothingMatched($e);
+                if (!$this->handleNewConversation($e)) {
+                    $this->handleNothingMatched($e);
+                }
             }
         }
     }
@@ -65,7 +66,9 @@ class ConversationController extends ActiveController implements ComponentInterf
     public function handleOngoingConversation(SensorEvent $e)
     {
         // If we don't get a CI object back there is no ongoing conversation that matches. Bail out.
-        if (!$ci=$this->ongoingConversation($e)) return false;
+        if (!$ci=$this->ongoingConversation($e)) {
+            return false;
+        }
 
         // Set up a default intent
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
@@ -75,7 +78,9 @@ class ConversationController extends ActiveController implements ComponentInterf
         $ci->performCurrentAction($e);
 
         // If we can't figure out what is the next utterance bail out.
-        if (!$next_utterance = $ci->getNextUtterance($e, $default_intent)) return false;
+        if (!$next_utterance = $ci->getNextUtterance($e, $default_intent)) {
+            return false;
+        }
 
         // We have an utterance - let's post the message.
         $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
@@ -105,7 +110,9 @@ class ConversationController extends ActiveController implements ComponentInterf
 
         $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
 
-        if (!$matching_conversation_id) return false;
+        if (!$matching_conversation_id) {
+            return false;
+        }
 
         $ci = new ConversationInstance($matching_conversation_id,
             $this->conversation_store,
@@ -146,7 +153,9 @@ class ConversationController extends ActiveController implements ComponentInterf
 
         $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
 
-        if (!$matching_conversation_id) return false;
+        if (!$matching_conversation_id) {
+            return false;
+        }
 
         $ci = new ConversationInstance($matching_conversation_id,
             $this->conversation_store,
@@ -227,5 +236,4 @@ class ConversationController extends ActiveController implements ComponentInterf
 
         return $intent;
     }
-
 }

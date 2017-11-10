@@ -9,7 +9,6 @@ use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Interpeters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 
-
 class Scene extends Vertex
 {
     private $preconditions = [];
@@ -39,8 +38,10 @@ class Scene extends Vertex
     public function getParticipants()
     {
         // Participants are Vertices of Type Participant
-        return $this->getVerticesEdgeTo()->getVerticesMatch( function($participant) {
-            if ($participant instanceof Participant) return $participant;
+        return $this->getVerticesEdgeTo()->getVerticesMatch(function ($participant) {
+            if ($participant instanceof Participant) {
+                return $participant;
+            }
         });
     }
 
@@ -64,10 +65,8 @@ class Scene extends Vertex
     {
         $utterances = [];
 
-        foreach($this->getParticipants() as $participant)
-        {
-            foreach($participant->getUtterances() as $utterance)
-            {
+        foreach ($this->getParticipants() as $participant) {
+            foreach ($participant->getUtterances() as $utterance) {
                 $utterances[$utterance->getSequence()] = $utterance;
             }
         }
@@ -88,9 +87,10 @@ class Scene extends Vertex
     public function getExitUtterances()
     {
         $exit_utterances = [];
-        foreach($this->getAllUtterances() as $utterance)
-        {
-            if ($utterance->changesScene()) $exit_utterances[] = $utterance;
+        foreach ($this->getAllUtterances() as $utterance) {
+            if ($utterance->changesScene()) {
+                $exit_utterances[] = $utterance;
+            }
         }
         return new Edges($exit_utterances);
     }
@@ -103,9 +103,10 @@ class Scene extends Vertex
     public function getInternalUtterances()
     {
         $internal_utterances = [];
-        foreach($this->getAllUtterances() as $utterance)
-        {
-            if (!$utterance->changesScene()) $internal_utterances[] = $utterance;
+        foreach ($this->getAllUtterances() as $utterance) {
+            if (!$utterance->changesScene()) {
+                $internal_utterances[] = $utterance;
+            }
         }
         return new Edges($internal_utterances);
     }
@@ -137,9 +138,10 @@ class Scene extends Vertex
     public function checkPreconditions($e)
     {
         foreach ($this->preconditions as $precondition) {
-            if (!$precondition->check($e)) return false;
+            if (!$precondition->check($e)) {
+                return false;
+            }
         }
         return true;
     }
-
 }

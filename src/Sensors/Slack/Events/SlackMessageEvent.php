@@ -40,7 +40,9 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     public function mentions($user_id)
     {
-        if (strpos($this->getUtterance(), $user_id)) return true;
+        if (strpos($this->getUtterance(), $user_id)) {
+            return true;
+        }
         return false;
     }
 
