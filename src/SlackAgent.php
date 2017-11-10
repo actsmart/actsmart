@@ -26,6 +26,9 @@ class SlackAgent extends Agent
         $this->configureForSlack();
     }
 
+    /**
+     * Setup the generic components required for a SlackAgent.
+     */
     private function configureForSlack()
     {
         // We use a store to keep external config
@@ -37,7 +40,11 @@ class SlackAgent extends Agent
         // We need to pickup Slack events so need to add a Slack sensor
         $this->addComponent(new SlackSensor(new SlackEventCreator()));
 
-        // A simple reactive controller for URL Verification.
+        // A simple controller for URL Verification.
         $this->addComponent(new URLVerificationController());
+
+        // A more complex controller that handles conversations
+        $this->addComponent(new ConversationController());
     }
+
 }

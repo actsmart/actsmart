@@ -16,4 +16,9 @@ trait ComponentTrait
     {
         $this->agent = $agent;
     }
+
+    public function getAgent()
+    {
+        return $this->agent;
+    }
 }

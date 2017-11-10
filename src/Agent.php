@@ -79,7 +79,7 @@ class Agent
                 break;
         }
 
-        //Inject the agent back in the components
+        //Inject the agent in the components.
         $component->setAgent($this);
 
         $this->bindLogger($component);
@@ -131,7 +131,7 @@ class Agent
     }
 
     /**
-     * Registers a listener for the event that the listener itself says they are interested in.
+     * Registers a listener for all the events that the listener itself says they are interested in.
      *
      * @param ListenerInterface $listener
      */

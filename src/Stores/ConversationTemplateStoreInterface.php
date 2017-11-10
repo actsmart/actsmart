@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
-use actsmart\actsmart\Conversations\ConversationInstance;
+use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 
@@ -33,7 +33,7 @@ interface ConversationTemplateStoreInterface
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(SensorEvent $e, Intent $intent);
+    public function getMatchingConversations(UtteranceEvent $e, Intent $intent);
 
     /**
      * Returns a single match - the first conversation that matchs for now.

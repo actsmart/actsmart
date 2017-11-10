@@ -1,17 +1,19 @@
-<?php
+ <?php
 
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
-use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
+use actsmart\actsmart\Sensors\UtteranceEvent;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
 
-abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface
+abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface
 {
-    protected $conversations = [];
+    use ComponentTrait;
 
-    protected $event_dispatcher;
+    protected $conversations = [];
 
     /**
      * @param Conversation $conversation
@@ -41,7 +43,7 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(SensorEvent $e, Intent $intent)
+    public function getMatchingConversations(UtteranceEvent $e, Intent $intent)
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {

@@ -2,68 +2,49 @@
 
 namespace actsmart\actsmart\Controllers\Slack;
 
-use actsmart\actsmart\Agent;
+
 use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
-use actsmart\actsmart\Controllers\Active\ActiveController;
+use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
 use actsmart\actsmart\Stores\ConversationInstanceStore;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\ListenerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-class ConversationController extends ActiveController implements ComponentInterface, ListenerInterface
+class ConversationController implements ComponentInterface, ListenerInterface, LoggerAwareInterface
 {
-    use ComponentTrait;
+    use ComponentTrait, LoggerAwareTrait;
 
     const SLACK_ACTION_TYPE_BUTTON = 'button';
     const SLACK_ACTION_TYPE_MENU = 'menu';
 
-    protected $slack_verification_token;
-
-    /* Time in seconds that a conversation is still considered as ongoing */
-    // @todo - This is not actually used right now.
-    protected $conversation_timeout = null;
-
-    /* @var actsmart\actsmart\Interpreters\InterpreterInterface $message_interpreter */
-    protected $message_interpreter;
-
-    /* @var actsmart\actsmart\Stores\ConversationTemplateStore $conversation_store */
-    protected $conversation_store;
-
-    /* @var actsmart\actsmart\Stores\ConversationInstanceStore $conversation_instance_store */
-    protected $conversation_instance_store;
-
-
-    public function __construct(Agent $agent, $slack_verification_token, $conversation_timeout = 300, $interpreter_key, $conversation_store_key, $conversation_instance_store_key)
-    {
-        parent::__construct($agent);
-        $this->slack_verification_token = $slack_verification_token;
-        $this->$conversation_timeout = $conversation_timeout;
-
-        $this->message_interpreter = $agent->getInterpreter($interpreter_key);
-        $this->conversation_store = $agent->getStore($conversation_store_key);
-        $this->conversation_instance_store = $agent->getStore($conversation_instance_store_key);
-    }
-
+    /**
+     * Implementation of listen function.
+     *
+     * @param GenericEvent $e
+     * @return bool
+     */
     public function listen(GenericEvent $e)
     {
-        $message_types = ['message', 'interactive_message'];
+        if (!($e instanceOf SlackEvent)) {
+            return false;
+        }
 
-        if (in_array($e->getSubject(), $message_types)) {
-            // Check top level preconditions (bot mentioned, direct message to bot, etc)
-            // If none of our top level preconditions match then give up early
-            if (!$this->handleOngoingConversation($e)) {
-                if (!$this->handleNewConversation($e)) {
-                    $this->handleNothingMatched($e);
-                }
+        // @todo Check top level preconditions (bot mentioned, direct message to bot, etc), if none of our top level preconditions match then give up early
+        if (!$this->handleOngoingConversation($e)) {
+            if (!$this->handleNewConversation($e)) {
+                $this->handleNothingMatched($e);
             }
         }
     }
 
-    public function handleOngoingConversation(SensorEvent $e)
+    public function handleOngoingConversation(SlackEvent $e)
     {
         // If we don't get a CI object back there is no ongoing conversation that matches. Bail out.
         if (!$ci=$this->ongoingConversation($e)) {
@@ -185,33 +166,19 @@ class ConversationController extends ActiveController implements ComponentInterf
         return true;
     }
 
-    public function setDefaultMessageInterpreter(InterpreterInterface $interpreter)
-    {
-        $this->message_interpreter = $interpreter;
-    }
-
-    public function setDefaultConversationStore(ConversationTemplateStore $conversation_store)
-    {
-        $this->conversation_store = $conversation_store;
-    }
-
-    public function setDefaultConversationInstanceStore(ConversationInstanceStore $conversation_instance_store)
-    {
-        $this->conversation_instance_store = $conversation_instance_store;
-    }
-
     private function ongoingConversation(SensorEvent $e)
     {
         //Check if there is an ongoing conversation - instantiate a temp CI object
         //to check against.
         $temp_conversation_instance = new ConversationInstance(null,
-            $this->conversation_store,
+            $this->agent->getStore('store.conversation_templates'),
             $e->getWorkspaceId(),
             $e->getUserId(),
             $e->getChannelId());
 
-        /* @var actsmart\actsmart\Conversations\ConversationInstans $ci */
-        return $this->conversation_instance_store->retrieve($temp_conversation_instance);
+        // Attempt to retrieve a conversation store
+        $conversation_instance_store = $this->agent->getStore('store.conversation_instance');
+        return $conversation_instance_store->retrieve($temp_conversation_instance);
     }
 
     /**
@@ -235,5 +202,18 @@ class ConversationController extends ActiveController implements ComponentInterf
         }
 
         return $intent;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey()
+    {
+        return 'controller.slack.conversation_controller';
+    }
+
+    public function listensForEvents()
+    {
+        return ['event.slack.message', 'event.slack.interactive_message'];
     }
 }
