@@ -1,16 +1,13 @@
 <?php
 namespace actsmart\actsmart\Interpreters\NLP;
 
-use actsmart\actsmart\Interpreters\InterpreterInterface;
+use actsmart\actsmart\Interpreters\BaseInterpreter;
 use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Sensors\SensorEvent;
 use GuzzleHttp\Client;
 
-class LUISInterpreter implements InterpreterInterface
+class LUISInterpreter extends BaseInterpreter
 {
-    const LUIS_INTERPRETER = 'interpreter.luis';
-
     private $client;
 
     private $app_url;
@@ -39,6 +36,10 @@ class LUISInterpreter implements InterpreterInterface
         $this->spellcheck = $spellcheck;
     }
 
+    /**
+     * @param SensorEvent $e
+     * @return Intent
+     */
     public function interpret(SensorEvent $e)
     {
         // Extract message
@@ -53,16 +54,10 @@ class LUISInterpreter implements InterpreterInterface
         return $intent;
     }
 
-    public function notify()
-    {
-        // TODO: Implement notify() method.
-    }
-
-    public function getKey()
-    {
-        return SELF::LUIS_INTERPRETER;
-    }
-
+    /**
+     * @param $message
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
     private function queryLUISapp($message)
     {
         return $this->client->request('GET',
@@ -80,4 +75,13 @@ class LUISInterpreter implements InterpreterInterface
             ]
         );
     }
+
+    /**
+     * @return string
+     */
+    public function getKey()
+    {
+        return 'interpreter.luis';
+    }
+
 }
