@@ -35,7 +35,6 @@ class SlackMessage
 
     public function __construct($token, $channel, $type)
     {
-        $this->token = $token;
         $this->channel = $channel;
         $this->type = $type;
     }
