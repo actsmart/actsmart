@@ -33,7 +33,7 @@ interface ConversationTemplateStoreInterface
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(UtteranceEvent $e, Intent $intent);
+    public function getMatchingConversations(SensorEvent $e, Intent $intent);
 
     /**
      * Returns a single match - the first conversation that matchs for now.
