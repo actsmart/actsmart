@@ -2,12 +2,8 @@
 
 namespace actsmart\actsmart\Controllers\Slack;
 
-
-use actsmart\actsmart\Interpreters\InterpreterInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
-use actsmart\actsmart\Stores\ConversationTemplateStore;
-use actsmart\actsmart\Stores\ConversationInstanceStore;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -53,10 +49,12 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         // Set up a default intent
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $default_intent = $this->message_interpreter->interpret($e);
+        $default_intent = $this->getAgent()->getInterpreter('interpreter.luis')->interpret($e);
 
         // Before getting the next utterance let us perform any actions related to the current utterance
-        $ci->performCurrentAction($e);
+        if ($action = $ci->getCurrentAction()) {
+            $this->getAgent()->performAction($action, $e);
+        }
 
         // If we can't figure out what is the next utterance bail out.
         if (!$next_utterance = $ci->getNextUtterance($e, $default_intent)) {
@@ -64,23 +62,23 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // We have an utterance - let's post the message.
-        $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->actuators['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
 
         // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
         if ($next_utterance->isCompleting()) {
             // Remove the current ci state.
-            $this->conversation_instance_store->delete($ci);
+            $this->getAgent()->getStore('store.conversation_instance')->delete($ci);
             return true;
         }
 
         // Remove the current ci state
         // @todo - this can be done with an update as well potentially.
-        $this->conversation_instance_store->delete($ci);
+        $this->getAgent()->getStore('store.conversation_instance')->delete($ci);
 
         // If the utterance we just sent does not end the conversation, store the CI instance.
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
         $ci->setCurrentUtteranceSequenceId($next_utterance->getSequence());
-        $this->conversation_instance_store->save($ci);
+        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 
@@ -107,7 +105,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $ci->initConversation();
 
         // Before getting the next utterance let us perform any actions related to the current utterance
-        // !!!!!Get the current utterance, derive the action name and call on the agent to perform the action.
         if ($action = $ci->getCurrentAction()) {
             $this->getAgent()->performAction($action, $e);
         }
@@ -124,7 +121,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         $ci->setCurrentUtteranceSequenceId($next_utterance->getSequence());
-        $this->conversation_instance_store->save($ci);
+        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 
@@ -136,7 +133,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $e, 1);
 
-        $matching_conversation_id = $this->conversation_store->getMatchingConversation($e, $intent);
+        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($e, $intent);
 
         if (!$matching_conversation_id) {
             return false;
@@ -155,7 +152,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
 
-        $response = $this->actuators['slack.actuator']->postMessage($next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->actuators['actuator.slack']->perform('actuator.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
 
         dd($response);
 
@@ -166,7 +163,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         $ci->setCurrentUtteranceSequenceId($ci->getNextUtterance()->getSequence());
-        $this->conversation_instance_store->save($ci);
+        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 
