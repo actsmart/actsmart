@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart;
 
+use actsmart\actsmart\Actuators\Slack\SlackActuator;
 use actsmart\actsmart\Stores\ConfigStore;
 use actsmart\actsmart\Sensors\Slack\SlackSensor;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
@@ -49,6 +50,9 @@ class SlackAgent extends Agent
 
         // A simple key:value context store to share state.
         $this->addComponent(new ContextStore());
+
+        // The Slack actuator that sends messages to Slack.
+        $this->addComponent(new SlackActuator());
 
     }
 
