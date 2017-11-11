@@ -38,7 +38,7 @@ class Agent
     /** @var EventDispatcher */
     protected $dispatcher;
 
-    /** @var  Logger */
+    /** @var  \Psr\Log\LoggerInterface */
     protected $logger;
 
     /** @var  Response */
