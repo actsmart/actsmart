@@ -62,7 +62,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // We have an utterance - let's post the message.
-        $response = $this->actuators['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->getAgent()->getActuator['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
 
         // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
         if ($next_utterance->isCompleting()) {
