@@ -112,9 +112,22 @@ class Agent
         return $this->sensors[$key];
     }
 
+    /**
+     * @param $key
+     * @return mixed
+     */
     public function getInterpreter($key)
     {
         return $this->interpreters[$key];
+    }
+
+    /**
+     * @param $key
+     * @return mixed
+     */
+    public function getActuator($key)
+    {
+        return $this->actuators[$key];
     }
 
     /**
@@ -123,6 +136,19 @@ class Agent
     public function getEventDispatcher()
     {
         return $this->dispatcher;
+    }
+
+    /**
+     * @param $action_id
+     * @param $object
+     */
+    public function performAction($action_id, $object)
+    {
+        foreach ($this->actions as $actuator => $actions) {
+            if (in_array($action_id, $actions)) {
+                $this->getActuator($actuator)->perform($action_id, $object);
+            }
+        }
     }
 
     public function setHttpReaction(Response $response)

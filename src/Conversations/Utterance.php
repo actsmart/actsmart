@@ -107,13 +107,6 @@ class Utterance extends EdgeDirected
         return $this;
     }
 
-    public function performAction(SensorEvent $event)
-    {
-        if (isset($this->action)) {
-            $this->action->perform($event);
-        }
-    }
-
     /**
      * @return ConditionInterface
      */

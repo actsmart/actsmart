@@ -104,9 +104,9 @@ class ConversationInstance
         return $this->conversation->getUtteranceWithSequence($this->current_utterance_sequence_id);
     }
 
-    public function performCurrentAction(SensorEvent $event)
+    public function getCurrentAction()
     {
-        $this->getCurrentUtterance()->performAction($event);
+        return $this->getCurrentUtterance()->getAction();
     }
 
     /**
