@@ -39,7 +39,7 @@ class SlackEphemeralMessage extends SlackMessage
             'text' => $this->getText(),
             'as_user' => $this->sendingAsUser(),
             'user' => $this->getUser(),
-            'attachments' => json_encode($this->getAttachmentsToPost()),
+            'attachments' => $this->getAttachmentsToPost(),
         ];
         return $form_params;
     }

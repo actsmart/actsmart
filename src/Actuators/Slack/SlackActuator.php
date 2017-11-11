@@ -48,7 +48,7 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
     public function postStandard(SlackMessage $message)
     {
         $headers = [
-            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.context')->get('token.slack'),
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('oauth_token.slack'),
             'Accept' => 'application/json',
             'charset' => 'utf-8',
         ];
@@ -71,12 +71,26 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
     public function postEphemeral(SlackMessage $message)
     {
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('oauth_token.slack'),
+            'Accept' => 'application/json',
+            'charset' => 'utf-8',
+        ];
+
         $this->logger->debug('Attempting to post an ephemeral message.');
 
-        $ret = $this->client->post('chat.postEphemeral', ['form_params' => $message->getMessageToPost()]);
+        $response = $this->client->request('POST',
+            self::SLACK_BASE_URI . 'chat.postEphemeral',[
+            'headers' => $headers,
+            'json' => $message->getMessageToPost()
+        ]);
 
         // @todo - handle failures and throw appropriate exceptions.
-        return json_decode($ret->getBody()->getContents());
+        $this->logger->debug($response->getStatusCode());
+        $this->logger->debug($response->getBody()->getContents());
+
+
+        return json_decode($response->getBody()->getContents());
     }
 
 
