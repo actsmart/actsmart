@@ -108,13 +108,14 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         // Before getting the next utterance let us perform any actions related to the current utterance
         // !!!!!Get the current utterance, derive the action name and call on the agent to perform the action.
-        if ($action = $ci->getCurrentAction($e)) {
-            $this->getAgent()->performAction($action);
+        if ($action = $ci->getCurrentAction()) {
+            $this->getAgent()->performAction($action, $e);
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
-        $response = $this->getAgent()->getActuator('slack.actuator')->perform($next_utterance->getMessage()->getSlackMessage($e));
+
+        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
 
         $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
 
