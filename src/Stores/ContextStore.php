@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Stores;
 
-use actsmart\actsmart\Actions\ActionEvent;
+use actsmart\actsmart\Actuators\ActionEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
@@ -18,9 +18,10 @@ class ContextStore implements ComponentInterface, ListenerInterface, StoreInterf
     {
         if ($a instanceof ActionEvent)
         {
-            dd($a->getSubject());
+            foreach ($a->getSubject() as $key => $value) {
+                $this->context_info[$key] = $value;
+            }
         }
-        $this->context_info[$a->getSubject()] = $a->getActionStatus();
     }
 
     public function retrieve($label)
