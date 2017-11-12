@@ -63,10 +63,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
         // @todo - handle failures and throw appropriate exceptions.
         $this->logger->debug($response->getStatusCode());
-        $this->logger->debug($response->getBody()->getContents());
 
+        $content_body = $response->getBody()->getContents();
+        $this->logger->debug($content_body);
 
-        return json_decode($response->getBody()->getContents());
+        return json_decode($content_body);
     }
 
     public function postEphemeral(SlackMessage $message)
@@ -87,10 +88,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
         // @todo - handle failures and throw appropriate exceptions.
         $this->logger->debug($response->getStatusCode());
-        $this->logger->debug($response->getBody()->getContents());
 
+        $content_body = $response->getBody()->getContents();
+        $this->logger->debug($content_body);
 
-        return json_decode($response->getBody()->getContents());
+        return json_decode($content_body);
     }
 
 

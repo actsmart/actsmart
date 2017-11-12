@@ -10,12 +10,6 @@ namespace actsmart\actsmart\Actuators\Slack;
  */
 class SlackMessage
 {
-    // Message, Ephemeral, Update
-    // @todo - other ways to handle this as well - keeping it simple for now.
-    private $type;
-
-    private $token;
-
     private $channel;
 
     private $text = null;
@@ -33,21 +27,9 @@ class SlackMessage
     private $response_url;
 
 
-    public function __construct($token, $channel, $type)
+    public function __construct($channel)
     {
         $this->channel = $channel;
-        $this->type = $type;
-    }
-
-    public function setToken($token)
-    {
-        $this->token = $token;
-        return $this;
-    }
-
-    public function getToken()
-    {
-        return $this->token;
     }
 
     public function setChannel($channel)
@@ -72,25 +54,7 @@ class SlackMessage
     {
         return $this->text;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param mixed $type
-     * @return SlackMessage
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
+    
     public function sendAsUser($as_user)
     {
         $this->as_user = $as_user;
