@@ -62,7 +62,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // We have an utterance - let's post the message.
-        $response = $this->getAgent()->getActuator['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->getAgent()->getActuator['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
 
         // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
         if ($next_utterance->isCompleting()) {
@@ -112,9 +112,11 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
 
-        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
 
-        $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
+        // @todo Improve this - we are trying to handle two different ways of sending timestamps back.
+        $ts = isset($response->ts) ? $response->ts : $response->message_ts;
+        $ci->setUpdateTs((int)explode('.', $ts)[0]);
 
         if ($next_utterance->isCompleting()) {
             return true;
@@ -140,7 +142,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         $ci = new ConversationInstance($matching_conversation_id,
-            $this->conversation_store,
+            $this->getAgent()->getStore('store.conversation_templates'),
             $e->getWorkspaceId(),
             $e->getUserId(),
             $e->getChannelId(),
@@ -152,11 +154,11 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($e, $intent, false);
 
-        $response = $this->actuators['actuator.slack']->perform('actuator.slack.postmessage', $next_utterance->getMessage()->getSlackMessage($e));
+        $response = $this->getAgent()->getActuator('actuator.slack')->perform('actuator.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
 
-        dd($response);
-
-        $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
+        // @todo Improve this - we are trying to handle two different ways of sending timestamps back.
+        $ts = isset($response->ts) ? $response->ts : $response->message_ts;
+        $ci->setUpdateTs((int)explode('.', $ts)[0]);
 
         if ($next_utterance->isCompleting()) {
             return true;
