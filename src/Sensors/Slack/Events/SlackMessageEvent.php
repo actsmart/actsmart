@@ -35,7 +35,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     public function getUtterance()
     {
-        return $this->getArgument('event')->text;
+        return $this->getSubject()->event->text;
     }
 
     public function mentions($user_id)
