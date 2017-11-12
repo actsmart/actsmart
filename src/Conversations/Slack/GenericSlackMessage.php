@@ -3,16 +3,15 @@
 namespace actsmart\actsmart\Conversations\Slack;
 
 use actsmart\actsmart\Conversations\Message;
-use actsmart\actsmart\Sensors\Slack\SlackEvent;
+use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Actuators\Slack\SlackStandardMessage;
-use actsmart\actsmart\Conversations\SlackResponseInterface;
 
 
-class GenericSlackMessage extends Message implements SlackMessageInterface
+class GenericSlackMessage extends Message implements SlackResponseInterface
 {
-    public function getSlackResponse(SlackEvent $e)
+    public function getSlackResponse(SensorEvent $e)
     {
-        $message = new SlackStandardMessage($e->getSubject()->event->channel);
+        $message = new SlackStandardMessage($e->getChannelId());
         $message->setText($this->getTextResponse());
         return $message;
     }
