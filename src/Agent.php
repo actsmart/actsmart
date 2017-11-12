@@ -141,12 +141,13 @@ class Agent
     /**
      * @param $action_id
      * @param $object
+     * @return mixed
      */
     public function performAction($action_id, $object)
     {
         foreach ($this->actions as $actuator => $actions) {
             if (in_array($action_id, $actions)) {
-                $this->getActuator($actuator)->perform($action_id, $object);
+                return $this->getActuator($actuator)->perform($action_id, $object);
             }
         }
     }
