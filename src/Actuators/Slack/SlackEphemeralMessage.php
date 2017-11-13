@@ -2,6 +2,12 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
+/**
+ * Class SlackEphemeralMessage
+ * @package actsmart\actsmart\Actuators\Slack
+ *
+ * An ephemeral message is only shown to the a single user within a channel.
+ */
 class SlackEphemeralMessage extends SlackMessage
 {
 

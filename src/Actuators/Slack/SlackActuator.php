@@ -9,6 +9,12 @@ use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerAwareTrait;
 
+/**
+ * Class SlackActuator
+ * @package actsmart\actsmart\Actuators\Slack
+ *
+ * Interacts with Slack to post messages.
+ */
 class SlackActuator implements ComponentInterface, LoggerAwareInterface, ActuatorInterface
 {
     use LoggerAwareTrait, ComponentTrait;
@@ -20,7 +26,6 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
     public function __construct()
     {
         $client = new Client();
-
         $this->client = $client;
     }
 

@@ -2,6 +2,12 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
+/**
+ * Class SlackDialog
+ * @package actsmart\actsmart\Actuators\Slack
+ *
+ * @todo - just a proof of concept for now - needs to provide generic tools for building dialogs.
+ */
 class SlackDialog
 {
     private $token;
