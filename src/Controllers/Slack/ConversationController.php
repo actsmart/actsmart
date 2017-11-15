@@ -6,6 +6,7 @@ use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Stores\ConfigurationStoreValueNotSetException;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
@@ -17,9 +18,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 {
     use ComponentTrait, LoggerAwareTrait;
 
-    const SLACK_ACTION_TYPE_BUTTON = 'button';
-    const SLACK_ACTION_TYPE_MENU = 'menu';
-
     /**
      * Implementation of listen function.
      *
@@ -29,6 +27,11 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     public function listen(GenericEvent $e)
     {
         if (!($e instanceOf SlackEvent)) {
+            return false;
+        }
+
+        // Make sure we have the tokens we need to communicate with the bot
+        if (!$this->checkForTokens($e)) {
             return false;
         }
 
@@ -205,6 +208,32 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         return $intent;
+    }
+
+    /**
+     * Checks if store.config has the token required and if not uses
+     * an actuator to retrieve it. Users of actSmart need to implement
+     * that actuator or set the token earlier in the store so the actuator
+     * is not required.
+     *
+     * @param GenericEvent $e
+     * @return bool
+     */
+    private function checkForTokens(GenericEvent $e)
+    {
+        // Tokens should be in the config store.
+        $config_store = $this->getAgent()->getStore('store.config');
+        $token = false;
+
+        // Try to retrieve the token and if not available invoke the actuator
+        // to populate the store with it.
+        try {
+            $token = $config_store->get('slack.oauth_token');
+        } catch(ConfigurationStoreValueNotSetException $exception) {
+            $this->getAgent()->performAction('action.slack.retrieve_oauth_token', $e);
+            $token = $config_store->get('oauth_token.slack');
+        }
+        return $token;
     }
 
     /**
