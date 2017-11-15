@@ -48,8 +48,9 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
         }
 
         if ($this->validateSlackMessage($slack_message)) {
-            $event = $this->process($slack_message);
-            $this->notify($event->getkey(), $event);
+            if ($event = $this->process($slack_message)) {
+                $this->notify($event->getkey(), $event);
+            }
         }
     }
 
@@ -74,7 +75,8 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                     break;
             }
         } catch (SlackEventTypeNotSupportedException $e) {
-            //
+            $this->logger->notice('Unsupported Slack message');
+            return null;
         }
     }
 
