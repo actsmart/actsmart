@@ -16,14 +16,11 @@ class SlackAgent extends Agent
 {
     private $slack_verification_token;
 
-    private $slack_oauth_token;
-
-    public function __construct(EventDispatcher $dispatcher, LoggerInterface $logger, $slack_verification_token, $slack_oauth_token)
+    public function __construct(EventDispatcher $dispatcher, LoggerInterface $logger, $slack_verification_token)
     {
         parent::__construct($dispatcher, $logger);
 
         $this->slack_verification_token = $slack_verification_token;
-        $this->slack_oauth_token = $slack_oauth_token;
 
         $this->configureForSlack();
     }
@@ -36,7 +33,7 @@ class SlackAgent extends Agent
         // We use a store to keep external config
         $config_store = new ConfigStore();
         $config_store->add('token.slack', $this->slack_verification_token);
-        $config_store->add('oauth_token.slack', $this->slack_oauth_token);
+        //$config_store->add('oauth_token.slack', $this->slack_oauth_token);
         $this->addComponent($config_store);
 
         // We need to pickup Slack events so need to add a Slack sensor
