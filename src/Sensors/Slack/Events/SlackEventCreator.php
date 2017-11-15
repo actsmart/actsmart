@@ -2,6 +2,8 @@
 
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
+use actsmart\actsmart\Sensors\Slack\SlackEventTypeNotSupportedException;
+
 class SlackEventCreator
 {
     /**
