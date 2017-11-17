@@ -121,6 +121,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back.
+
         $ts = isset($response->ts) ? $response->ts : $response->message_ts;
         $ci->setUpdateTs((int)explode('.', $ts)[0]);
 
