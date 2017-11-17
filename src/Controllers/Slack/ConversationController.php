@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Controllers\Slack;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
+use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
+use actsmart\actsmart\Sensors\Slack\Events\SlackMessageEvent;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Stores\ConfigurationStoreValueNotSetException;
@@ -47,6 +49,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     {
         // If we don't get a CI object back there is no ongoing conversation that matches. Bail out.
         if (!$ci=$this->ongoingConversation($e)) {
+            $this->logger->debug('Not an ongoing conversation.');
             return false;
         }
 
@@ -113,7 +116,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance($e, $intent, false);
+        $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
 
@@ -196,17 +199,18 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     private function determineEventIntent(SensorEvent $e)
     {
         $intent = null;
-        switch ($e->getSubject()) {
-            case 'interactive_message':
+        switch (true) {
+            case $e instanceof SlackInteractiveMessageEvent:
                 $intent = new Intent($e->getCallbackId(), $e, 1);
                 break;
-            case 'message':
+            case $e instanceof SlackMessageEvent:
                 $intent = $this->getAgent()->getInterpreter('interpreter.luis')->interpret($e);
                 break;
             default:
                 $intent = new Intent();
         }
 
+        $this->logger->debug('Created an intent', (array)$intent);
         return $intent;
     }
 
