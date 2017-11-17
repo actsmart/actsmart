@@ -22,7 +22,7 @@ class Utterance extends EdgeDirected
 
     private $action;
 
-    private $precondition;
+    private $preconditions = [];
 
     /* @var actsmart\actsmart\Interpreters\InterpreterInterface $interpreter */
     private $interpreter = null;
@@ -108,30 +108,21 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return ConditionInterface
+     * @return array
      */
-    public function getPrecondition()
+    public function getPreconditions()
     {
-        return $this->precondition;
+        return $this->preconditions;
     }
 
     /**
-     * @param ConditionInterface $precondition
+     * @param string $precondition
      * @return Utterance
      */
-    public function setPrecondition(ConditionInterface $precondition)
+    public function addPrecondition($precondition)
     {
-        $this->precondition = $precondition;
+        $this->preconditions[] = $precondition;
         return $this;
-    }
-
-    public function checkPrecondition(SensorEvent $e)
-    {
-        if (isset($this->precondition)) {
-            return $this->precondition->check($e);
-        }
-
-        return true;
     }
 
     public function changesScene()

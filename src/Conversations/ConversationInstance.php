@@ -2,9 +2,10 @@
 
 namespace actsmart\actsmart\Conversations;
 
+use actsmart\actsmart\Agent;
 use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class ConversationInstance
 {
@@ -257,14 +258,14 @@ class ConversationInstance
         $this->conversation_instance_store->save($this);
     }
 
-    public function getNextUtterance(SensorEvent $e, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, GenericEvent $e, Intent $default_intent, $ongoing = true)
     {
         // If the conversation is not ongoing we are dealing with a new conversation and just need to get
         // the next thing the bot should say based on what the user just said.
         // @todo Variable names and structure of this is too confusing.
 
         if (!$ongoing) {
-            return $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+            return $this->conversation->getNextUtterance($agent, $this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
         }
 
         // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was.

@@ -60,7 +60,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // If we can't figure out what is the next utterance bail out.
-        if (!$next_utterance = $ci->getNextUtterance($e, $default_intent)) {
+        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $default_intent)) {
             return false;
         }
 
@@ -85,7 +85,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         return true;
     }
 
-    public function handleNewConversation(SensorEvent $e)
+    public function handleNewConversation(GenericEvent $e)
     {
         /* @var \actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($e);
@@ -133,7 +133,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     /**
      * @param GenericEvent $e
      */
-    public function handleNothingMatched($e)
+    public function handleNothingMatched(GenericEvent $e)
     {
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $e, 1);
@@ -155,7 +155,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $ci->initConversation();
 
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance($e, $intent, false);
+        $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('actuator.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
 

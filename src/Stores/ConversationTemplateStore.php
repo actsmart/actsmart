@@ -8,6 +8,7 @@ use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
 {
@@ -43,14 +44,14 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(SensorEvent $e, Intent $intent)
+    public function getMatchingConversations(GenericEvent $e, Intent $intent)
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {
             $scene = $conversation->getInitialScene();
 
             // Check preconditions and if good then check interpreter
-            if ($scene->checkPreconditions($e)) {
+            if ($this->getAgent()->checkConditions($scene->getPreConditions(), $e)) {
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
                 if ($u->hasInterpreter()) {
@@ -79,7 +80,7 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * @param Intent $intent
      * @return mixed
      */
-    public function getMatchingConversation(SensorEvent $e, Intent $intent)
+    public function getMatchingConversation(GenericEvent $e, Intent $intent)
     {
         $matches = $this->getMatchingConversations($e, $intent);
 

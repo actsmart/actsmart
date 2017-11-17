@@ -2,11 +2,10 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use actsmart\actsmart\Sensors\SensorEvent;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 interface ConditionInterface
 {
-    public function check(SensorEvent $e);
+    public function check(GenericEvent $e);
 
-    public function getLabel();
 }

@@ -2,9 +2,13 @@
 
 namespace actsmart\actsmart\Conversations;
 
+use actsmart\actsmart\Agent;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
 use Fhaculty\Graph\Graph as Graph;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * A conversation is a Graph structure that describes the possible utterances
@@ -191,8 +195,10 @@ class Conversation extends Graph
                 $utterance->setCompletes($options['completes']);
             }
 
-            if (isset($options['precondition'])) {
-                $utterance->setPrecondition($options['precondition']);
+            if (isset($options['preconditions'])) {
+                foreach ($options['preconditions'] as $precondition) {
+                    $utterance->addPrecondition($precondition);
+                }
             }
         }
 
@@ -208,12 +214,20 @@ class Conversation extends Graph
         return $this->getScene($scene_id)->getAllUtterances();
     }
 
+    /**
+     * @return \Fhaculty\Graph\Vertex
+     */
     public function getInitialScene()
     {
         return $this->getScene(SELF::INITIAL_SCENE);
     }
 
-    public function addPreconditionToScene($scene_id, ConditionInterface $condition)
+    /**
+     * @param $scene_id
+     * @param $condition
+     * @return $this
+     */
+    public function addPreconditionToScene($scene_id, $condition)
     {
         $this->getScene($scene_id)->addPrecondition($condition);
         return $this;
@@ -226,9 +240,12 @@ class Conversation extends Graph
      * are all the replies within the scene from the receiver to the sender.
      *
      * @param $current_sequence
+     * @param $current_scene
+     * @param GenericEvent $e
+     * @param Agent $agent
      * @return array
      */
-    public function getPossibleFollowUps($current_sequence, $current_scene, SensorEvent $e)
+    public function getPossibleFollowUps(Agent $agent, $current_sequence, $current_scene, GenericEvent $e)
     {
         $current_utterance = $this->getUtteranceWithSequence($current_sequence);
 
@@ -266,7 +283,7 @@ class Conversation extends Graph
 
         // Before sending followups onwards check their preconditions
         foreach ($possible_followups as $followup) {
-            if ($followup->checkPrecondition($e)) {
+            if ($agent->checkConditions($followup->getPreconditions(), $e)) {
                 $followups_with_matching_preconditions[$followup->getSequence()] = $followup;
             }
         }
@@ -275,20 +292,20 @@ class Conversation extends Graph
     }
 
     /**
-     * Matching utterances are the ones that are viable based on a match of intention.
+     * Matching utterances are the ones that are a possible followup and match the intention.
      *
      * @param $current_sequence
      * @param SensorEvent $e
      * @param Intent $default_intent
      * @return array
      */
-    public function getMatchingUtterances($current_scene, $current_sequence, SensorEvent $e, $default_intent = null)
+    public function getMatchingUtterances(Agent $agent, $current_scene, $current_sequence, GenericEvent $e, $default_intent = null)
     {
         // Check each possible followup for a match
         $matching_followups = [];
 
         //@todo if we are checking against what the bot should say then matching intents might not be useful
-        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene, $e) as $followup) {
+        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene, $e, $agent) as $followup) {
             if ($followup->hasInterpreter()) {
                 if ($followup->intentMatches($followup->interpret($e))) {
                     $matching_followups[] = $followup;
@@ -309,10 +326,10 @@ class Conversation extends Graph
      * @param Intent $default_intent
      * @return bool
      */
-    public function getNextUtterance($current_scene, $sequence, SensorEvent $e, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, $current_scene, $sequence, SensorEvent $e, Intent $default_intent, $ongoing = true)
     {
-        $matching_utterances = $ongoing ? $this->getMatchingUtterances($current_scene, $sequence, $e, $default_intent)
-            :$this->getPossibleFollowUps($sequence, $current_scene, $e);
+        $matching_utterances = $ongoing ? $this->getMatchingUtterances($agent, $current_scene, $sequence, $e, $default_intent)
+            :$this->getPossibleFollowUps($agent, $sequence, $current_scene, $e);
 
         // We couldn't find any matching intent. Get out.
         if (count($matching_utterances) == 0) {
@@ -353,4 +370,5 @@ class Conversation extends Graph
     {
         return $this->getScene($scene_id)->getAllUtterancesKeyedBySequence();
     }
+
 }

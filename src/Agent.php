@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart;
 
+use actsmart\actsmart\Conversations\ConditionInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -35,6 +36,9 @@ class Agent
     /** @var array  */
     protected $interpreters = [];
 
+    /** @var array */
+    protected $conditions = [];
+
     /** @var EventDispatcher */
     protected $dispatcher;
 
@@ -54,6 +58,8 @@ class Agent
     {
         $this->dispatcher = $dispatcher;
         $this->logger = $logger;
+
+        // Add the conversation controller as a component
     }
 
     /**
@@ -82,6 +88,9 @@ class Agent
             case $component instanceof InterpreterInterface:
                 $this->interpreters[$component->getKey()] = $component;
                 break;
+            case $component instanceof ConditionInterface:
+                $this->conditions[$component->getKey()] = $component;
+                break;
         }
 
         //Inject the agent in the components.
@@ -90,6 +99,8 @@ class Agent
         $this->bindLogger($component);
         $this->bindDispatcher($component);
         $this->bindListener($component);
+
+        return $this;
     }
 
     /**
@@ -152,11 +163,33 @@ class Agent
         }
     }
 
+    /**
+     * @param $conditions
+     * @param $e
+     * @return bool
+     */
+    public function checkConditions($conditions, $e)
+    {
+        foreach ($conditions as $condition) {
+            if (!$this->conditions[$condition]->check($e)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Response $response
+     */
     public function setHttpReaction(Response $response)
     {
         $this->http_response = $response;
     }
 
+    /**
+     * @return Response
+     */
     public function httpReact()
     {
         if ($this->http_response == null) {

@@ -6,6 +6,7 @@ use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 interface ConversationTemplateStoreInterface
 {
@@ -33,7 +34,7 @@ interface ConversationTemplateStoreInterface
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(SensorEvent $e, Intent $intent);
+    public function getMatchingConversations(GenericEvent $e, Intent $intent);
 
     /**
      * Returns a single match - the first conversation that matchs for now.
@@ -44,7 +45,7 @@ interface ConversationTemplateStoreInterface
      * @param Intent $intent
      * @return mixed
      */
-    public function getMatchingConversation(SensorEvent $e, Intent $intent);
+    public function getMatchingConversation(GenericEvent $e, Intent $intent);
 
     /**
      * Creates the conversations objects this store will deal with.
