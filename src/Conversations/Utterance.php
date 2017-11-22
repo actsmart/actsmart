@@ -24,8 +24,7 @@ class Utterance extends EdgeDirected
 
     private $preconditions = [];
 
-    /* @var actsmart\actsmart\Interpreters\InterpreterInterface $interpreter */
-    private $interpreter = null;
+    private $interpreter;
 
     public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false)
     {
@@ -162,9 +161,14 @@ class Utterance extends EdgeDirected
         return false;
     }
 
-    public function setInterpreter(InterpreterInterface $interpreter)
+    public function setInterpreter($interpreter)
     {
         $this->interpreter = $interpreter;
+    }
+
+    public function getInterpreter()
+    {
+        return $this->interpreter;
     }
 
     public function hasInterpreter()
