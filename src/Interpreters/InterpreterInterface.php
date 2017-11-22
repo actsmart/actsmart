@@ -2,9 +2,9 @@
 
 namespace actsmart\actsmart\Interpreters;
 
-use actsmart\actsmart\Sensors\SensorEvent;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 interface InterpreterInterface
 {
-    public function interpret(SensorEvent $e);
+    public function interpret(GenericEvent $e);
 }

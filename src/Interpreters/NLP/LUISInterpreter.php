@@ -3,7 +3,8 @@ namespace actsmart\actsmart\Interpreters\NLP;
 
 use actsmart\actsmart\Interpreters\BaseInterpreter;
 use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\SensorEvent;
+use Symfony\Component\EventDispatcher\GenericEvent;
+use actsmart\actsmart\Sensors\UtteranceEvent;
 use GuzzleHttp\Client;
 
 class LUISInterpreter extends BaseInterpreter
@@ -37,21 +38,22 @@ class LUISInterpreter extends BaseInterpreter
     }
 
     /**
-     * @param SensorEvent $e
+     * @param GenericEvent $e
      * @return Intent
      */
-    public function interpret(SensorEvent $e)
+    public function interpret(GenericEvent $e)
     {
-        // Extract message
-        $message = $e->getUtterance();
-        $response = json_decode($this->queryLUISapp($message)->getBody()->getContents());
-        $intent = new Intent(
-            $response->topScoringIntent->intent,
-            $e,
-            $response->topScoringIntent->score
-        );
+        if ($e instanceof UtteranceEvent) {
+            $message = $e->getUtterance();
+            $response = json_decode($this->queryLUISapp($message)->getBody()->getContents());
+            return new Intent(
+                $response->topScoringIntent->intent,
+                $e,
+                $response->topScoringIntent->score
+            );
+        }
 
-        return $intent;
+        return new Intent();
     }
 
     /**
