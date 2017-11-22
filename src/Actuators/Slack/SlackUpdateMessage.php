@@ -2,10 +2,10 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use actsmart\actsmart\Sensors\Slack\SlackInteractiveMessageEvent;
+use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
 
 /**
- * When a user interacts with an action on a slack message attachement
+ * When a user interacts with an action on a Slack message attachement
  * we can reply with an updated message to display changes to the user. This
  * class provides functionality to "redraw" the original message and change it
  * as required.
@@ -21,9 +21,9 @@ class SlackUpdateMessage extends SlackMessage
     /** @var String - timestamp of the message to be updated **/
     private $ts;
 
-    public function __construct($token, $channel, $type, $ts)
+    public function __construct($channel, $type, $ts)
     {
-        parent::__construct($token, $channel, $type);
+        parent::__construct($channel, $type);
         $this->ts = $ts;
     }
 

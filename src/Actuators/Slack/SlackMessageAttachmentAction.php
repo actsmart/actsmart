@@ -33,11 +33,12 @@ class SlackMessageAttachmentAction
     private $min_query_length;
 
 
-    public function __construct($name = '', $text = '', $type = '', $value = '')
+    public function __construct($name = '', $text = '', $type = '', $value = '', $style = 'default')
     {
         $this->name = $name;
         $this->text = $text;
         $this->type = $type;
+        $this->style = $style;
         $this->value = $value;
     }
 
@@ -244,6 +245,7 @@ class SlackMessageAttachmentAction
         $this->name = $action->name;
         $this->text = $action->text;
         $this->type = $action->type;
+        $this->style = $action->style;
         $this->value = $action->value;
     }
 
@@ -253,7 +255,8 @@ class SlackMessageAttachmentAction
             'name' => $this->getName(),
             'text' => $this->getText(),
             'type' => $this->getType(),
-            'value' => $this->getValue(),
+            'style' => $this->getStyle(),
+            'value' => $this->getValue()
         ];
 
         // Need to handle callback values, differentiation of actions and make buttons idempotent

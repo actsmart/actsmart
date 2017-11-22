@@ -93,6 +93,15 @@ class SlackMessage
         return $this->attachments;
     }
 
+    public function hasAttachments()
+    {
+        if (count($this->attachments) >= 1) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getAttachmentsToPost()
     {
         $attachments_to_post = [];
@@ -131,6 +140,7 @@ class SlackMessage
             'as_user' => $this->sendingAsUser(),
             'attachments' => $this->getAttachmentsToPost(),
         ];
+
         return $message;
     }
 }
