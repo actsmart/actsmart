@@ -55,7 +55,7 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
                 if ($u->hasInterpreter()) {
-                    $intent = $u->interpret($e);
+                    $intent = $this->getAgent()->interpret($u->getInterpreter(), $e);
                 }
 
                 if ($u->intentMatches($intent)) {
