@@ -110,15 +110,17 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
         $ci->initConversation();
 
-        // Before getting the next utterance let us perform any actions related to the current utterance
+        // Before getting the next utterance let us perform any actions related to the current utterance.
+        // The action result is passed as an argument to a message.
+        $action_result = null;
         if ($action = $ci->getCurrentAction()) {
-            $this->getAgent()->performAction($action, $e);
+            $action_result = $this->getAgent()->performAction($action, $e);
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
-        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
+        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e, $action_result));
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back.
 
@@ -217,9 +219,10 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
     /**
      * Checks if store.config has the token required and if not uses
-     * an actuator to retrieve it. Users of actSmart need to implement
-     * that actuator or set the token earlier in the store so the actuator
-     * is not required.
+     * an actuator to retrieve it.
+     *
+     * Users of actSmart need to implement that actuator or set the token
+     * earlier in the store so the actuato is not required.
      *
      * @param GenericEvent $e
      * @return bool
