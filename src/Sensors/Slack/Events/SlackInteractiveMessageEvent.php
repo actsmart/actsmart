@@ -111,11 +111,16 @@ class SlackInteractiveMessageEvent extends SlackEvent
     public function getActionPerformed()
     {
         // @todo assuming just one and always in an interactive message
-        return $this->getMessage()->actions[0];
+        return $this->getSubject()->actions[0];
+    }
+
+    public function getActionPerformedValue()
+    {
+        return $this->getSubject()->actions[0]->value;
     }
 
     public function getTextMessage()
     {
-        return $this->getMessage()->original_message->text;
+        return $this->getSubject()->original_message->text;
     }
 }
