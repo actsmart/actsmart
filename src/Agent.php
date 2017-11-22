@@ -3,6 +3,7 @@
 namespace actsmart\actsmart;
 
 use actsmart\actsmart\Conversations\ConditionInterface;
+use actsmart\actsmart\Interpreters\Intent;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -175,8 +176,18 @@ class Agent
                 return false;
             }
         }
-
         return true;
+    }
+
+    public function interpret($interpreter_key, $e)
+    {
+        foreach ($this->interpreters as $key => $interpreter) {
+            if ($interpreter_key == $key) {
+                return $interpreter->interpret($e);
+            }
+        }
+
+        return new Intent();
     }
 
     /**
