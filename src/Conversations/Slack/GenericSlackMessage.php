@@ -9,7 +9,7 @@ use actsmart\actsmart\Actuators\Slack\SlackStandardMessage;
 
 class GenericSlackMessage extends Message implements SlackResponseInterface
 {
-    public function getSlackResponse(SensorEvent $e)
+    public function getSlackResponse(SensorEvent $e, $action_result = null)
     {
         $message = new SlackStandardMessage($e->getChannelId());
         $message->setText($this->getTextResponse());
