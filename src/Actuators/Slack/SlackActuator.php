@@ -29,17 +29,24 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
     {
         $client = new Client();
         $this->client = $client;
+
     }
 
     /**
+     * The SlackActuator determines the type of slack message so as to call the apporpriate Slack API endpoint.
+     *
      * @param $action
-     * @param $message
+     * @param SlackMessage $message
      * @return mixed
      */
-    public function perform($action, $message)
+    public function perform(string $action, $message)
     {
+        if ($action != 'action.slack.postmessage') {
+            return null;
+        }
+
         $this->headers = [
-            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('oauth_token.slack'),
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $message->getWorkspace(), 'bot_token'),
             'Content-Type' => 'application/json; charset=utf-8',
         ];
 

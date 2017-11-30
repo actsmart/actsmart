@@ -14,9 +14,9 @@ class SlackEphemeralMessage extends SlackMessage
     // The user this ephemeral message should appear to
     private $user;
 
-    public function __construct($channel, $type, $user)
+    public function __construct($channel, $user)
     {
-        parent::__construct($channel, $type);
+        parent::__construct($channel);
         $this->user = $user;
     }
 

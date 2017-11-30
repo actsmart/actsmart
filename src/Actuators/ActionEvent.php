@@ -14,7 +14,7 @@ class ActionEvent extends GenericEvent
 {
     protected $event_key;
 
-    public function __construct($subject, $arguments, $event_key = 'event.action.generic')
+    public function __construct($subject = null, array $arguments = array(), $event_key = 'event.action.generic')
     {
         parent::__construct($subject, $arguments);
         $this->event_key = $event_key;

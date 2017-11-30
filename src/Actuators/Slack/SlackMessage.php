@@ -10,14 +10,22 @@ namespace actsmart\actsmart\Actuators\Slack;
  */
 class SlackMessage
 {
+    /* Channel in which to post the message. */
     private $channel;
 
+    /* Workspace the channel belongs to. */
+    private $workspace;
+
+    /* The message text. */
     private $text = null;
 
+    /* Whether to post the message as the authenticated user or as a bot. */
     private $as_user = false;
 
+    /* Attachments to the message see SlackMEssageAttachment. */
     private $attachments= [];
 
+    /* Whether to find and link names and channels that may appear in the message. */
     private $link_names = true;
 
     /* @see https://api.slack.com/docs/message-formatting#message_formatting */
@@ -27,9 +35,10 @@ class SlackMessage
     private $response_url;
 
 
-    public function __construct($channel)
+    public function __construct($channel, $workspace)
     {
         $this->channel = $channel;
+        $this->workspace = $workspace;
     }
 
     public function setChannel($channel)
@@ -43,6 +52,26 @@ class SlackMessage
         return $this->channel;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
+
+    /**
+     * @param $text
+     * @return $this
+     */
     public function setText($text)
     {
         // Escape &, <, > characters
@@ -50,17 +79,27 @@ class SlackMessage
         return $this;
     }
 
+    /**
+     * @return null|string
+     */
     public function getText()
     {
         return $this->text;
     }
-    
+
+    /**
+     * @param $as_user
+     * @return $this
+     */
     public function sendAsUser($as_user)
     {
         $this->as_user = $as_user;
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function sendingAsUser()
     {
         return $this->as_user;
