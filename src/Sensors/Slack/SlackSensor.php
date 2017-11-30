@@ -55,6 +55,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
     }
 
     /**
+     * Process the slack message and creates an appropriate Slack event based on the message type.
      * @param $slack_message
      * @return Events\SlackEvent|null
      */
@@ -96,7 +97,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
      */
     private function validateSlackMessage($slack_message)
     {
-        if ($slack_message->token != $this->agent->getStore('store.config')->get('token.slack')) {
+        if ($slack_message->token != $this->agent->getStore('store.config')->get('slack', 'app.token')) {
             throw new SlackMessageInvalidException("Could not validate Slack Message");
         } else {
             return true;

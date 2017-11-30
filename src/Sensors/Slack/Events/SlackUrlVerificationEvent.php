@@ -8,7 +8,7 @@ class SlackUrlVerificationEvent extends SlackEvent
 {
     const EVENT_KEY = 'event.slack.url_verification';
 
-    public function __construct($subject, $arguments)
+    public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
     }

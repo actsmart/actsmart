@@ -22,7 +22,7 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     private $attachments;
 
-    public function __construct($subject, $arguments)
+    public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
         $this->callback_id = $subject->callback_id;

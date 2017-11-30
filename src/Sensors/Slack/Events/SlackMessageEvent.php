@@ -18,7 +18,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     private $channel_id = null;
 
-    public function __construct($subject, $arguments)
+    public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
 
