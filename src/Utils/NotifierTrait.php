@@ -21,7 +21,7 @@ trait NotifierTrait
     protected $dispatcher;
 
     /**
-     * Sets a dispatcher
+     * Sets a dispatcher.
      *
      * $param NotifierInterface $dispatcher
      */
@@ -31,6 +31,7 @@ trait NotifierTrait
     }
 
     /**
+     * Uses the dispatcher to sent an event.
      * @param GenericEvent $e
      */
     public function notify($event_key, GenericEvent $e)
