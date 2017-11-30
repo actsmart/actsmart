@@ -8,7 +8,6 @@ use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackMessageEvent;
 use actsmart\actsmart\Conversations\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Stores\ConfigurationStoreValueNotSetException;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
@@ -29,11 +28,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     public function listen(GenericEvent $e)
     {
         if (!($e instanceOf SlackEvent)) {
-            return false;
-        }
-
-        // Make sure we have the tokens we need to communicate with the bot
-        if (!$this->checkForTokens($e)) {
             return false;
         }
 
@@ -120,7 +114,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
-        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e, $action_result));
+        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e->getChannelId(), $e->getWorkspaceId(), $action_result));
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back.
 
@@ -217,32 +211,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         return $intent;
     }
 
-    /**
-     * Checks if store.config has the token required and if not uses
-     * an actuator to retrieve it.
-     *
-     * Users of actSmart need to implement that actuator or set the token
-     * earlier in the store so the actuato is not required.
-     *
-     * @param GenericEvent $e
-     * @return bool
-     */
-    private function checkForTokens(GenericEvent $e)
-    {
-        // Tokens should be in the config store.
-        $config_store = $this->getAgent()->getStore('store.config');
-        $token = false;
-
-        // Try to retrieve the token and if not available invoke the actuator
-        // to populate the store with it.
-        try {
-            $token = $config_store->get('slack.oauth_token');
-        } catch(ConfigurationStoreValueNotSetException $exception) {
-            $this->getAgent()->performAction('action.slack.retrieve_oauth_token', $e);
-            $token = $config_store->get('oauth_token.slack');
-        }
-        return $token;
-    }
 
     /**
      * @return string
