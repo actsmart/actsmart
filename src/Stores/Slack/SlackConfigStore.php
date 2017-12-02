@@ -32,7 +32,7 @@ class SlackConfigStore extends ConfigStore
                     return;
                 } else {
                     $workspace_id = explode('_', $event->getArgument('topic'))[1];
-                    $this->getAgent()->performAction('action.slack.getbotinfo', $workspace_id);
+                    $this->getAgent()->performAction('action.slack.getbotinfo', ['workspace_id' => $workspace_id]);
                 }
             }
         }
