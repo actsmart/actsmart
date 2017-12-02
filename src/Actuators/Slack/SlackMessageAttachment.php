@@ -429,9 +429,9 @@ class SlackMessageAttachment
      */
     public function rebuildAttachment($attachment)
     {
-        $this->callback_id = isset($attachment->callback_id) ? $attachment->callback_id : null;
-        $this->title = isset($attachment->title) ? $attachment->title : null;
-        $this->fallback = isset($attachment->fallback) ? $attachment->fallback : null;
+        $this->callback_id = $attachment->callback_id ?? null;
+        $this->title = $attachment->title ?? null;
+        $this->fallback = $attachment->fallback ?? null;
 
         if (isset($attachment->fields)) {
             foreach ($attachment->fields as $field) {

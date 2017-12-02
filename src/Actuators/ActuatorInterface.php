@@ -7,10 +7,10 @@ interface ActuatorInterface
 {
     /**
      * @param $action_id - the identifier of the action to perform.
-     * @param $object - an object relevant to the action to be perform.
+     * @param $arguments - a set of arguments the action will required in order to execute.
      * @return mixed
      */
-    public function perform(string $action_id, $object);
+    public function perform(string $action_id, $arguments = []);
 
     /**
      * @return array - an array of action ids.

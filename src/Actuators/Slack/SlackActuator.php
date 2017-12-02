@@ -39,34 +39,34 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
      * @param SlackMessage $message
      * @return mixed
      */
-    public function perform(string $action, $message)
+    public function perform(string $action, $arguments = [])
     {
-        if ($action != 'action.slack.postmessage') {
+        if ($action != 'action.slack.postmessage' || !isset($arguments['message'])) {
             return null;
         }
 
         $this->headers = [
-            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $message->getWorkspace(), 'bot_token'),
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $arguments['message']->getWorkspace(), 'bot_token'),
             'Content-Type' => 'application/json; charset=utf-8',
         ];
 
         $response = null;
 
         // Determine the type
-        if ($message instanceof SlackEphemeralMessage) {
-            $response = $this->postEphemeral($message);
+        if ($arguments['message'] instanceof SlackEphemeralMessage) {
+            $response = $this->postEphemeral($arguments['message']);
         }
 
-        if ($message instanceof SlackStandardMessage) {
-            $response = $this->postStandard($message);
+        if ($arguments['message'] instanceof SlackStandardMessage) {
+            $response = $this->postStandard($arguments['message']);
         }
 
-        if ($message instanceof SlackUpdateMessage) {
-            $response = $this->postUpdate($message);
+        if ($arguments['message'] instanceof SlackUpdateMessage) {
+            $response = $this->postUpdate($arguments['message']);
         }
 
-        if ($message instanceof SlackDialog) {
-            $response = $this->postDialog($message);
+        if ($arguments['message'] instanceof SlackDialog) {
+            $response = $this->postDialog($arguments['message']);
         }
 
 
