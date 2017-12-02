@@ -12,9 +12,9 @@ class GenericSlackMessage extends Message implements SlackResponseInterface
      * This extends the default Conversation Message object to inject slack-specific support
      * for generic text message.
      *
-     * @param string $channel
-     * @param string $workspace
-     * @param mixed $action_data
+     * @param string $channel - the channel to post the message.
+     * @param string $workspace - the workspace to post the message in.
+     * @param mixed $action_data - the result of an action that can be used to format a message.
      * @return SlackStandardMessage
      */
     public function getSlackResponse(string $channel, string $workspace, $action_data = null)
