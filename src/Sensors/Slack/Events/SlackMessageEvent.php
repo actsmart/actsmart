@@ -2,12 +2,13 @@
 
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
-use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
-use Illuminate\Support\Facades\Log;
+use actsmart\actsmart\Utils\RegularExpressionHelper;
 
 class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 {
+    use RegularExpressionHelper;
+
     const EVENT_NAME = 'event.slack.message';
 
     private $workspace_id = null;
@@ -40,10 +41,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     public function mentions($user_id)
     {
-        if (strpos($this->getUtterance(), $user_id)) {
-            return true;
-        }
-        return false;
+        return $this->userNameMentioned($this->getUtterance(), $user_id);
     }
 
     /**
