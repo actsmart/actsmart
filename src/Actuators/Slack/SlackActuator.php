@@ -19,17 +19,16 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 {
     use LoggerAwareTrait, ComponentTrait;
 
-    const SLACK_BASE_URI = 'https://slack.com/api/';
-
     private $headers = [];
 
     private $client;
+
+    private $slack_base_uri;
 
     public function __construct()
     {
         $client = new Client();
         $this->client = $client;
-
     }
 
     /**
@@ -49,6 +48,8 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
             'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $arguments['message']->getWorkspace(), 'bot_token'),
             'Content-Type' => 'application/json; charset=utf-8',
         ];
+
+        $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
 
         $response = null;
 
@@ -89,7 +90,7 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
         $this->logger->debug('Attempting to post a Standard message.');
 
         return $this->client->request('POST',
-            self::SLACK_BASE_URI . 'chat.postMessage', [
+            $this->slack_base_uri . 'chat.postMessage', [
                 'headers' => $this->headers,
                 'json' => $message->getMessageToPost()
             ]);
@@ -104,7 +105,7 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
         $this->logger->debug('Attempting to post an ephemeral message.');
 
         return $this->client->request('POST',
-            self::SLACK_BASE_URI . 'chat.postEphemeral',[
+            $this->slack_base_uri . 'chat.postEphemeral',[
             'headers' => $this->headers,
             'json' => $message->getMessageToPost()
         ]);
