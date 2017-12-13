@@ -15,13 +15,18 @@ use Psr\Log\LoggerInterface;
 
 class SlackAgent extends Agent
 {
+    // The verification token associated with the Slack app we will be using.
     private $slack_verification_token;
 
-    public function __construct(EventDispatcher $dispatcher, LoggerInterface $logger, $slack_verification_token)
+    // The base uri for the Slack api - useful to manage for testing, proxying, etc.
+    private $slack_base_uri;
+
+    public function __construct(EventDispatcher $dispatcher, LoggerInterface $logger, string $slack_verification_token, string $slack_base_uri)
     {
         parent::__construct($dispatcher, $logger);
 
         $this->slack_verification_token = $slack_verification_token;
+        $this->slack_base_uri = $slack_base_uri;
 
         $this->configureForSlack();
     }
@@ -34,6 +39,7 @@ class SlackAgent extends Agent
         // We use a store to keep external config
         $config_store = new SlackConfigStore();
         $config_store->add('slack', 'app.token', $this->slack_verification_token);
+        $config_store->add('slack', 'uri.base', $this->slack_base_uri);
         $this->addComponent($config_store);
 
         // We need to pickup Slack events so need to add a Slack sensor
