@@ -5,12 +5,14 @@ namespace actsmart\actsmart\Controllers\Slack;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Response;
 
-class URLVerificationController implements ListenerInterface, ComponentInterface
+class URLVerificationController implements ListenerInterface, ComponentInterface, LoggerAwareInterface
 {
-    use ComponentTrait;
+    use ComponentTrait, LoggerAwareTrait;
 
     public function listen(GenericEvent $e)
     {
@@ -22,6 +24,8 @@ class URLVerificationController implements ListenerInterface, ComponentInterface
                 )
             );
         }
+
+        $this->getAgent()->httpReact()->send();
 
         // We have an actual response so let's stop propagation and allow the Agent to react directly.
         $e->stopPropagation();
