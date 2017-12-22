@@ -155,11 +155,11 @@ class Agent
      * @param $object
      * @return mixed
      */
-    public function performAction($action_id, $object)
+    public function performAction($action_id, $arguments = [])
     {
         foreach ($this->actions as $actuator => $actions) {
             if (in_array($action_id, $actions)) {
-                return $this->getActuator($actuator)->perform($action_id, $object);
+                return $this->getActuator($actuator)->perform($action_id, $arguments);
             }
         }
     }
@@ -201,10 +201,10 @@ class Agent
     /**
      * @return Response
      */
-    public function httpReact()
+    public function httpReact($status = Response::HTTP_OK)
     {
         if ($this->http_response == null) {
-            return new Response('', Response::HTTP_OK, ['content-type' => 'text/html']);
+            return new Response('', $status, ['content-type' => 'text/html']);
         }
         return $this->http_response;
     }
