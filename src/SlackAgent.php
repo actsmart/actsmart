@@ -21,12 +21,16 @@ class SlackAgent extends Agent
     // The base uri for the Slack api - useful to manage for testing, proxying, etc.
     private $slack_base_uri;
 
-    public function __construct(EventDispatcher $dispatcher, LoggerInterface $logger, string $slack_verification_token, string $slack_base_uri)
+    // Set to true if we should reply immediately to Slack callbacks (to avoid duplicated events) - set to false for debugging other parts of the application.
+    private $slack_reply_early;
+
+    public function __construct(EventDispatcher $dispatcher, LoggerInterface $logger, string $slack_verification_token, string $slack_base_uri, bool $slack_reply_early = null)
     {
         parent::__construct($dispatcher, $logger);
 
         $this->slack_verification_token = $slack_verification_token;
         $this->slack_base_uri = $slack_base_uri;
+        $this->slack_reply_early = $slack_reply_early;
 
         $this->configureForSlack();
     }
@@ -40,6 +44,8 @@ class SlackAgent extends Agent
         $config_store = new SlackConfigStore();
         $config_store->add('slack', 'app.token', $this->slack_verification_token);
         $config_store->add('slack', 'uri.base', $this->slack_base_uri);
+        $config_store->add('slack', 'reply_early', $this->slack_reply_early);
+
         $this->addComponent($config_store);
 
         // We need to pickup Slack events so need to add a Slack sensor
