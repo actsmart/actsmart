@@ -103,22 +103,47 @@ class SlackInteractiveMessageEvent extends SlackEvent
         return $this->response_url;
     }
 
+    /**
+     * @return attachments.
+     */
     public function getAttachments()
     {
         return $this->attachments;
     }
 
+    /**
+     * Returns all the details associated with the action performed - typically name, type and value.
+     * @return mixed
+     */
     public function getActionPerformed()
     {
         // @todo assuming just one and always in an interactive message
         return $this->getSubject()->actions[0];
     }
 
+    /**
+     * Gets just the value associated with the action perfromed.
+     * @return mixed
+     */
     public function getActionPerformedValue()
     {
         return $this->getSubject()->actions[0]->value;
     }
 
+    /**
+     * The name of the action performed.
+     * @return mixed
+     */
+    public function getActionName()
+    {
+        return $this->getSubject()->actions[0]->name;
+    }
+
+    /**
+     * The text associated with the attachment that was the source of the action.
+     * 
+     * @return mixed
+     */
     public function getTextMessage()
     {
         return $this->getSubject()->original_message->text;
