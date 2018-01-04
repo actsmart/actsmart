@@ -196,6 +196,7 @@ class Agent
     public function setHttpReaction(Response $response)
     {
         $this->http_response = $response;
+        return $this;
     }
 
     /**
