@@ -48,8 +48,8 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
         }
 
         if ($this->validateSlackMessage($slack_message)) {
-            if ($this->getAgent()->getStore('store.config')->get('slack', 'reply_early')) {
-                // Reply to Slack so we don't get a retry.
+            if ($this->getAgent()->getStore('store.config')->get('slack', 'reply_early') && ($slack_message->type != 'url_verification')) {
+                // Reply to Slack so we don't get a retry unless it's a URL verification event.
                 $this->getAgent()->httpReact()->send();
             }
 
