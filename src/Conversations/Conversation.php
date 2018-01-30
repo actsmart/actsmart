@@ -253,7 +253,7 @@ class Conversation extends Graph
 
         $possible_followups = [];
 
-        // We are interested in utterances where the receiver of the currenct utterance is replying to the
+        // We are interested in utterances where the receiver of the current utterance is replying to the
         // current sender.
         $sender_receiver_tracker = $current_utterance->getReceiver() . $current_utterance->getSender();
 
