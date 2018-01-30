@@ -4,6 +4,7 @@ namespace actsmart\actsmart;
 
 use actsmart\actsmart\Conversations\ConditionInterface;
 use actsmart\actsmart\Interpreters\Intent;
+use Mockery\Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -36,6 +37,9 @@ class Agent
 
     /** @var array  */
     protected $interpreters = [];
+
+    /** @var InterpreterInterface */
+    protected $default_conversation_interpreter;
 
     /** @var array */
     protected $conditions = [];
@@ -130,7 +134,30 @@ class Agent
      */
     public function getInterpreter($key)
     {
+        if (!isset($this->interpreters[$key])) {
+            throw new InterpretDoesNotExistException('No interpret with key ' . $key . ' exists.');
+        }
+
         return $this->interpreters[$key];
+    }
+
+    /**
+     * @return InterpreterInterface
+     */
+    public function getDefaultConversationInterpreter()
+    {
+        if (!isset($this->default_conversation_interpreter)) {
+            throw new DefaultInterpreterNotDefinedException('This agent does not have a default interpreter defined.');
+        }
+        return $this->default_conversation_interpreter;
+    }
+
+    /**
+     * @param $key
+     */
+    public function setDefaultConversationInterpreter($key)
+    {
+        $this->default_conversation_interpreter = $this->getInterpreter($key);
     }
 
     /**

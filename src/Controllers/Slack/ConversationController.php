@@ -49,7 +49,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         // Set up a default intent
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $default_intent = $this->getAgent()->getInterpreter('interpreter.luis')->interpret($e);
+        $intent = $this->determineEventIntent($e);
 
         // Before getting the next utterance let us perform any actions related to the current utterance
         if ($action = $ci->getCurrentAction()) {
@@ -57,7 +57,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // If we can't figure out what is the next utterance bail out.
-        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $default_intent)) {
+        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent)) {
             return false;
         }
 
@@ -98,7 +98,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             $this->getAgent()->getStore('store.conversation_templates'),
             $e->getWorkspaceId(),
             $e->getUserId(),
-            $e->getChannelid(),
+            $e->getChannelId(),
             $e->getTimestamp(),
             $e->getTimestamp());
 
@@ -215,7 +215,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
                 $intent = new Intent($e->getCallbackId(), $e, 1);
                 break;
             case $e instanceof SlackMessageEvent:
-                $intent = $this->getAgent()->getInterpreter('interpreter.luis')->interpret($e);
+                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
                 break;
             default:
                 $intent = new Intent();
