@@ -13,7 +13,7 @@ class BasicMessageInterpreter extends BaseInterpreter
 
     private $hello = ['hello', 'howdy', 'hi', 'how are you'];
 
-    public function interpret($e)
+    public function interpret(GenericEvent $e)
     {
         if ($e instanceof UtteranceEvent) {
             $message = $e->getUtterance();
