@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Interpreters;
 
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class BasicMessageInterpreter extends BaseInterpreter
 {
