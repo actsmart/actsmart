@@ -40,11 +40,29 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
     public function receive(SymfonyRequest $message)
     {
         $this->logger->debug('Got a message: ' . $message->getContent());
-        $slack_message = json_decode($message->getContent());
+        $this->logger->debug($message->getContentType());
 
-        if ($slack_message == null) {
-            // Let us try and see if it is one of those that come as a payload.
-            $slack_message = json_decode(urldecode($message->get('payload')));
+        switch ($message->getContentType()) {
+            case 'json':
+                $slack_message = json_decode($message->getContent());
+                break;
+            case 'form':
+                // If we are getting form content it is either json stuffed in the payload attribute
+                // or as actual form content
+                $this->logger->debug(implode($message->request->all()));
+
+                if ($message->get('paylod') != null) {
+                    $slack_message = json_decode(urldecode($message->get('payload')));
+                } else {
+                    $slack_message = (object)$message->request->all();
+                    // Add a command type for commands.
+                    if (isset($slack_message->command)) {
+                        $slack_message->type = 'command';
+                    }
+                }
+                break;
+            default:
+                return false;
         }
 
         if ($this->validateSlackMessage($slack_message)) {
@@ -79,6 +97,8 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                 case 'interactive_message':
                     return $this->event_creator->createEvent($slack_message->type, $slack_message);
                     break;
+                case 'command':
+                    return $this->event_creator->createEvent($slack_message->type, $slack_message);
             }
         } catch (SlackEventTypeNotSupportedException $e) {
             $this->logger->notice('Unsupported Slack message');

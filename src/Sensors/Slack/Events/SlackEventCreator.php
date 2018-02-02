@@ -14,6 +14,7 @@ class SlackEventCreator
         'url_verification' => SlackUrlVerificationEvent::class,
         'message' => SlackMessageEvent::class,
         'interactive_message' => SlackInteractiveMessageEvent::class,
+        'command' => SlackCommandEvent::class,
     ];
 
     /**
