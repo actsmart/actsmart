@@ -51,7 +51,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                 // or as actual form content
                 $this->logger->debug(implode($message->request->all()));
 
-                if ($message->get('paylod') != null) {
+                if ($message->get('payload') != null) {
                     $slack_message = json_decode(urldecode($message->get('payload')));
                 } else {
                     $slack_message = (object)$message->request->all();
@@ -62,6 +62,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                 }
                 break;
             default:
+                $this->logger->debug('Could not get message content.');
                 return false;
         }
 
