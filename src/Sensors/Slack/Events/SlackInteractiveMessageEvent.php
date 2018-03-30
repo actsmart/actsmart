@@ -122,12 +122,18 @@ class SlackInteractiveMessageEvent extends SlackEvent
     }
 
     /**
-     * Gets just the value associated with the action perfromed.
+     * Gets just the value associated with the action performed - assumes one selection or one action.
      * @return mixed
      */
     public function getActionPerformedValue()
     {
-        return $this->getSubject()->actions[0]->value;
+        if (isset($this->getSubject()->actions[0]->value)) {
+            return $this->getSubject()->actions[0]->value;
+        }
+
+        if (isset($this->getSubject()->actions[0]->selected_options)) {
+            return $this->getSubject()->actions[0]->selected_options[0]->value;
+        }
     }
 
     /**
