@@ -40,7 +40,6 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
     public function receive(SymfonyRequest $message)
     {
         $this->logger->debug('Got a message: ' . $message->getContent());
-        $this->logger->debug($message->getContentType());
 
         switch ($message->getContentType()) {
             case 'json':
