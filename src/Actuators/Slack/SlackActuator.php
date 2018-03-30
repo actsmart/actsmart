@@ -27,8 +27,7 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
     public function __construct()
     {
-        $client = new Client();
-        $this->client = $client;
+        $this->client = new Client();
     }
 
     /**

@@ -259,6 +259,14 @@ class SlackMessageAttachmentAction
             'value' => $this->getValue()
         ];
 
+        if ($type = 'select') {
+            if (count($this->option_groups) > 0) {
+                $action['option_groups'] = $this->getOptionGroups();
+            } elseif (count($this->options) > 0) {
+                $action['options'] = $this->getOptions();
+            }
+        }
+
         // Need to handle callback values, differentiation of actions and make buttons idempotent
         return $action;
     }
