@@ -13,7 +13,7 @@ class SlackMessageAttachment
 
     private $pretext;
 
-    private $authorname;
+    private $author_name;
 
     private $author_link;
 
@@ -102,16 +102,16 @@ class SlackMessageAttachment
      */
     public function getAuthorname()
     {
-        return $this->authorname;
+        return $this->author_name;
     }
 
     /**
      * @param mixed $authorname
      * @return SlackMessageAttachment
      */
-    public function setAuthorname($authorname)
+    public function setAuthorname($author_name)
     {
-        $this->authorname = $authorname;
+        $this->author_name = $author_name;
         return $this;
     }
 
@@ -432,6 +432,9 @@ class SlackMessageAttachment
         $this->callback_id = $attachment->callback_id ?? null;
         $this->title = $attachment->title ?? null;
         $this->fallback = $attachment->fallback ?? null;
+        $this->author_icon = $attachment->author_icon ?? null;
+        $this->author_link = $attachment->author_link ?? null;
+        $this->author_name = $attachment->author_name ?? null;
 
         if (isset($attachment->fields)) {
             foreach ($attachment->fields as $field) {
