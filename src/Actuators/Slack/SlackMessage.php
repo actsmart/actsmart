@@ -74,8 +74,11 @@ class SlackMessage
      */
     public function setText($text)
     {
+        $args = func_get_args();
+        array_shift($args);
+
         // Escape &, <, > characters
-        $this->text = htmlspecialchars($text, ENT_NOQUOTES);
+        $this->text = vsprintf(htmlspecialchars($text, ENT_NOQUOTES), $args);
         return $this;
     }
 
