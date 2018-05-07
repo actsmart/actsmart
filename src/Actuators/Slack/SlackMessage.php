@@ -69,16 +69,17 @@ class SlackMessage
     }
 
     /**
-     * @param $text
+     * Sets text for a standard slack message. The main text is escaped as per Slack API requirements
+     * https://api.slack.com/docs/message-formatting#how_to_escape_characters
+     *
+     * @param $format - main message text
+     * @param array $args - replaced in format
      * @return $this
      */
-    public function setText($text)
+    public function setText($format, $args = array())
     {
-        $args = func_get_args();
-        array_shift($args);
-
         // Escape &, <, > characters
-        $this->text = vsprintf(htmlspecialchars($text, ENT_NOQUOTES), $args);
+        $this->text = vsprintf(htmlspecialchars($format, ENT_NOQUOTES), $args);
         return $this;
     }
 
