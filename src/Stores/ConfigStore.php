@@ -53,7 +53,8 @@ class ConfigStore implements ComponentInterface, StoreInterface, ListenerInterfa
      * Listens to events and registers the required info.
      * @param GenericEvent $e
      */
-    public function listen(GenericEvent  $e) {
+    public function listen(GenericEvent  $e)
+    {
         if ($e instanceof ActionEvent) {
             $subject = $e->getSubject();
             foreach ($subject as $topic =>  $content) {
@@ -64,7 +65,8 @@ class ConfigStore implements ComponentInterface, StoreInterface, ListenerInterfa
         }
     }
 
-    public function listensForEvents() {
+    public function listensForEvents()
+    {
         return ['event.action.config.info', 'config.store.request'];
     }
 

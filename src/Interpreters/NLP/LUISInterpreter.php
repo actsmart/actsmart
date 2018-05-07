@@ -85,5 +85,4 @@ class LUISInterpreter extends BaseInterpreter
     {
         return 'interpreter.luis';
     }
-
 }

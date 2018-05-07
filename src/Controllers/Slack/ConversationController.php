@@ -28,7 +28,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      */
     public function listen(GenericEvent $e)
     {
-        if (!($e instanceOf SlackEvent)) {
+        if (!($e instanceof SlackEvent)) {
             return false;
         }
 

@@ -16,7 +16,7 @@ class URLVerificationController implements ListenerInterface, ComponentInterface
 
     public function listen(GenericEvent $e)
     {
-        if ($e->getSubject()->token == $this->agent->getStore('store.config')->get('slack','app.token')) {
+        if ($e->getSubject()->token == $this->agent->getStore('store.config')->get('slack', 'app.token')) {
             $this->agent->setHttpReaction(
                 new Response($e->getSubject()->challenge,
                     Response::HTTP_OK,
