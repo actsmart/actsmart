@@ -16,8 +16,7 @@ class ContextStore implements ComponentInterface, ListenerInterface, StoreInterf
 
     public function listen(GenericEvent $a)
     {
-        if ($a instanceof ActionEvent)
-        {
+        if ($a instanceof ActionEvent) {
             foreach ($a->getSubject() as $key => $value) {
                 $this->context_info[$key] = $value;
             }

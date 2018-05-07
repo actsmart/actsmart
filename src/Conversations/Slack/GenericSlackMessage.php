@@ -5,7 +5,6 @@ namespace actsmart\actsmart\Conversations\Slack;
 use actsmart\actsmart\Conversations\Message;
 use actsmart\actsmart\Actuators\Slack\SlackStandardMessage;
 
-
 class GenericSlackMessage extends Message implements SlackResponseInterface
 {
     /**

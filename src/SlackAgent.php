@@ -62,7 +62,5 @@ class SlackAgent extends Agent
 
         // The Slack actuator that sends messages to Slack.
         $this->addComponent(new SlackActuator());
-
     }
-
 }

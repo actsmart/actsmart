@@ -104,7 +104,7 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
         $this->logger->debug('Attempting to post an ephemeral message.');
 
         return $this->client->request('POST',
-            $this->slack_base_uri . 'chat.postEphemeral',[
+            $this->slack_base_uri . 'chat.postEphemeral', [
             'headers' => $this->headers,
             'json' => $message->getMessageToPost()
         ]);

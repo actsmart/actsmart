@@ -370,5 +370,4 @@ class Conversation extends Graph
     {
         return $this->getScene($scene_id)->getAllUtterancesKeyedBySequence();
     }
-
 }

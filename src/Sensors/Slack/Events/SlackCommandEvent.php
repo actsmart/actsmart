@@ -157,5 +157,4 @@ class SlackCommandEvent extends SlackEvent implements UtteranceEvent
     {
         return time();
     }
-
 }

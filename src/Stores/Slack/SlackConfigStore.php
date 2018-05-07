@@ -27,7 +27,7 @@ class SlackConfigStore extends ConfigStore
 
         if ($event instanceof ConfigRequestEvent) {
             // Check if the topic is a slack workspace
-            if(in_array('slackworkspace', explode('_', $event->getArgument('topic')))) {
+            if (in_array('slackworkspace', explode('_', $event->getArgument('topic')))) {
                 if ((isset($this->configuration[$event->getArgument('topic')][$event->getArgument('key')]))) {
                     return;
                 } else {
@@ -36,7 +36,5 @@ class SlackConfigStore extends ConfigStore
                 }
             }
         }
-
     }
-
 }
