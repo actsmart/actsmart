@@ -76,7 +76,7 @@ class SlackMessage
      * @param array $args - replaced in format
      * @return $this
      */
-    public function setText($format, $args = array())
+    public function setText($format, $args = [])
     {
         // Escape &, <, > characters
         $this->text = vsprintf(htmlspecialchars($format, ENT_NOQUOTES), $args);

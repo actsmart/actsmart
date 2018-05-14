@@ -19,6 +19,9 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 {
     use LoggerAwareTrait, ComponentTrait;
 
+    const STANDARD_MESSAGE = 'postMessage';
+    const EPHEMERAL_MESSAGE = 'postEphemeral';
+
     private $headers = [];
 
     private $client;
@@ -31,10 +34,10 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
     }
 
     /**
-     * The SlackActuator determines the type of slack message so as to call the apporpriate Slack API endpoint.
+     * The SlackActuator determines the type of Slack message so as to call the apporpriate Slack API endpoint.
      *
      * @param $action
-     * @param SlackMessage $message
+     * @param array $arguments
      * @return mixed
      */
     public function perform(string $action, $arguments = [])
@@ -54,11 +57,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
         // Determine the type
         if ($arguments['message'] instanceof SlackEphemeralMessage) {
-            $response = $this->postEphemeral($arguments['message']);
+            $response = $this->postMessage($arguments['message'], SlackActuator::EPHEMERAL_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackStandardMessage) {
-            $response = $this->postStandard($arguments['message']);
+            $response = $this->postMessage($arguments['message'], SlackActuator::STANDARD_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackUpdateMessage) {
@@ -82,29 +85,15 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
     /**
      * @param SlackMessage $message
+     * @param String $type
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    public function postStandard(SlackMessage $message)
+    protected function postMessage(SlackMessage $message, $type)
     {
-        $this->logger->debug('Attempting to post a Standard message.');
+        $this->logger->debug(sprintf('Attempting a message of type: %s.', $type));
 
         return $this->client->request('POST',
-            $this->slack_base_uri . 'chat.postMessage', [
-                'headers' => $this->headers,
-                'json' => $message->getMessageToPost()
-            ]);
-    }
-
-    /**
-     * @param SlackMessage $message
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     */
-    public function postEphemeral(SlackMessage $message)
-    {
-        $this->logger->debug('Attempting to post an ephemeral message.');
-
-        return $this->client->request('POST',
-            $this->slack_base_uri . 'chat.postEphemeral', [
+            $this->slack_base_uri . 'chat.'. $type ,[
             'headers' => $this->headers,
             'json' => $message->getMessageToPost()
         ]);
