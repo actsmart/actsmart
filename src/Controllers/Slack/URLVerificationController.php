@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Controllers\Slack;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
+use actsmart\actsmart\Utils\ListenerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class URLVerificationController implements ListenerInterface, ComponentInterface, LoggerAwareInterface
 {
-    use ComponentTrait, LoggerAwareTrait;
+    use ComponentTrait, LoggerAwareTrait, ListenerTrait;
 
     public function listen(GenericEvent $e)
     {

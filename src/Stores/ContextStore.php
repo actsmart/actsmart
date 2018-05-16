@@ -6,11 +6,12 @@ use actsmart\actsmart\Actuators\ActionEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
+use actsmart\actsmart\Utils\ListenerTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class ContextStore implements ComponentInterface, ListenerInterface, StoreInterface
 {
-    use ComponentTrait;
+    use ComponentTrait, ListenerTrait;
 
     private $context_info = [];
 
