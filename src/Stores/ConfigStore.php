@@ -6,6 +6,7 @@ use actsmart\actsmart\Actuators\ActionEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
+use actsmart\actsmart\Utils\ListenerTrait;
 use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -20,7 +21,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class ConfigStore implements ComponentInterface, StoreInterface, ListenerInterface, NotifierInterface
 {
-    use ComponentTrait, NotifierTrait;
+    use ComponentTrait, NotifierTrait, ListenerTrait;
 
     protected $configuration = [];
 

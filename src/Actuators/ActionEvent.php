@@ -4,9 +4,6 @@ namespace actsmart\actsmart\Actuators;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * Class ActionEvent
- * @package actsmart\actsmart\Actions
- *
  * Some actuators may raise ActionEvents that will carry information about what the actuator just did to store within
  * the application context.
  */

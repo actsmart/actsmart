@@ -72,6 +72,12 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
             }
 
             if ($event = $this->process($slack_message)) {
+                // Send event to interpreter
+
+                // Extract any relevant information and store in context store
+
+
+                // Notify subscribers of the event
                 $this->notify($event->getkey(), $event);
             }
         }
@@ -92,7 +98,8 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                 case 'event_callback':
                     // If it is an event callback then we need to check whether the message has a subtype as well
                     $message_type = isset($slack_message->event->subtype) ? $slack_message->event->subtype : $slack_message->event->type;
-                    return $this->event_creator->createEvent($message_type, $slack_message);
+                    $event = $this->event_creator->createEvent($message_type, $slack_message);
+                    return $event;
                     break;
                 case 'interactive_message':
                     return $this->event_creator->createEvent($slack_message->type, $slack_message);

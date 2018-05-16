@@ -4,7 +4,6 @@ namespace actsmart\actsmart;
 
 use actsmart\actsmart\Conversations\ConditionInterface;
 use actsmart\actsmart\Interpreters\Intent;
-use Mockery\Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -206,6 +205,11 @@ class Agent
         return true;
     }
 
+    /**
+     * @param $interpreter_key
+     * @param $e
+     * @return Intent
+     */
     public function interpret($interpreter_key, $e)
     {
         foreach ($this->interpreters as $key => $interpreter) {
@@ -255,7 +259,7 @@ class Agent
     private function listenForEvents(ListenerInterface $listener)
     {
         foreach ($listener->listensForEvents() as $event_key) {
-            $this->dispatcher->addListener($event_key, array($listener, 'listen'));
+            $this->dispatcher->addListener($event_key, array($listener, 'listen'), $listener->getPriority());
         }
     }
 
