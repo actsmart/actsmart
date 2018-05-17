@@ -65,8 +65,8 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
 
     /**
      * Process the slack message and creates an appropriate Slack event based on the message type.
-     * @param $slack_message
-     * @return Events\SlackEvent|null
+     * @param string $facebook_message
+     * @return Events\FacebookEvent|null
      */
     public function process($facebook_message)
     {
@@ -75,7 +75,6 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
                 return $this->event_creator->createEvent('url_verification', $facebook_message);
             }
             if (isset($facebook_message->entry[0]->messaging)) {
-                dump('hi');
                 return $this->event_creator->createEvent('messages', $facebook_message->entry[0]);
             }
 
@@ -95,9 +94,9 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
 
 
     /**
-     * @param $slack_message
+     * @param $facebook_message
+     * @param $original_request
      * @return bool
-     * @throws \Exception
      */
     private function validateFacebookMessage($facebook_message, $original_request)
     {

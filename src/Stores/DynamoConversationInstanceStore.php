@@ -2,10 +2,10 @@
 
 namespace actsmart\actsmart\Stores;
 
+use actsmart\actsmart\Conversations\Slack\ConversationInstance;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use Aws\DynamoDb\DynamoDbClient;
-use actsmart\actsmart\Conversations\ConversationInstance;
 
 class DynamoConversationInstanceStore implements ComponentInterface, StoreInterface
 {

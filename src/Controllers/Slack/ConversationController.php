@@ -2,13 +2,13 @@
 
 namespace actsmart\actsmart\Controllers\Slack;
 
+use actsmart\actsmart\Conversations\Slack\ConversationInstance;
+use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackCommandEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackMessageEvent;
-use actsmart\actsmart\Conversations\ConversationInstance;
-use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
