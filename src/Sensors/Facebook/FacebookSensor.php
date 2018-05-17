@@ -64,7 +64,7 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
     }
 
     /**
-     * Process the slack message and creates an appropriate Slack event based on the message type.
+     * Process the facebook message and creates an appropriate Facebook event based on the message type.
      * @param string $facebook_message
      * @return Events\FacebookEvent|null
      */

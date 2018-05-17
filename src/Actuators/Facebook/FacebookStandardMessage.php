@@ -3,10 +3,7 @@
 namespace actsmart\actsmart\Actuators\Facebook;
 
 /**
- * Class SlackMessage
- * @package actsmart\actsmart\Actuators\Slack
- *
- * @see https://api.slack.com/methods/chat.postMessage
+ * @see https://developers.facebook.com/docs/messenger-platform/reference/send-api
  */
 class FacebookStandardMessage extends FacebookMessage
 {
