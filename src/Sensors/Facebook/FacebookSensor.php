@@ -36,16 +36,19 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
 
     /**
      * @param SymfonyRequest $message
+     * @return bool
+     * @throws \Exception
      */
     public function receive(SymfonyRequest $message)
     {
         $this->logger->debug('Got a message: ' . $message->getContent());
-        switch ($message->getContentType()) {
-            case 'json' && $message->getMethod() == 'POST':
-                $facebook_message = json_decode($message->getContent());
-                break;
-            case $message->getMethod() == 'GET':
+        switch ($message->getMethod()) {
+            case 'GET':
                 $facebook_message = (object)$message->request->all();
+                break;
+            case 'POST':
+                // Removed the check for json
+                $facebook_message = json_decode($message->getContent());
                 break;
             default:
                 $this->logger->debug('Could not get message content.');
@@ -54,7 +57,6 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
 
         if ($this->validateFacebookMessage($facebook_message, $message)) {
             if ($event = $this->process($facebook_message)) {
-                dd($event);
                 // Notify subscribers of the event
                 $this->notify($event->getkey(), $event);
             }
