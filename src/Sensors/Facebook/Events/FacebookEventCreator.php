@@ -13,6 +13,7 @@ class FacebookEventCreator
      */
     public $facebook_event_map = [
         'url_verification' => FacebookUrlVerificationEvent::class,
+        'messages' => FacebookMessageEvent::class
     ];
 
     /**

@@ -41,21 +41,10 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
     {
         $this->logger->debug('Got a message: ' . $message->getContent());
         switch ($message->getContentType()) {
-            case 'json':
+            case 'json' && $message->getMethod() == 'POST':
                 $facebook_message = json_decode($message->getContent());
                 break;
-            case 'form':
-                // If we are getting form content it is either json stuffed in the payload attribute
-                // or as actual form content
-                $this->logger->debug(implode($message->request->all()));
-
-                if ($message->get('payload') != null) {
-                    $facebook_message = json_decode(urldecode($message->get('payload')));
-                } else {
-                    $facebook_message = (object)$message->request->all();
-                }
-                break;
-            case null:
+            case $message->getMethod() == 'GET':
                 $facebook_message = (object)$message->request->all();
                 break;
             default:
@@ -63,10 +52,9 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
                 return false;
         }
 
-        if ($this->validateFacebookMessage($facebook_message)) {
-
+        if ($this->validateFacebookMessage($facebook_message, $message)) {
             if ($event = $this->process($facebook_message)) {
-
+                dd($event);
                 // Notify subscribers of the event
                 $this->notify($event->getkey(), $event);
             }
@@ -81,9 +69,14 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
     public function process($facebook_message)
     {
         try {
-            if ($facebook_message->hub_mode == 'subscribe') {
+            if (isset($facebook_message->hub_mode) && $facebook_message->hub_mode == 'subscribe') {
                 return $this->event_creator->createEvent('url_verification', $facebook_message);
             }
+            if (isset($facebook_message->entry[0]->messaging)) {
+                dump('hi');
+                return $this->event_creator->createEvent('messages', $facebook_message->entry[0]);
+            }
+
         } catch (FacebookEventTypeNotSupportedException $e) {
             $this->logger->notice('Unsupported Facebook message');
             return null;
@@ -104,12 +97,18 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
      * @return bool
      * @throws \Exception
      */
-    private function validateFacebookMessage($facebook_message)
+    private function validateFacebookMessage($facebook_message, $original_request)
     {
-        if ($facebook_message->hub_verify_token != $this->agent->getStore('store.config')->get('facebook', 'app.token')) {
-            throw new FacebookMessageInvalidException("Could not validate Facebook Message");
+        if (isset($facebook_message->hub_verify_toke)) {
+            if ($facebook_message->hub_verify_token != $this->agent->getStore('store.config')->get('facebook', 'app.token')) {
+                throw new FacebookMessageInvalidException("Could not validate Facebook Message");
+            } else {
+                return true;
+            }
         } else {
+            //@todo SHA1 verification on original request - https://developers.facebook.com/docs/messenger-platform/webhook#security
             return true;
         }
+
     }
 }
