@@ -77,7 +77,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
         $response = $this->getAgent()->getActuator('actuator.facebook')->perform('action.facebook.postmessage', [
-            'message' => $next_utterance->getMessage()->getFacebookResponse($e->getRecipientId(), $action_result ?? $e)
+            'message' => $next_utterance->getMessage()->getFacebookResponse($e->getSenderId(), $action_result ?? $e)
         ]);
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back and provide a fallback..

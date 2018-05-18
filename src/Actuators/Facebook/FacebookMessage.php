@@ -73,7 +73,6 @@ class FacebookMessage
     public function getMessageToPost()
     {
         $message = [
-            'messaging_type' => $this->messageType,
             'recipient' => [
                 'id' => $this->recipientId
             ],

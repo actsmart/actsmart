@@ -98,6 +98,8 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
     }
 
     /**
+     * Gets the access token from the config store and appends to the uri
+     *
      * @return mixed
      */
     protected function getBaseUri()
