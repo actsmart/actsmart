@@ -70,11 +70,28 @@ class FacebookMessage
         $this->response_url = $response_url;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getRecipientId()
+    {
+        return $this->recipientId;
+    }
+
+    /**
+     * @param mixed $recipientId
+     */
+    public function setRecipientId($recipientId): void
+    {
+        $this->recipientId = $recipientId;
+    }
+
+    // TODO - all messages follow the same basic structure, so we shouldn't repeat this so much
     public function getMessageToPost()
     {
         $message = [
             'recipient' => [
-                'id' => $this->recipientId
+                'id' => $this->getRecipientId()
             ],
             'message' => [
                 'text' => $this->getText()
@@ -82,5 +99,34 @@ class FacebookMessage
         ];
 
         return $message;
+    }
+
+    public function getTypingOnMessage()
+    {
+        return $this->getSenderAction('typing_on');
+    }
+
+    public function getTypingOffMessage()
+    {
+        return $this->getSenderAction('typing_off');
+    }
+
+    public function getMarkSeenMessage()
+    {
+        return $this->getSenderAction('mark_seen');
+    }
+
+    /**
+     * @param $action
+     * @return array
+     */
+    protected function getSenderAction($action): array
+    {
+        return [
+            'recipient' => [
+                'id' => $this->getRecipientId()
+            ],
+            'sender_action' => $action
+        ];
     }
 }

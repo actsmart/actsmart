@@ -156,7 +156,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     }
 
     /**
-     * Builds an apporpriate Intent object based on the event that should generate the Intent.
+     * Builds an appropriate Intent object based on the event that should generate the Intent.
      *
      * @param SensorEvent $e
      * @return Intent|null
@@ -166,7 +166,13 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $intent = null;
         switch (true) {
             case $e instanceof FacebookMessageEvent:
-                $intent = new Intent($e->getText(), $e, 1);
+                if ($e->getAttachmentType()) {
+                    $intent = new Intent($e->getAttachmentType(), 1);
+                } else if ($e->getPostback()) {
+                    $intent = new Intent($e->getPostback(), 1);
+                } else {
+                    $intent = new Intent($e->getText(), $e, 1);
+                }
                 break;
             default:
                 $intent = new Intent();
@@ -175,7 +181,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $this->logger->debug('Created an intent', (array)$intent);
         return $intent;
     }
-
 
     /**
      * @return string

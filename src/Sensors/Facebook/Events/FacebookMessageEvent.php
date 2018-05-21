@@ -23,6 +23,13 @@ class FacebookMessageEvent extends FacebookEvent
 
     protected $text;
 
+    // TODO - need to work out if there can be multiple attachments or not
+    protected $attachment;
+
+    protected $attachmentType;
+
+    protected $postback;
+
     public function __construct($subject, $arguments)
     {
         parent::__construct($subject, $arguments, $this::EVENT_NAME);
@@ -36,6 +43,11 @@ class FacebookMessageEvent extends FacebookEvent
         $this->mid = $subject->messaging[0]->message->mid ?? null;
         $this->seq = $subject->messaging[0]->message->seq ?? null;
         $this->text = $subject->messaging[0]->message->text ?? null;
+
+        $this->attachment = $subject->messaging[0]->message->attachments[0] ?? null;
+        $this->attachmentType = $subject->messaging[0]->message->attachments[0]->type ?? null;
+
+        $this->postback = $subject->messaging[0]->postback->payload ?? null;
     }
 
     public function getKey()
@@ -107,4 +119,18 @@ class FacebookMessageEvent extends FacebookEvent
         return $this->text;
     }
 
+    public function getAttachmentType()
+    {
+        return $this->attachmentType;
+    }
+
+    public function getAttachment()
+    {
+        return $this->attachment;
+    }
+
+    public function getPostback()
+    {
+        return $this->postback;
+    }
 }

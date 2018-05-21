@@ -5,8 +5,8 @@ namespace actsmart\actsmart\Actuators\Facebook;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
-use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
 /**
@@ -74,11 +74,14 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
     {
         $this->logger->debug('Attempting a facebook message.');
 
+        $this->sendTypingOnMessage($message);
+        $this->sendTypingOffMessage($message);
+
         return $this->client->request('POST',
-            $this->base_uri ,[
-            'headers' => $this->headers,
-            'json' => $message->getMessageToPost()
-        ]);
+            $this->base_uri, [
+                'headers' => $this->headers,
+                'json' => $message->getMessageToPost()
+            ]);
     }
 
     /**
@@ -108,5 +111,34 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
         $accessToken = $this->getAgent()->getStore('store.config')->get('facebook', 'access.token');
 
         return sprintf("%s?access_token=%s", $baseUri, $accessToken);
+    }
+
+    /**
+     * Sends a message to set the sender action of typing_on to the user to show that a message is being constructed
+     *
+     * @param FacebookMessage $message
+     */
+    protected function sendTypingOnMessage(FacebookMessage $message): void
+    {
+        $this->client->request('POST',
+            $this->base_uri, [
+                'headers' => $this->headers,
+                'json' => $message->getTypingOnMessage()
+            ]);
+    }
+
+    /**
+     * Sends a message to set the sender action of typing_off to the user to show that the message has finished being
+     * constructed
+     *
+     * @param FacebookMessage $message
+     */
+    protected function sendTypingOffMessage(FacebookMessage $message): void
+    {
+        $this->client->request('POST',
+            $this->base_uri, [
+                'headers' => $this->headers,
+                'json' => $message->getTypingOffMessage()
+            ]);
     }
 }
