@@ -8,8 +8,8 @@ use actsmart\actsmart\Controllers\Facebook\URLVerificationController;
 use actsmart\actsmart\Sensors\Facebook\Events\FacebookEventCreator;
 use actsmart\actsmart\Sensors\Facebook\FacebookSensor;
 use actsmart\actsmart\Stores\ConfigStore;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class FacebookAgent extends Agent
 {

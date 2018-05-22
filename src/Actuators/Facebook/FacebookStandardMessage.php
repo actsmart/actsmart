@@ -10,6 +10,7 @@ class FacebookStandardMessage extends FacebookMessage
     const CONTENT_TYPE   = "content_type";
     const QUICK_REPLIES  = 'quick_replies';
     const MESSAGE        = 'message';
+
     /**
      * Quick replies can only be added to standard text messages
      * @see https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies
@@ -23,6 +24,13 @@ class FacebookStandardMessage extends FacebookMessage
     {
         $this->quickReplies[] = [
             self::CONTENT_TYPE => 'location'
+        ];
+    }
+
+    public function addEmailButton()
+    {
+        $this->quickReplies[] = [
+            self::CONTENT_TYPE => 'user_email'
         ];
     }
 
@@ -56,7 +64,9 @@ class FacebookStandardMessage extends FacebookMessage
     public function getMessageToPost()
     {
          $message = parent::getMessageToPost();
-         $message[self::MESSAGE][self::QUICK_REPLIES] = $this->quickReplies;
+         if ($this->quickReplies) {
+             $message[self::MESSAGE][self::QUICK_REPLIES] = $this->quickReplies;
+         }
          return $message;
     }
 }

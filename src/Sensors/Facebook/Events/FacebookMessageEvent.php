@@ -30,6 +30,10 @@ class FacebookMessageEvent extends FacebookEvent
 
     protected $postback;
 
+    protected $referral;
+
+    protected $quickReplyPayload;
+
     public function __construct($subject, $arguments)
     {
         parent::__construct($subject, $arguments, $this::EVENT_NAME);
@@ -48,6 +52,10 @@ class FacebookMessageEvent extends FacebookEvent
         $this->attachmentType = $subject->messaging[0]->message->attachments[0]->type ?? null;
 
         $this->postback = $subject->messaging[0]->postback->payload ?? null;
+
+        $this->referral = $subject->messaging[0]->referral->ref ?? null;
+
+        $this->quickReplyPayload = $subject->messaging[0]->message->quick_reply->payload ?? null;
     }
 
     public function getKey()
@@ -132,5 +140,15 @@ class FacebookMessageEvent extends FacebookEvent
     public function getPostback()
     {
         return $this->postback;
+    }
+
+    public function getReferral()
+    {
+        return $this->referral;
+    }
+
+    public function getQuickReplyPayload()
+    {
+        return $this->quickReplyPayload;
     }
 }

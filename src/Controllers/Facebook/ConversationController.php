@@ -12,6 +12,7 @@ use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\In;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -166,11 +167,20 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $intent = null;
         switch (true) {
             case $e instanceof FacebookMessageEvent:
-                if ($e->getAttachmentType()) {
+                if ($e->getReferral()) {
+                    $intent = new Intent($e->getReferral(), 1);
+                } else if ($e->getAttachmentType()) {
                     $intent = new Intent($e->getAttachmentType(), 1);
                 } else if ($e->getPostback()) {
-                    $intent = new Intent($e->getPostback(), 1);
-                } else {
+                    if (str_contains($e->getPostback(), 'view')) {
+                        $intent = new Intent('VIEW_STORE', 1);
+                    } else {
+                        $intent = new Intent($e->getPostback(), 1);
+                    }
+                } else if ($e->getQuickReplyPayload()) {
+                    $intent = new Intent($e->getQuickReplyPayload(), $e, 1);
+                }
+                else {
                     $intent = new Intent($e->getText(), $e, 1);
                 }
                 break;

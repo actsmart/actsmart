@@ -7,17 +7,7 @@ namespace actsmart\actsmart\Actuators\Facebook;
  */
 class FacebookCarouselMessage extends FacebookMessage
 {
-    private $elements;
-
-    public function getElements()
-    {
-        return $this->elements;
-    }
-
-    public function addElement(FacebookElement $element)
-    {
-        $this->elements[] = $element;
-    }
+    use HasElements;
 
     public function getMessageToPost()
     {
@@ -30,7 +20,7 @@ class FacebookCarouselMessage extends FacebookMessage
                     'type' => 'template',
                     "payload" => [
                         "template_type" => 'generic',
-                        "elements" => $this->getElements()
+                        "elements" => json_encode($this->getElements())
                     ]
                 ]
             ]
