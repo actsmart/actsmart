@@ -435,6 +435,7 @@ class SlackMessageAttachment
         $this->author_icon = $attachment->author_icon ?? null;
         $this->author_link = $attachment->author_link ?? null;
         $this->author_name = $attachment->author_name ?? null;
+        $this->color = $attachment->color ?? null;
 
         if (isset($attachment->fields)) {
             foreach ($attachment->fields as $field) {
