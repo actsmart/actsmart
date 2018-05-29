@@ -62,6 +62,7 @@ class SlackUpdateMessage extends SlackMessage
      */
     public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
     {
+        $this->setText($e->getTextMessage());
         foreach ($e->getAttachments() as $attachment) {
             $new_attachment = new SlackMessageAttachment();
             $new_attachment->rebuildAttachment($attachment);
