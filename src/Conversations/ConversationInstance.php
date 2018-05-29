@@ -9,8 +9,11 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 
 class ConversationInstance
 {
-    /* @var actsmart/actsmart/Conversations/Conversation $conversation */
+    /* @var Conversation $conversation */
     private $conversation;
+
+    /* @var ConversationTemplateStore $conversation_store */
+    private $conversation_store;
 
     /**
      * @var string - an identified for the conversation template

@@ -28,7 +28,6 @@ class BasicMessageInterpreter extends BaseInterpreter
             if ($this->wordsMentioned($message, [$this->hello])) {
                 return new Intent('Hello', $e, 1);
             }
-
         }
 
         // Return an empty Intent if nothing matches.
@@ -39,7 +38,8 @@ class BasicMessageInterpreter extends BaseInterpreter
     {
     }
 
-    public function getKey() {
+    public function getKey()
+    {
         return ('interpreter.basic');
     }
 }

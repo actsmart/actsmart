@@ -19,6 +19,12 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     private $channel_id = null;
 
+    /**
+     * The type of channel that the event originated from - https://api.slack.com/events/message.channels
+     * @var null
+     */
+    private $channel_type = null;
+
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
@@ -27,6 +33,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
         $this->user_id = isset($subject->event->user) ? $subject->event->user : null;
         $this->timestamp= isset($subject->event_time) ? $subject->event_time : null;
         $this->channel_id = isset($subject->event->channel) ? $subject->event->channel : null;
+        $this->channel_type = isset($subject->event->channel_type) ? $subject->event->channel_type : null;
     }
 
     public function getKey()
@@ -74,5 +81,13 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
     public function getChannelId()
     {
         return $this->channel_id;
+    }
+
+    /**
+     * @return null
+     */
+    public function getChannelType()
+    {
+        return $this->channel_type;
     }
 }

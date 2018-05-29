@@ -5,7 +5,7 @@ namespace actsmart\actsmart\Actuators\Slack;
 use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
 
 /**
- * When a user interacts with an action on a Slack message attachement
+ * When a user interacts with an action on a Slack message attachment
  * we can reply with an updated message to display changes to the user. This
  * class provides functionality to "redraw" the original message and change it
  * as required.

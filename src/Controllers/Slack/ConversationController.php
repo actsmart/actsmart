@@ -12,13 +12,14 @@ use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
+use actsmart\actsmart\Utils\ListenerTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 class ConversationController implements ComponentInterface, ListenerInterface, LoggerAwareInterface
 {
-    use ComponentTrait, LoggerAwareTrait;
+    use ComponentTrait, LoggerAwareTrait, ListenerTrait;
 
     /**
      * Implementation of listen function.
@@ -28,7 +29,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      */
     public function listen(GenericEvent $e)
     {
-        if (!($e instanceOf SlackEvent)) {
+        if (!($e instanceof SlackEvent)) {
             return false;
         }
 
@@ -242,4 +243,5 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     {
         return ['event.slack.message', 'event.slack.interactive_message', 'event.slack.command'];
     }
+
 }

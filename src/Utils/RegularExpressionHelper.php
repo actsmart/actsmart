@@ -52,7 +52,8 @@ trait RegularExpressionHelper
         return $mentioned;
     }
 
-    private function createCaptureGroup($words) {
-        return '(' . implode("|", $words ) . ')';
+    private function createCaptureGroup($words)
+    {
+        return '(' . implode("|", $words) . ')';
     }
 }

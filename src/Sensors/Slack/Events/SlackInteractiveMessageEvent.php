@@ -147,7 +147,7 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     /**
      * The text associated with the attachment that was the source of the action.
-     * 
+     *
      * @return mixed
      */
     public function getTextMessage()
