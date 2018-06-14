@@ -53,7 +53,11 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
 
         $response = null;
 
-        $response = $this->postMessage($arguments['message']);
+        if (is_array($arguments['message'])) {
+            $response = $this->postMultipleMessages($arguments['message']);
+        } else {
+            $response = $this->postMessage($arguments['message']);
+        }
 
 
         if ($response) {
@@ -82,6 +86,19 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
                 'headers' => $this->headers,
                 'json' => $message->getMessageToPost()
             ]);
+    }
+
+    /**
+     * @param FacebookMessage[] $messages
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
+    private function postMultipleMessages(array $messages)
+    {
+        foreach ($messages as $message) {
+            $response = $this->postMessage($message);
+        }
+
+        return $response;
     }
 
     /**
