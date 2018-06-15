@@ -84,6 +84,19 @@ class SlackMessage
     }
 
     /**
+     * Sets text for a standard slack message.
+     *
+     * @param $format - main message text
+     * @param array $args - replaced in format
+     * @return $this
+     */
+    public function setEncodedText($format, $args = [])
+    {
+        $this->text = vsprintf($format, $args);
+        return $this;
+    }
+
+    /**
      * @return null|string
      */
     public function getText()
