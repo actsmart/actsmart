@@ -78,10 +78,10 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
     {
         $this->logger->debug('Attempting a facebook message.');
 
-        $this->sendMarkSeenMessage($message);
-        $this->sendTypingOnMessage($message);
-        sleep(1);
-        $this->sendTypingOffMessage($message);
+//        $this->sendMarkSeenMessage($message);
+//        $this->sendTypingOnMessage($message);
+//        sleep(1);
+//        $this->sendTypingOffMessage($message);
 
         return $this->client->request('POST',
             $this->base_uri, [
