@@ -54,11 +54,18 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
         $response = null;
 
         if (is_array($arguments['message'])) {
+            $this->sendMarkSeenMessage($arguments['message'][0]);
+            $this->sendTypingOnMessage($arguments['message'][0]);
+            sleep(1);
+            $this->sendTypingOffMessage($arguments['message'][0]);
             $response = $this->postMultipleMessages($arguments['message']);
         } else {
+            $this->sendMarkSeenMessage($arguments['message']);
+            $this->sendTypingOnMessage($arguments['message']);
+            sleep(1);
+            $this->sendTypingOffMessage($arguments['message']);
             $response = $this->postMessage($arguments['message']);
         }
-
 
         if ($response) {
             // @todo - handle failures and throw appropriate exceptions.
@@ -77,11 +84,6 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
     protected function postMessage(FacebookMessage $message)
     {
         $this->logger->debug('Attempting a facebook message.');
-
-        $this->sendMarkSeenMessage($message);
-        $this->sendTypingOnMessage($message);
-        sleep(1);
-        $this->sendTypingOffMessage($message);
 
         return $this->client->request('POST',
             $this->base_uri, [
