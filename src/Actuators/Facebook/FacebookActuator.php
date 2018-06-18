@@ -78,7 +78,9 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
     {
         $this->logger->debug('Attempting a facebook message.');
 
+        $this->sendMarkSeenMessage($message);
         $this->sendTypingOnMessage($message);
+        sleep(1);
         $this->sendTypingOffMessage($message);
 
         return $this->client->request('POST',
@@ -128,6 +130,20 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
         $accessToken = $this->getAgent()->getStore('store.config')->get('facebook', 'access.token');
 
         return sprintf("%s?access_token=%s", $baseUri, $accessToken);
+    }
+
+    /**
+     * Sends a message to set the sender action of typing_on to the user to show that a message is being constructed
+     *
+     * @param FacebookMessage $message
+     */
+    protected function sendMarkSeenMessage(FacebookMessage $message): void
+    {
+        $this->client->request('POST',
+            $this->base_uri, [
+                'headers' => $this->headers,
+                'json' => $message->getMarkSeenMessage()
+            ]);
     }
 
     /**
