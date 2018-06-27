@@ -16,11 +16,20 @@ class SlackDialog
 
     private $callback_id;
 
-    public function __construct($token, $trigger_id, $callback_id)
+    private $workspace;
+
+    private $elements;
+
+    private $title;
+
+    private $submit_label;
+
+    public function __construct($token, $trigger_id, $callback_id, $workspace)
     {
         $this->token = $token;
         $this->trigger_id = $trigger_id;
         $this->callback_id = $callback_id;
+        $this->workspace = $workspace;
     }
 
     public function getDialogToPost()
@@ -30,18 +39,12 @@ class SlackDialog
             'trigger_id' => $this->getTriggerId(),
             'dialog' => json_encode([
                 'callback_id' => $this->getCallbackId(),
-                'title' => 'Just a test',
-                'submit_label' => 'Request',
-                'elements' => [
-                    [
-                        'type' => 'text',
-                        'label' => 'Label A',
-                        'name' => 'label_a'
-                    ],
-                ],
+                'title' => $this->title,
+                'submit_label' => $this->submit_label,
+                'elements' => $this->elements,
             ])
-
         ];
+
         return $form_params;
     }
 
@@ -94,5 +97,69 @@ class SlackDialog
     {
         $this->callback_id = $callback_id;
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubmitLabel()
+    {
+        return $this->submit_label;
+    }
+
+    /**
+     * @param mixed $submit_label
+     */
+    public function setSubmitLabel($submit_label)
+    {
+        $this->submit_label = $submit_label;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getElements()
+    {
+        return $this->elements;
+    }
+
+    /**
+     * @param mixed $elements
+     */
+    public function setElements($elements)
+    {
+        $this->elements = $elements;
     }
 }

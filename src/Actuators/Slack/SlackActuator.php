@@ -104,9 +104,13 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
      */
     public function postDialog(SlackDialog $dialog)
     {
-        $ret = $this->client->post('dialog.open', ['form_params' => $dialog->getDialogToPost()]);
-        // @todo - handle failures and throw appropriate exceptions.
-        $ret->getBody()->getContents();
+        $this->logger->debug('Attempting a message of type: dialog.open');
+
+        return $this->client->request('POST',
+            $this->slack_base_uri . 'dialog.open' ,[
+            'headers' => $this->headers,
+            'json' => $dialog->getDialogToPost()
+        ]);
     }
 
     /**
