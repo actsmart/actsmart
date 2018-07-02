@@ -389,7 +389,7 @@ class SlackMessageAttachment
      */
     public function addAction(SlackMessageAttachmentAction $action)
     {
-        $this->actions[$action->getValue()] = $action;
+        $this->actions[$action->getName() . '.' . $action->getValue()] = $action;
         return $this;
     }
 

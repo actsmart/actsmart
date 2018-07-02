@@ -106,6 +106,9 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
                     break;
                 case 'command':
                     return $this->event_creator->createEvent($slack_message->type, $slack_message);
+                    break;
+                case 'dialog_submission':
+                    return $this->event_creator->createEvent($slack_message->type, $slack_message);
             }
         } catch (SlackEventTypeNotSupportedException $e) {
             $this->logger->notice('Unsupported Slack message');
