@@ -54,11 +54,14 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
             if ($this->getAgent()->checkConditions($scene->getPreConditions(), $e)) {
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
+                // TODO - we are overwriting the original Intent here and if the conversations that follow do not have their own interpreter, it doesn't get changed back
                 if ($u->hasInterpreter()) {
-                    $intent = $this->getAgent()->interpret($u->getInterpreter(), $e);
+                    $conversationIntent = $this->getAgent()->interpret($u->getInterpreter(), $e);
+                } else {
+                    $conversationIntent = $intent;
                 }
 
-                if ($u->intentMatches($intent)) {
+                if ($u->intentMatches($conversationIntent)) {
                     $matches[$conversation->getConversationTemplateId()] = $conversation;
                 }
             }
