@@ -431,11 +431,14 @@ class SlackMessageAttachment
     {
         $this->callback_id = $attachment->callback_id ?? null;
         $this->title = $attachment->title ?? null;
+        $this->text = $attachment->text ?? null;
         $this->fallback = $attachment->fallback ?? null;
         $this->author_icon = $attachment->author_icon ?? null;
         $this->author_link = $attachment->author_link ?? null;
         $this->author_name = $attachment->author_name ?? null;
         $this->color = $attachment->color ?? null;
+        $this->footer = $attachment->footer ?? null;
+        $this->footer_icon = $attachment->footer_icon ?? null;
 
         if (isset($attachment->fields)) {
             foreach ($attachment->fields as $field) {
