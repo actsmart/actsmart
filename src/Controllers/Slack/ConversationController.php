@@ -6,6 +6,7 @@ use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackCommandEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
+use actsmart\actsmart\Sensors\Slack\Events\SlackMessageActionEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackMessageEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackDialogSubmissionEvent;
 use actsmart\actsmart\Conversations\ConversationInstance;
@@ -226,6 +227,9 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             case $e instanceof SlackDialogSubmissionEvent:
                 $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
                 break;
+            case $e instanceof SlackMessageActionEvent:
+                $intent = new Intent($e->getCallbackId(), $e, 1);
+                break;
             default:
                 $intent = new Intent();
         }
@@ -245,7 +249,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
     public function listensForEvents()
     {
-        return ['event.slack.message', 'event.slack.interactive_message', 'event.slack.command', 'event.slack.dialog_submission'];
+        return ['event.slack.message', 'event.slack.interactive_message', 'event.slack.command', 'event.slack.dialog_submission', 'event.slack.messageaction'];
     }
 
 }
