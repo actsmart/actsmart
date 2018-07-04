@@ -18,9 +18,30 @@ trait RegularExpressionHelper
      */
     public function removeAllUsernames($message)
     {
-        return preg_replace("/(<@)\w+(>)/", "", $message);
+        return preg_replace("/(<@)\w+(>)\s?/", "", $message);
     }
 
+    /**
+     * Removes all slash commands from the string
+     *
+     * @return null|string|string[]
+     */
+    public function removeAllCommands($message)
+    {
+        return preg_replace("/\/\S+\s?/", "", $message);
+    }
+
+    /**
+     * Strips all usernames and commands from the input message
+     *
+     * @param $message
+     * @return null|string|string[]
+     */
+    public function cleanseMessage($message)
+    {
+        $message = $this->removeAllUsernames($message);
+        return $this->removeAllCommands($message);
+    }
 
     /**
      * Returns true if the userName is mentioned.

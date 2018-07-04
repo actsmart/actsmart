@@ -19,7 +19,7 @@ class BasicMessageInterpreter extends BaseInterpreter
         if ($e instanceof UtteranceEvent) {
             $message = $e->getUtterance();
 
-            $message = $this->removeAllUsernames($message);
+            $message = $this->cleanseMessage($message);
 
             if ($this->wordsMentioned($message, [$this->help])) {
                 return new Intent('ProvideHelp', $e, 1);
