@@ -15,6 +15,7 @@ class SlackEventCreator
         'message' => SlackMessageEvent::class,
         'interactive_message' => SlackInteractiveMessageEvent::class,
         'command' => SlackCommandEvent::class,
+        'message_action' => SlackMessageActionEvent::class,
         'tokens_revoked' => SlackTokensRevokedEvent::class,
         'dialog_submission' => SlackDialogSubmissionEvent::class,
     ];

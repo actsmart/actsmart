@@ -56,18 +56,38 @@ class SlackUpdateMessage extends SlackMessage
     }
 
     /**
+     * Rebuilds the original message text.
+     *
+     * @param SlackInteractiveMessageEvent $e
+     */
+    public function rebuildOriginalMessageText(SlackInteractiveMessageEvent $e)
+    {
+        $this->setEncodedText($e->getTextMessage());
+    }
+
+    /**
+     * Rebuilds the original message attachments.
+     *
+     * @param SlackInteractiveMessageEvent $e
+     */
+    public function rebuildOriginalMessageAttachments(SlackInteractiveMessageEvent $e)
+    {
+        foreach ($e->getAttachments() as $attachment) {
+            $new_attachment = new SlackMessageAttachment();
+            $new_attachment->rebuildAttachment($attachment);
+            $this->addAttachment($new_attachment);
+        }
+    }
+
+    /**
      * Rebuilds the original message this message is supposed to update.
      *
      * @param SlackInteractiveMessageEvent $e
      */
     public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
     {
-        $this->setEncodedText($e->getTextMessage());
-        foreach ($e->getAttachments() as $attachment) {
-            $new_attachment = new SlackMessageAttachment();
-            $new_attachment->rebuildAttachment($attachment);
-            $this->addAttachment($new_attachment);
-        }
+        $this->rebuildOriginalMessageText($e);
+        $this->rebuildOriginalMessageAttachments($e);
     }
 
     /**
