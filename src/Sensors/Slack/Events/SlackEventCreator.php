@@ -13,6 +13,7 @@ class SlackEventCreator
     public $slack_event_map = [
         'url_verification' => SlackUrlVerificationEvent::class,
         'message' => SlackMessageEvent::class,
+        'app_mention' => SlackMessageEvent::class,
         'interactive_message' => SlackInteractiveMessageEvent::class,
         'command' => SlackCommandEvent::class,
         'message_action' => SlackMessageActionEvent::class,
