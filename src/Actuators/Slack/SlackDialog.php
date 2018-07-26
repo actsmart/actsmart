@@ -24,6 +24,12 @@ class SlackDialog
 
     private $submit_label;
 
+    private $action;
+
+    private $item_id;
+
+    private $timestamp;
+
     public function __construct($token, $trigger_id, $callback_id, $workspace)
     {
         $this->token = $token;
@@ -87,7 +93,11 @@ class SlackDialog
      */
     public function getCallbackId()
     {
-        return $this->callback_id;
+        if ($this->callback_id) {
+            return $this->callback_id;
+        }
+
+        return "a:{$this->action};id:{$this->item_id};ts:{$this->timestamp}";
     }
 
     /**
@@ -145,6 +155,30 @@ class SlackDialog
     public function setSubmitLabel($submit_label)
     {
         $this->submit_label = $submit_label;
+    }
+
+    /**
+     * @param mixed $action
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+    }
+
+    /**
+     * @param mixed $item_id
+     */
+    public function setItemId($item_id)
+    {
+        $this->item_id = $item_id;
+    }
+
+    /**
+     * @param mixed $timestamp
+     */
+    public function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
     }
 
     /**

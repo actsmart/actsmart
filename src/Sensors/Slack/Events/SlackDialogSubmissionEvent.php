@@ -90,12 +90,34 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
     }
 
     /**
+     * @return mixed
+     */
+    public function getAction()
+    {
+        list($action, $item_id, $timestamp) = array_pad(explode(';', $this->callback_id), 3, null);
+
+        return (substr($action, 0, 2) == 'a:') ? substr($action, 2) : '';
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getItemId()
+    {
+        list($action, $item_id, $timestamp) = array_pad(explode(';', $this->callback_id), 3, null);
+
+        return (substr($item_id, 0, 3) == 'id:') ? substr($item_id, 3) : '';
+    }
+
+    /**
      * Returns the time the command was called.
      *
      * @return int
      */
     public function getTimestamp()
     {
-        return time();
+        list($action, $item_id, $timestamp) = array_pad(explode(';', $this->callback_id), 3, null);
+
+        return (substr($timestamp, 0, 3) == 'ts:') ? substr($timestamp, 3) : time();
     }
 }
