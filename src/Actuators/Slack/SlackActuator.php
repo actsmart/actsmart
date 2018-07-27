@@ -93,7 +93,7 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
         $this->logger->debug(sprintf('Attempting a message of type: %s.', $type));
 
         return $this->client->request('POST',
-            $this->slack_base_uri . 'chat.'. $type ,[
+            $this->slack_base_uri . 'chat.'. $type, [
             'headers' => $this->headers,
             'json' => $message->getMessageToPost()
         ]);

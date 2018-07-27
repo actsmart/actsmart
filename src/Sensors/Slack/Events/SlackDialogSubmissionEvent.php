@@ -86,7 +86,9 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
      */
     public function getResponseUrl()
     {
-        return $this->response_url;
+        list($action, $item_id, $timestamp, $response_url) = array_pad(explode(';', $this->callback_id), 4, null);
+
+        return (substr($response_url, 0, 4) == 'url:') ? substr($response_url, 4) : $this->response_url;
     }
 
     /**
@@ -94,7 +96,7 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
      */
     public function getAction()
     {
-        list($action, $item_id, $timestamp) = array_pad(explode(';', $this->callback_id), 3, null);
+        list($action, $item_id, $timestamp, $response_url) = array_pad(explode(';', $this->callback_id), 4, null);
 
         return (substr($action, 0, 2) == 'a:') ? substr($action, 2) : '';
     }
@@ -104,7 +106,7 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
      */
     public function getItemId()
     {
-        list($action, $item_id, $timestamp) = array_pad(explode(';', $this->callback_id), 3, null);
+        list($action, $item_id, $timestamp, $response_url) = array_pad(explode(';', $this->callback_id), 4, null);
 
         return (substr($item_id, 0, 3) == 'id:') ? substr($item_id, 3) : '';
     }
@@ -116,7 +118,7 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
      */
     public function getTimestamp()
     {
-        list($action, $item_id, $timestamp) = array_pad(explode(';', $this->callback_id), 3, null);
+        list($action, $item_id, $timestamp, $response_url) = array_pad(explode(';', $this->callback_id), 4, null);
 
         return (substr($timestamp, 0, 3) == 'ts:') ? substr($timestamp, 3) : time();
     }

@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
+use actsmart\actsmart\Sensors\Slack\Events\SlackMessageEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
 
 /**
@@ -60,7 +61,7 @@ class SlackUpdateMessage extends SlackMessage
      *
      * @param SlackInteractiveMessageEvent $e
      */
-    public function rebuildOriginalMessageText(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalInteractiveMessageText(SlackInteractiveMessageEvent $e)
     {
         $this->setEncodedText($e->getTextMessage());
     }
@@ -70,7 +71,7 @@ class SlackUpdateMessage extends SlackMessage
      *
      * @param SlackInteractiveMessageEvent $e
      */
-    public function rebuildOriginalMessageAttachments(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalInteractiveMessageAttachments(SlackInteractiveMessageEvent $e)
     {
         foreach ($e->getAttachments() as $attachment) {
             $new_attachment = new SlackMessageAttachment();
@@ -84,7 +85,42 @@ class SlackUpdateMessage extends SlackMessage
      *
      * @param SlackInteractiveMessageEvent $e
      */
-    public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalInteractiveMessage(SlackInteractiveMessageEvent $e)
+    {
+        $this->rebuildOriginalInteractiveMessageText($e);
+        $this->rebuildOriginalInteractiveMessageAttachments($e);
+    }
+
+    /**
+     * Rebuilds the original message text.
+     *
+     * @param SlackMessageEvent $e
+     */
+    public function rebuildOriginalMessageText(SlackMessageEvent $e)
+    {
+        $this->setEncodedText($e->getTextMessage());
+    }
+
+    /**
+     * Rebuilds the original message attachments.
+     *
+     * @param SlackMessageEvent $e
+     */
+    public function rebuildOriginalMessageAttachments(SlackMessageEvent $e)
+    {
+        foreach ($e->getAttachments() as $attachment) {
+            $new_attachment = new SlackMessageAttachment();
+            $new_attachment->rebuildAttachment($attachment);
+            $this->addAttachment($new_attachment);
+        }
+    }
+
+    /**
+     * Rebuilds the original message this message is supposed to update.
+     *
+     * @param SlackMessageEvent $e
+     */
+    public function rebuildOriginalMessage(SlackMessageEvent $e)
     {
         $this->rebuildOriginalMessageText($e);
         $this->rebuildOriginalMessageAttachments($e);
