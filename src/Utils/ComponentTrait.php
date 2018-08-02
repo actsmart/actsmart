@@ -8,7 +8,7 @@ trait ComponentTrait
 {
 
     /**
-     * @var actsmart\actsmart\Agent
+     * @var \actsmart\actsmart\Agent
      */
     private $agent;
 

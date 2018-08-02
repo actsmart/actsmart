@@ -2,10 +2,11 @@
 
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
+use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
 
-class SlackMessageEvent extends SlackEvent implements UtteranceEvent
+class SlackMessageEvent extends SlackRebuildableMessageEvent implements UtteranceEvent
 {
     use RegularExpressionHelper;
 
@@ -44,7 +45,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
 
     public function getKey()
     {
-        return SELF::EVENT_NAME;
+        return self::EVENT_NAME;
     }
 
     public function getUtterance()
@@ -106,7 +107,7 @@ class SlackMessageEvent extends SlackEvent implements UtteranceEvent
     }
 
     /**
-     * @return attachments.
+     * @return SlackMessageAttachment[]
      */
     public function getAttachments()
     {

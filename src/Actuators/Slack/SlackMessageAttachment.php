@@ -2,9 +2,6 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentField;
-use actsmart\actsmart\Actuators\Slack\SlackMessageAttachmentAction;
-
 class SlackMessageAttachment
 {
     private $fallback;
@@ -359,6 +356,7 @@ class SlackMessageAttachment
 
     /**
      * @param mixed $callback_id
+     * @return SlackMessageAttachment
      */
     public function setCallbackId($callback_id)
     {
@@ -367,7 +365,7 @@ class SlackMessageAttachment
     }
 
     /**
-     * @return array
+     * @return SlackMessageAttachmentAction[]
      */
     public function getActions()
     {
@@ -376,6 +374,7 @@ class SlackMessageAttachment
 
     /**
      * @param array $actions
+     * @return SlackMessageAttachment
      */
     public function setActions($actions)
     {
