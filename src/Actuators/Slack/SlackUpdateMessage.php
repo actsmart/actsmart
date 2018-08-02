@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
+use actsmart\actsmart\Sensors\Slack\Events\SlackRebuildableMessageEvent;
 
 /**
  * When a user interacts with an action on a Slack message attachment
@@ -36,6 +36,7 @@ class SlackUpdateMessage extends SlackMessage
     }
 
     /**
+     * @param $ts string Timestamp value
      */
     public function setTs($ts)
     {
@@ -58,9 +59,9 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message text.
      *
-     * @param SlackInteractiveMessageEvent $e
+     * @param SlackRebuildableMessageEvent $e
      */
-    public function rebuildOriginalMessageText(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalMessageText(SlackRebuildableMessageEvent $e)
     {
         $this->setEncodedText($e->getTextMessage());
     }
@@ -68,9 +69,9 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message attachments.
      *
-     * @param SlackInteractiveMessageEvent $e
+     * @param SlackRebuildableMessageEvent $e
      */
-    public function rebuildOriginalMessageAttachments(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalMessageAttachments(SlackRebuildableMessageEvent $e)
     {
         foreach ($e->getAttachments() as $attachment) {
             $new_attachment = new SlackMessageAttachment();
@@ -82,9 +83,9 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message this message is supposed to update.
      *
-     * @param SlackInteractiveMessageEvent $e
+     * @param SlackRebuildableMessageEvent $e
      */
-    public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalMessage(SlackRebuildableMessageEvent $e)
     {
         $this->rebuildOriginalMessageText($e);
         $this->rebuildOriginalMessageAttachments($e);
@@ -102,6 +103,8 @@ class SlackUpdateMessage extends SlackMessage
                 return $attachment;
             }
         }
+
+        return null;
     }
 
     /**

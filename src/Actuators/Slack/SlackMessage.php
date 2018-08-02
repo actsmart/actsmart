@@ -25,12 +25,6 @@ class SlackMessage
     /* Attachments to the message see SlackMEssageAttachment. */
     private $attachments= [];
 
-    /* Whether to find and link names and channels that may appear in the message. */
-    private $link_names = true;
-
-    /* @see https://api.slack.com/docs/message-formatting#message_formatting */
-    private $parse = 'none';
-
     /* Currently only used for message updates */
     private $response_url;
 
@@ -144,6 +138,9 @@ class SlackMessage
         return $this;
     }
 
+    /**
+     * @return SlackMessageAttachment[]
+     */
     public function getAttachments()
     {
         return $this->attachments;

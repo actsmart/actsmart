@@ -2,7 +2,9 @@
 
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
-class SlackInteractiveMessageEvent extends SlackEvent
+use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
+
+class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
 {
     const EVENT_NAME = 'event.slack.interactive_message';
 
@@ -46,7 +48,7 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     public function getKey()
     {
-        return SELF::EVENT_NAME;
+        return self::EVENT_NAME;
     }
 
     /**
@@ -106,7 +108,7 @@ class SlackInteractiveMessageEvent extends SlackEvent
     }
 
     /**
-     * @return attachments.
+     * @return SlackMessageAttachment[].
      */
     public function getAttachments()
     {
@@ -144,6 +146,8 @@ class SlackInteractiveMessageEvent extends SlackEvent
         if (isset($this->getSubject()->actions[0]->selected_options)) {
             return $this->getSubject()->actions[0]->selected_options[0]->value;
         }
+
+        return null;
     }
 
     /**

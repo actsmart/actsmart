@@ -3,6 +3,7 @@
 namespace actsmart\actsmart;
 
 use actsmart\actsmart\Actuators\Slack\SlackActuator;
+use actsmart\actsmart\Actuators\Slack\SlackConversationsHistory;
 use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
 use actsmart\actsmart\Stores\ConfigStore;
 use actsmart\actsmart\Sensors\Slack\SlackSensor;
@@ -63,6 +64,9 @@ class SlackAgent extends Agent
 
         // The Slack actuator that sends messages to Slack.
         $this->addComponent(new SlackActuator());
+
+        // The Slack actuator that retrieve conversations history.
+        $this->addComponent(new SlackConversationsHistory());
 
         // A Slack event interpreter to provide context throughout.
         $this->addComponent(new SlackEventInterpreter());
