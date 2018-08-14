@@ -57,11 +57,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
         // Determine the type
         if ($arguments['message'] instanceof SlackEphemeralMessage) {
-            $response = $this->postMessage($arguments['message'], SlackActuator::EPHEMERAL_MESSAGE);
+            $response = $this->postMessage($arguments['message'], FacebookActuator::EPHEMERAL_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackStandardMessage) {
-            $response = $this->postMessage($arguments['message'], SlackActuator::STANDARD_MESSAGE);
+            $response = $this->postMessage($arguments['message'], FacebookActuator::STANDARD_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackUpdateMessage) {

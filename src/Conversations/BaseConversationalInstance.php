@@ -7,63 +7,51 @@ use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-class ConversationInstance
+abstract class BaseConversationalInstance implements ConversationInstanceInterface
 {
     /* @var Conversation $conversation */
-    private $conversation;
+    protected $conversation;
 
     /* @var ConversationTemplateStore $conversation_store */
-    private $conversation_store;
+    protected $conversation_store;
 
     /**
      * @var string - an identified for the conversation template
      */
-    private $conversation_template_id;
-
-    /**
-     * The workspace id where this conversation is taking place.
-     */
-    private $workspace_id;
-
-    /**
-     * The user id the bot is having the conversation with.
-     */
-    private $user_id;
-
-    /**
-     * The channel id where the conversation is happening.
-     */
-    private $channel_id;
+    protected $conversation_template_id;
 
     /**
      * When the conversation started.
      */
-    private $start_ts;
+    protected $start_ts;
 
     /**
      * When a conversation was updated.
      */
-    private $update_ts;
+    protected $update_ts;
 
     /**
      * Current scene id.
      */
-    private $current_scene_id;
+    protected $current_scene_id;
 
     /**
      * Current utterance id.
      */
-    private $current_utterance_sequence_id;
+    protected $current_utterance_sequence_id;
 
-    public function __construct($conversation_template_id = null, ConversationTemplateStore $conversation_store, $workspace_id, $user_id, $channel_id, $start_ts = 0, $update_ts = 0)
+    /**
+     * The user id the bot is having the conversation with.
+     */
+    protected $user_id;
+
+    public function __construct($conversation_template_id = null, ConversationTemplateStore $conversation_store, $user_id, $start_ts = 0, $update_ts = 0)
     {
         $this->conversation_template_id = $conversation_template_id;
         $this->conversation_store = $conversation_store;
-        $this->workspace_id = $workspace_id;
-        $this->channel_id = $channel_id;
-        $this->user_id = $user_id;
         $this->start_ts = $start_ts;
         $this->update_ts = $update_ts;
+        $this->user_id = $user_id;
     }
 
     /**
@@ -74,7 +62,7 @@ class ConversationInstance
         // Get the relevant conversation template
         $this->conversation = $this->conversation_store->getConversation($this->conversation_template_id);
 
-        /* @var actsmart\actsmart\Conversations\Scene $initial_scene */
+        /* @var \actsmart\actsmart\Conversations\Scene $initial_scene */
         $initial_scene = $this->conversation->getInitialScene();
 
         // Setup the current scene and the current utterance.
@@ -123,7 +111,7 @@ class ConversationInstance
 
     /**
      * @param ConversationTemplateStore $conversation_store
-     * @return ConversationInstance
+     * @return ConversationInstanceInterface
      */
     public function setConversationStore($conversation_store)
     {
@@ -141,47 +129,11 @@ class ConversationInstance
 
     /**
      * @param string $conversation_template_id
-     * @return ConversationInstance
+     * @return ConversationInstanceInterface
      */
     public function setConversationTemplateId($conversation_template_id)
     {
         $this->conversation_template_id = $conversation_template_id;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getWorkspaceId()
-    {
-        return $this->workspace_id;
-    }
-
-    /**
-     * @param mixed $workspace_id
-     * @return ConversationInstance
-     */
-    public function setWorkspaceId($workspace_id)
-    {
-        $this->workspace_id = $workspace_id;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @param mixed $user_id
-     * @return ConversationInstance
-     */
-    public function setUserId($user_id)
-    {
-        $this->user_id = $user_id;
         return $this;
     }
 
@@ -195,7 +147,7 @@ class ConversationInstance
 
     /**
      * @param mixed $start_ts
-     * @return ConversationInstance
+     * @return ConversationInstanceInterface
      */
     public function setStartTs($start_ts)
     {
@@ -213,7 +165,7 @@ class ConversationInstance
 
     /**
      * @param mixed $update_ts
-     * @return ConversationInstance
+     * @return ConversationInstanceInterface
      */
     public function setUpdateTs($update_ts)
     {
@@ -224,41 +176,19 @@ class ConversationInstance
     /**
      * @return mixed
      */
-    public function getChannelId()
+    public function getUserId()
     {
-        return $this->channel_id;
+        return $this->user_id;
     }
 
     /**
-     * @param mixed $channel_id
+     * @param mixed $user_id
+     * @return ConversationInstanceInterface
      */
-    public function setChannelId($channel_id)
+    public function setUserId($user_id)
     {
-        $this->channel_id = $channel_id;
+        $this->user_id = $user_id;
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCurrentSceneId()
-    {
-        return $this->current_scene_id;
-    }
-
-    /**
-     * @param mixed $current_scene_id
-     * @return ConversationInstance
-     */
-    public function setCurrentSceneId($current_scene_id)
-    {
-        $this->current_scene_id = $current_scene_id;
-        return $this;
-    }
-
-    public function saveConversationInstance()
-    {
-        $this->conversation_instance_store->save($this);
     }
 
     public function getNextUtterance(Agent $agent, GenericEvent $e, Intent $default_intent, $ongoing = true)
@@ -287,5 +217,28 @@ class ConversationInstance
         // Now let us retrieve what the bot should reply given that user utterance. Treat this like a new conversation and just get the bot's next reply.
         $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, false);
         return $bot_next_utterance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentSceneId()
+    {
+        return $this->current_scene_id;
+    }
+
+    /**
+     * @param mixed $current_scene_id
+     * @return ConversationInstanceInterface
+     */
+    public function setCurrentSceneId($current_scene_id)
+    {
+        $this->current_scene_id = $current_scene_id;
+        return $this;
+    }
+
+    public function saveConversationInstance()
+    {
+        $this->conversation_instance_store->save($this);
     }
 }

@@ -32,7 +32,7 @@ class SlackMessageEvent extends SlackRebuildableMessageEvent implements Utteranc
 
     public function __construct($subject, $arguments = [])
     {
-        parent::__construct($subject, $arguments);
+        parent::__construct($subject, $arguments, $this::EVENT_NAME);
 
         $this->workspace_id = isset($subject->team_id) ? $subject->team_id : null;
         $this->user_id = isset($subject->event->user) ? $subject->event->user : null;

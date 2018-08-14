@@ -1,20 +1,18 @@
 <?php
 
-namespace actsmart\actsmart\Controllers\Slack;
+namespace actsmart\actsmart\Controllers\Facebook;
 
-use actsmart\actsmart\Conversations\Slack\ConversationInstance;
+use actsmart\actsmart\Conversations\Facebook;
 use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Sensors\Facebook\Events\FacebookEvent;
+use actsmart\actsmart\Sensors\Facebook\Events\FacebookMessageEvent;
 use actsmart\actsmart\Sensors\SensorEvent;
-use actsmart\actsmart\Sensors\Slack\Events\SlackCommandEvent;
-use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;
-use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
-use actsmart\actsmart\Sensors\Slack\Events\SlackMessageActionEvent;
-use actsmart\actsmart\Sensors\Slack\Events\SlackMessageEvent;
-use actsmart\actsmart\Sensors\Slack\Events\SlackDialogSubmissionEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\In;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -31,7 +29,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      */
     public function listen(GenericEvent $e)
     {
-        if (!($e instanceof SlackEvent)) {
+        if (!($e instanceof FacebookEvent)) {
             return false;
         }
 
@@ -43,50 +41,13 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
     }
 
-    public function handleOngoingConversation(SlackEvent $e)
+    public function handleOngoingConversation(GenericEvent $e)
     {
-        // If we don't get a CI object back there is no ongoing conversation that matches. Bail out.
-        if (!$ci=$this->ongoingConversation($e)) {
-            $this->logger->debug('Not an ongoing conversation.');
-            return false;
-        }
-
-        // Set up a default intent
-        /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $intent = $this->determineEventIntent($e);
-
-        // Before getting the next utterance let us perform any actions related to the current utterance
-        if ($action = $ci->getCurrentAction()) {
-            $this->getAgent()->performAction($action, $e);
-        }
-
-        // If we can't figure out what is the next utterance bail out.
-        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent)) {
-            return false;
-        }
-
-        // We have an utterance - let's post the message.
-        $response = $this->getAgent()->getActuator['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
-
-        // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
-        if ($next_utterance->isCompleting()) {
-            // Remove the current ci state.
-            $this->getAgent()->getStore('store.conversation_instance')->delete($ci);
-            return true;
-        }
-
-        // Remove the current ci state
-        // @todo - this can be done with an update as well potentially.
-        $this->getAgent()->getStore('store.conversation_instance')->delete($ci);
-
-        // If the utterance we just sent does not end the conversation, store the CI instance.
-        $ci->setUpdateTs((int)explode('.', $response->ts)[0]);
-        $ci->setCurrentUtteranceSequenceId($next_utterance->getSequence());
-        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
-        return true;
+        //@todo
+        return false;
     }
 
-    public function handleNewConversation(GenericEvent $e)
+    public function handleNewConversation(FacebookMessageEvent $e)
     {
         /* @var \actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($e);
@@ -98,11 +59,8 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             return false;
         }
 
-        $ci = new ConversationInstance($matching_conversation_id,
+        $ci = new Facebook\ConversationInstance($matching_conversation_id,
             $this->getAgent()->getStore('store.conversation_templates'),
-            $e->getWorkspaceId(),
-            $e->getUserId(),
-            $e->getChannelId(),
             $e->getTimestamp(),
             $e->getTimestamp());
 
@@ -119,8 +77,8 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
-        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', [
-            'message' => $next_utterance->getMessage()->getSlackResponse($e->getChannelId(), $e->getWorkspaceId(), $action_result ?? $e)
+        $response = $this->getAgent()->getActuator('actuator.facebook')->perform('action.facebook.postmessage', [
+            'message' => $next_utterance->getMessage()->getFacebookResponse($e->getSenderId(), $action_result ?? $e)
         ]);
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back and provide a fallback..
@@ -132,18 +90,21 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         $ci->setCurrentUtteranceSequenceId($next_utterance->getSequence());
-        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
+
+        // Not saving conversations for now
+        //$this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 
     /**
      * @param GenericEvent $e
+     * @return bool
      */
     public function handleNothingMatched(GenericEvent $e)
     {
         $this->logger->debug('Nothing Matched - resorting to default.');
 
-        /* @var actsmart\actsmart\Interpreters\Intent $intent */
+        /* @var \actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $e, 1);
 
         $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($e, $intent);
@@ -153,11 +114,8 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             return false;
         }
 
-        $ci = new ConversationInstance($matching_conversation_id,
+        $ci = new Facebook\ConversationInstance($matching_conversation_id,
             $this->getAgent()->getStore('store.conversation_templates'),
-            $e->getWorkspaceId(),
-            $e->getUserId(),
-            $e->getChannelId(),
             $e->getTimestamp(),
             $e->getTimestamp());
 
@@ -170,10 +128,10 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             $action_result = $this->getAgent()->performAction($action, ['event' => $e]);
         }
 
-        /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
+        /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
 
-        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', [
+        $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.facebook.postmessage', [
             'message' => $next_utterance->getMessage()->getSlackResponse($e->getChannelId(), $e->getWorkspaceId(), $action_result ?? $e)
         ]);
 
@@ -186,7 +144,8 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         $ci->setCurrentUtteranceSequenceId($ci->getNextUtterance()->getSequence());
-        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
+        // Not saving instances for Facebook for now.
+        //$this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 
@@ -194,19 +153,11 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     {
         //Check if there is an ongoing conversation - instantiate a temp CI object
         //to check against.
-        $temp_conversation_instance = new ConversationInstance(null,
-            $this->agent->getStore('store.conversation_templates'),
-            $e->getWorkspaceId(),
-            $e->getUserId(),
-            $e->getChannelId());
-
-        // Attempt to retrieve a conversation store
-        $conversation_instance_store = $this->agent->getStore('store.conversation_instance');
-        return $conversation_instance_store->retrieve($temp_conversation_instance);
+        return false;
     }
 
     /**
-     * Builds an apporpriate Intent object based on the event that should generate the Intent.
+     * Builds an appropriate Intent object based on the event that should generate the Intent.
      *
      * @param SensorEvent $e
      * @return Intent|null
@@ -215,20 +166,23 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     {
         $intent = null;
         switch (true) {
-            case $e instanceof SlackInteractiveMessageEvent:
-                $intent = new Intent($e->getCallbackId(), $e, 1);
-                break;
-            case $e instanceof SlackMessageEvent:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
-                break;
-            case $e instanceof SlackCommandEvent:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
-                break;
-            case $e instanceof SlackDialogSubmissionEvent:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
-                break;
-            case $e instanceof SlackMessageActionEvent:
-                $intent = new Intent($e->getCallbackId(), $e, 1);
+            case $e instanceof FacebookMessageEvent:
+                if ($e->getReferral()) {
+                    $intent = new Intent($e->getReferral(), 1);
+                } else if ($e->getAttachmentType()) {
+                    $intent = new Intent($e->getAttachmentType(), 1);
+                } else if ($e->getPostback()) {
+                    if (str_contains($e->getPostback(), 'view')) {
+                        $intent = new Intent('VIEW_STORE', 1);
+                    } else {
+                        $intent = new Intent($e->getPostback(), 1);
+                    }
+                } else if ($e->getQuickReplyPayload()) {
+                    $intent = new Intent($e->getQuickReplyPayload(), $e, 1);
+                }
+                else {
+                    $intent = new Intent($e->getText(), $e, 1);
+                }
                 break;
             default:
                 $intent = new Intent();
@@ -238,18 +192,17 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         return $intent;
     }
 
-
     /**
      * @return string
      */
     public function getKey()
     {
-        return 'controller.slack.conversation_controller';
+        return 'controller.facebook.conversation_controller';
     }
 
     public function listensForEvents()
     {
-        return ['event.slack.message', 'event.slack.interactive_message', 'event.slack.command', 'event.slack.dialog_submission', 'event.slack.messageaction'];
+        return ['event.facebook.message'];
     }
 
 }
