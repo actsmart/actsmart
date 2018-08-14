@@ -2,7 +2,9 @@
 
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
-class SlackInteractiveMessageEvent extends SlackEvent
+use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
+
+class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
 {
     const EVENT_NAME = 'event.slack.interactive_message';
 
@@ -22,12 +24,14 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     private $attachments;
 
+    private $token;
+
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
         $this->callback_id = $subject->callback_id;
         $this->trigger_id = $subject->trigger_id;
-
+        $this->token = $subject->token;
         $this->workspace_id = $subject->team->id;
         $this->user_id = $subject->user->id;
         $this->timestamp = $subject->message_ts;
@@ -44,7 +48,7 @@ class SlackInteractiveMessageEvent extends SlackEvent
 
     public function getKey()
     {
-        return SELF::EVENT_NAME;
+        return self::EVENT_NAME;
     }
 
     /**
@@ -104,11 +108,19 @@ class SlackInteractiveMessageEvent extends SlackEvent
     }
 
     /**
-     * @return attachments.
+     * @return SlackMessageAttachment[].
      */
     public function getAttachments()
     {
         return $this->attachments;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
     /**
@@ -134,6 +146,8 @@ class SlackInteractiveMessageEvent extends SlackEvent
         if (isset($this->getSubject()->actions[0]->selected_options)) {
             return $this->getSubject()->actions[0]->selected_options[0]->value;
         }
+
+        return null;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use actsmart\actsmart\Sensors\Slack\Events\SlackInteractiveMessageEvent;
+use actsmart\actsmart\Sensors\Slack\Events\SlackRebuildableMessageEvent;
 
 /**
  * When a user interacts with an action on a Slack message attachment
@@ -36,6 +36,7 @@ class SlackUpdateMessage extends SlackMessage
     }
 
     /**
+     * @param $ts string Timestamp value
      */
     public function setTs($ts)
     {
@@ -56,17 +57,38 @@ class SlackUpdateMessage extends SlackMessage
     }
 
     /**
-     * Rebuilds the original message this message is supposed to update.
+     * Rebuilds the original message text.
      *
-     * @param SlackInteractiveMessageEvent $e
+     * @param SlackRebuildableMessageEvent $e
      */
-    public function rebuildOriginalMessage(SlackInteractiveMessageEvent $e)
+    public function rebuildOriginalMessageText(SlackRebuildableMessageEvent $e)
+    {
+        $this->setEncodedText($e->getTextMessage());
+    }
+
+    /**
+     * Rebuilds the original message attachments.
+     *
+     * @param SlackRebuildableMessageEvent $e
+     */
+    public function rebuildOriginalMessageAttachments(SlackRebuildableMessageEvent $e)
     {
         foreach ($e->getAttachments() as $attachment) {
             $new_attachment = new SlackMessageAttachment();
             $new_attachment->rebuildAttachment($attachment);
             $this->addAttachment($new_attachment);
         }
+    }
+
+    /**
+     * Rebuilds the original message this message is supposed to update.
+     *
+     * @param SlackRebuildableMessageEvent $e
+     */
+    public function rebuildOriginalMessage(SlackRebuildableMessageEvent $e)
+    {
+        $this->rebuildOriginalMessageText($e);
+        $this->rebuildOriginalMessageAttachments($e);
     }
 
     /**
@@ -81,6 +103,8 @@ class SlackUpdateMessage extends SlackMessage
                 return $attachment;
             }
         }
+
+        return null;
     }
 
     /**
