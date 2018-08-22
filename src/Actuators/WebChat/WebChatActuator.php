@@ -38,6 +38,10 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
         $response = null;
 
+        if (is_array($arguments['message'])) {
+            return $this->postMultipleMessages($arguments['message']);
+        }
+
         return $this->postMessage($arguments['message']);
     }
 
@@ -57,6 +61,23 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
         );
 
         return $this->agent->httpReact();
+    }
+
+    protected function postMultipleMessages(array $messages)
+    {
+        $this->logger->debug('Attempting a Web Chat response message.');
+
+        $response = [];
+        foreach ($messages as $message) {
+            $response[] = $message->getMessageToPost();
+        }
+
+        $this->agent->setHttpReaction(
+            new JsonResponse($response,
+                Response::HTTP_OK,
+                $this->headers
+            )
+        );
     }
 
     /**
