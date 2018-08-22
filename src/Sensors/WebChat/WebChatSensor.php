@@ -58,6 +58,11 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
      */
     public function process($message)
     {
-        return $this->eventCreator->createEvent('message', $message);
+        $event_type = 'message';
+        if (isset($message->callback_id)) {
+            $event_type = 'action';
+        }
+
+        return $this->eventCreator->createEvent($event_type, $message);
     }
 }

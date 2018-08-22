@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Controllers\WebChat;
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
+use actsmart\actsmart\Sensors\WebChat\Events\ActionEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\MessageEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
@@ -137,6 +138,9 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             case $e instanceof MessageEvent:
                 $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
                 break;
+            case $e instanceof ActionEvent:
+                $intent = new Intent($e->getCallbackId());
+                break;
             default:
                 $intent = new Intent();
         }
@@ -152,6 +156,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
     public function listensForEvents()
     {
-        return [MessageEvent::EVENT_NAME];
+        return [ActionEvent::EVENT_NAME, MessageEvent::EVENT_NAME];
     }
 }

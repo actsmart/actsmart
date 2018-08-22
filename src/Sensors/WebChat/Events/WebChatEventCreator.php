@@ -8,6 +8,7 @@ class WebChatEventCreator
 {
     public $eventMap = [
         'message' => MessageEvent::class,
+        'action' => ActionEvent::class,
     ];
 
     /**

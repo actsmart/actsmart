@@ -2,13 +2,12 @@
 
 namespace actsmart\actsmart\Actuators\WebChat;
 
-use actsmart\actsmart\Actuators\WebChat\WebChatButton;
-
 class WebChatButtonMessage
 {
     /** The message text. */
     private $text = null;
 
+    /** The message buttons. */
     private $buttons = [];
 
     /**
