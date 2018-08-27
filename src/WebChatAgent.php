@@ -21,14 +21,14 @@ class WebChatAgent extends Agent
     }
 
     /**
-     * Setup the generic components required for a SlackAgent.
+     * Setup the generic components required for a WebChatAgent.
      */
     private function configure()
     {
         $config_store = new ConfigStore();
         $this->addComponent($config_store);
 
-        // We need to pickup Slack events so need to add a Slack sensor
+        // We need to pickup WebChat events so need to add a WebChat sensor
         $this->addComponent(new WebChatSensor(new WebChatEventCreator()));
 
         // A more complex controller that handles conversations.
@@ -37,7 +37,7 @@ class WebChatAgent extends Agent
         // A simple key:value context store to share state.
         $this->addComponent(new ContextStore());
 
-        // The Slack actuator that sends messages to Slack.
+        // The WebChat actuator that sends messages to the WebChat component.
         $this->addComponent(new WebChatActuator());
     }
 }
