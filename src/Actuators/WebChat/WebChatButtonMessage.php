@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Actuators\WebChat;
 
-class WebChatButtonMessage
+class WebChatButtonMessage extends WebChatMessage
 {
     /** The message text. */
     private $text = null;
@@ -26,7 +26,7 @@ class WebChatButtonMessage
 
     public function addButton(WebChatButton $button)
     {
-        $buttons[] = $button;
+        $this->buttons[] = $button;
         return $this;
     }
 
