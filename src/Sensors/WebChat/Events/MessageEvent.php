@@ -20,6 +20,8 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
 
     private $attachments = null;
 
+    private $data = null;
+
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments = []);
@@ -28,6 +30,7 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
         $this->user_id = $subject->user_id ?? null;
         $this->timestamp = null;
         $this->text = $subject->data->text ?? null;
+        $this->data = $subject->data ?? null;
         $this->attachments = null;
     }
 
@@ -68,6 +71,14 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
     public function getTextMessage()
     {
         return $this->text;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**
