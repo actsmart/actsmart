@@ -8,6 +8,7 @@ use Google\Cloud\Language\LanguageClient;
 
 class GoogleCloudInterpreter implements NLPInterpreter
 {
+    private $features = ['syntax', 'entities'];
 
     /** @var LanguageClient */
     private $client;
@@ -33,7 +34,8 @@ class GoogleCloudInterpreter implements NLPInterpreter
      */
     public function analyse(string $utterance): NLPAnalysis
     {
-        $annotation = $this->client->annotateText($utterance);
+        $annotation = $this->client->annotateText($utterance, ['features' => $this->features]);
+
         return new GoogleCloudNLPAnalysis($annotation, $utterance);
     }
 }

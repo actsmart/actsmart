@@ -23,6 +23,8 @@ interface NLPAnalysis
 
     public function getVerbs();
 
+    public function getEntities();
+
     public function getSentences();
 
     public function getSentence(int $sentenceNumber);
