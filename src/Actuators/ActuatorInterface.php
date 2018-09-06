@@ -1,4 +1,5 @@
 <?php
+
 namespace actsmart\actsmart\Actuators;
 
 use Symfony\Component\EventDispatcher\GenericEvent;

@@ -3,8 +3,11 @@
 namespace actsmart\actsmart\Actuators\Slack;
 
 use actsmart\actsmart\Actuators\ActuatorInterface;
+use actsmart\actsmart\Actuators\SlackNotificationEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\NotifierInterface;
+use actsmart\actsmart\Utils\NotifierTrait;
 use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerAwareTrait;
@@ -15,9 +18,9 @@ use Psr\Log\LoggerAwareTrait;
  *
  * Interacts with Slack to post messages.
  */
-class SlackActuator implements ComponentInterface, LoggerAwareInterface, ActuatorInterface
+class SlackActuator implements NotifierInterface, ComponentInterface, LoggerAwareInterface, ActuatorInterface
 {
-    use LoggerAwareTrait, ComponentTrait;
+    use NotifierTrait, LoggerAwareTrait, ComponentTrait;
 
     const STANDARD_MESSAGE = 'postMessage';
     const EPHEMERAL_MESSAGE = 'postEphemeral';
@@ -53,23 +56,40 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
         $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
 
+        $message = $arguments['message'];
+        $platform_user_id = (!empty($arguments['platform_user_id'])) ? $arguments['platform_user_id'] : null;
+        $platform_channel_id = (!empty($arguments['platform_channel_id'])) ? $arguments['platform_channel_id'] : null;
+        $notification_name = $arguments['notification_name'];
+
         $response = null;
 
         // Determine the type
         if ($arguments['message'] instanceof SlackEphemeralMessage) {
-            $response = $this->postMessage($arguments['message'], FacebookActuator::EPHEMERAL_MESSAGE);
+            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $this->notify($event->getkey(), $event);
+
+            $response = $this->postMessage($message, SlackActuator::EPHEMERAL_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackStandardMessage) {
-            $response = $this->postMessage($arguments['message'], FacebookActuator::STANDARD_MESSAGE);
+            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $this->notify($event->getkey(), $event);
+
+            $response = $this->postMessage($message, SlackActuator::STANDARD_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackUpdateMessage) {
-            $response = $this->postUpdate($arguments['message']);
+            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $this->notify($event->getkey(), $event);
+
+            $response = $this->postUpdate($message);
         }
 
         if ($arguments['message'] instanceof SlackDialog) {
-            $response = $this->postDialog($arguments['message']);
+            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $this->notify($event->getkey(), $event);
+
+            $response = $this->postDialog($message);
         }
 
 
@@ -126,6 +146,24 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
             'headers' => $this->headers,
             'json' => $message->getMessageToPost()
         ]);
+    }
+
+    /**
+     * @param $message
+     * @param $platform_user_id
+     * @param $platform_channel_id
+     * @param $notification_name
+     * @return SlackNotificationEvent
+     */
+    protected function createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name)
+    {
+        $arguments = [
+            'platform_user_id' => $platform_user_id,
+            'platform_channel_id' => $platform_channel_id,
+            'notification_name' => $notification_name,
+        ];
+
+        return new SlackNotificationEvent($message, $arguments);
     }
 
     /**
