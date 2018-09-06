@@ -26,4 +26,7 @@ class Literals
 
     /* The source event this utterance was created from */
     const SOURCE_EVENT = 'source_event';
+
+    /* Identifier for an utterance */
+    const UTTERANCE = 'utterance';
 }

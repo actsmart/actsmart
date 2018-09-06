@@ -56,21 +56,21 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $ci = new ConversationInstance(
             $matchingConversationId,
             $this->getAgent()->getStore('store.conversation_templates'),
-            $e->getUserId());
+            $utterance->get(Literals::UID));
 
         /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
         $ci->initConversation();
 
         $actionResult = null;
         if ($action = $ci->getCurrentAction()) {
-            $actionResult = $this->getAgent()->performAction($action, ['event' => $e]);
+            $actionResult = $this->getAgent()->performAction($action, [Literals::UTTERANCE => $utterance]);
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $nextUtterance */
-        $nextUtterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
+        $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            'message' => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $e)
+            'message' => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance)
         ]);
 
         if ($nextUtterance->isCompleting()) {
