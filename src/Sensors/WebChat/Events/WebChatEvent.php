@@ -4,7 +4,7 @@ namespace actsmart\actsmart\Sensors\WebChat\Events;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 
-class WebChatEvent extends SensorEvent
+abstract class WebChatEvent extends SensorEvent
 {
     public function __construct($subject, $arguments, $event_key = 'event.webchat.generic')
     {

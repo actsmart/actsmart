@@ -2,13 +2,13 @@
 
 namespace actsmart\actsmart\Sensors;
 
+use Ds\Map;
+
 /**
- * Interface Utterance
- * An utterance is an event that represents a statement that was made in a dialog.
- *
- * @package actsmart\actsmart\Sensors
+ * Interface UtteranceEvent
+ * An UtteranceEvent is an event that signifies that a statement was made in a dialog.
  */
 interface UtteranceEvent
 {
-    public function getUtterance();
+    public function getUtterance() : Map;
 }

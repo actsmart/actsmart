@@ -36,10 +36,8 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
 
         $message = json_decode($message->getContent());
 
-        // TODO Validate message here
-
-        // TODO - support different message types
         $event = $this->process($message);
+
         $this->notify($event->getkey(), $event);
     }
 

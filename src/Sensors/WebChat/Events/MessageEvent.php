@@ -3,8 +3,10 @@
 namespace actsmart\actsmart\Sensors\WebChat\Events;
 
 use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
-use actsmart\actsmart\Sensors\UtteranceEvent;
+use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
+use actsmart\actsmart\Sensors\UtteranceEvent;
+use Ds\Map;
 
 class MessageEvent extends WebChatEvent implements UtteranceEvent
 {
@@ -18,8 +20,6 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
 
     private $text = null;
 
-    private $attachments = null;
-
     private $data = null;
 
     public function __construct($subject, $arguments = [])
@@ -27,11 +27,10 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
         parent::__construct($subject, $arguments = []);
 
         // TODO pull the values out of the message
-        $this->user_id = $subject->user_id ?? null;
-        $this->timestamp = null;
+        $this->user_id = $subject->author;
+        $this->timestamp = now();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;
-        $this->attachments = null;
     }
 
     public function getKey()
@@ -39,30 +38,16 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
         return self::EVENT_NAME;
     }
 
-    public function getUtterance()
+    public function getUtterance() : Map
     {
-        return $this->getSubject()->data->text;
-    }
-
-    public function mentions($user_id)
-    {
-        return $this->userNameMentioned($this->getUtterance(), $user_id);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
+        /* @var \Ds\Map */
+        $utterance = new Map();
+        $utterance->put(Literals::TYPE, Literals::WEB_CHAT_MESSAGE);
+        $utterance->put(Literals::TEXT, $this->getTextMessage());
+        $utterance->put(Literals::SOURCE_EVENT, $this);
+        $utterance->put(Literals::UID, $this->user_id);
+        $utterance->put(Literals::TIMESTAMP, $this->timestamp);
+        return $utterance;
     }
 
     /**
@@ -79,13 +64,5 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
     public function getData()
     {
         return $this->data;
-    }
-
-    /**
-     * @return SlackMessageAttachment[]
-     */
-    public function getAttachments()
-    {
-        return $this->attachments;
     }
 }

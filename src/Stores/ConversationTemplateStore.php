@@ -4,10 +4,9 @@ namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\SensorEvent;
-use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
@@ -41,17 +40,18 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * Returns the set of conversations whose opening utterance has an intent that
      * matches the $intent.
      *
+     * @param Map $utterance
      * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(GenericEvent $e, Intent $intent)
+    public function getMatchingConversations(Map $utterance, Intent $intent)
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {
             $scene = $conversation->getInitialScene();
 
             // Check preconditions and if good then check interpreter
-            if ($this->getAgent()->checkConditions($scene->getPreConditions(), $e)) {
+            if ($this->getAgent()->checkIntentConditions($scene->getPreConditions(), $utterance)) {
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
                 // TODO - we are overwriting the original Intent here and if the conversations that follow do not have their own interpreter, it doesn't get changed back
@@ -83,9 +83,9 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * @param Intent $intent
      * @return mixed
      */
-    public function getMatchingConversation(GenericEvent $e, Intent $intent)
+    public function getMatchingConversation(Map $utterance, Intent $intent)
     {
-        $matches = $this->getMatchingConversations($e, $intent);
+        $matches = $this->getMatchingConversations($utterance, $intent);
 
         if (!$matches) {
             return false;

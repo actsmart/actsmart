@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Conversations;
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
+use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 abstract class BaseConversationalInstance implements ConversationInstanceInterface
@@ -191,20 +192,20 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         return $this;
     }
 
-    public function getNextUtterance(Agent $agent, GenericEvent $e, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true)
     {
         // If the conversation is not ongoing we are dealing with a new conversation and just need to get
         // the next thing the bot should say based on what the user just said.
         // @todo Variable names and structure of this is too confusing.
 
         if (!$ongoing) {
-            return $this->conversation->getNextUtterance($agent, $this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+            return $this->conversation->getNextUtterance($agent, $this->current_scene_id, $this->current_utterance_sequence_id, $source_utterance, $default_intent, $ongoing);
         }
 
         // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was.
         // The conversation model could support the user saying any number of things - so we need to get all of them,
         // interpret them, decide which one was actually said and the move the converation forward based on that.
-        $user_current_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+        $user_current_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $source_utterance, $default_intent, $ongoing);
 
         if (!$user_current_utterance) {
             return false;
@@ -215,7 +216,7 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         $this->current_utterance_sequence_id = $user_current_utterance->getSequence();
 
         // Now let us retrieve what the bot should reply given that user utterance. Treat this like a new conversation and just get the bot's next reply.
-        $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, false);
+        $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $source_utterance, $default_intent, false);
         return $bot_next_utterance;
     }
 
