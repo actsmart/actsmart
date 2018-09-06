@@ -5,8 +5,8 @@ namespace actsmart\actsmart\Actuators\Slack;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
-use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
 /**
@@ -57,11 +57,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
 
         // Determine the type
         if ($arguments['message'] instanceof SlackEphemeralMessage) {
-            $response = $this->postMessage($arguments['message'], FacebookActuator::EPHEMERAL_MESSAGE);
+            $response = $this->postMessage($arguments['message'], self::EPHEMERAL_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackStandardMessage) {
-            $response = $this->postMessage($arguments['message'], FacebookActuator::STANDARD_MESSAGE);
+            $response = $this->postMessage($arguments['message'], self::STANDARD_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackUpdateMessage) {
