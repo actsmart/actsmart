@@ -40,7 +40,15 @@ class GoogleCloudNLPAnalysis implements NLPAnalysis
      */
     public function getNouns()
     {
-        return $this->annotation->tokensByTag('NOUN');
+        $nouns = [];
+        foreach ($this->annotation->tokensByTag('NOUN') as $noun) {
+            $content = $noun['text']['content'];
+            if ($this->isValid($content)) {
+                $nouns[] = $content;
+            }
+        }
+
+        return $nouns;
     }
 
     /**
@@ -48,7 +56,27 @@ class GoogleCloudNLPAnalysis implements NLPAnalysis
      */
     public function getVerbs()
     {
-        return $this->annotation->tokensByTag('VERB');
+        $verbs = [];
+        foreach ($this->annotation->tokensByTag('VERB') as $verb) {
+            $content = $verb['text']['content'];
+
+            if ($this->isValid($content)) {
+                $verbs[] = $content;
+            }
+        }
+
+        return $verbs;
+    }
+    
+    public function getEntities()
+    {
+        $entities = [];
+
+        foreach ($this->annotation->entities() as $entity) {
+            $entities[] = $entity['name'];
+        }
+
+        return $entities;
     }
 
     /**
@@ -73,5 +101,17 @@ class GoogleCloudNLPAnalysis implements NLPAnalysis
     public function getLanguage()
     {
         return $this->annotation->language();
+    }
+
+    /**
+     * Because Google is returning double quotes as a noun. Checks if the word is valid
+     *
+     * TODO This should be expanded on as we notice an more irregularities
+     *
+     * @param $word
+     */
+    private function isValid($word)
+    {
+        return $word !== '"';
     }
 }
