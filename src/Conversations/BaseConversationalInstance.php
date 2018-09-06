@@ -3,10 +3,9 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
 use Ds\Map;
-use Symfony\Component\EventDispatcher\GenericEvent;
 
 abstract class BaseConversationalInstance implements ConversationInstanceInterface
 {

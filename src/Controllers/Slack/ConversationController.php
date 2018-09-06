@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Controllers\Slack;
 
 use actsmart\actsmart\Conversations\Slack\ConversationInstance;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackCommandEvent;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEvent;

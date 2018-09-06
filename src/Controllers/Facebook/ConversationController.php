@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Controllers\Facebook;
 
 use actsmart\actsmart\Conversations\Facebook;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\Facebook\Events\FacebookEvent;
 use actsmart\actsmart\Sensors\Facebook\Events\FacebookMessageEvent;
 use actsmart\actsmart\Sensors\SensorEvent;

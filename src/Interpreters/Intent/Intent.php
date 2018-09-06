@@ -1,6 +1,6 @@
 <?php
 
-namespace actsmart\actsmart\Interpreters;
+namespace actsmart\actsmart\Interpreters\Intent;
 
 use Ds\Map;
 

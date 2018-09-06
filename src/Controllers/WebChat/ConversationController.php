@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Controllers\WebChat;
 
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\ActionEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\MessageEvent;

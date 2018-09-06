@@ -1,8 +1,8 @@
 <?php
 namespace actsmart\actsmart\Interpreters\NLP;
 
-use actsmart\actsmart\Interpreters\BaseIntentInterpreter;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\BaseIntentInterpreter;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use GuzzleHttp\Client;

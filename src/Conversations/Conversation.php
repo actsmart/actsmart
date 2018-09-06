@@ -3,11 +3,9 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
 use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
 use Symfony\Component\EventDispatcher\GenericEvent;
 

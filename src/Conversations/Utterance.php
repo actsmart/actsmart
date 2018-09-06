@@ -2,10 +2,10 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
-use actsmart\actsmart\Interpreters\InterpreterInterface;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
 use actsmart\actsmart\Actions\ActionInterface;
 use actsmart\actsmart\Conversations\ConditionInterface;
 use actsmart\actsmart\Sensors\SensorEvent;
