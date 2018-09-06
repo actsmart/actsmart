@@ -2,32 +2,37 @@
 
 namespace actsmart\actsmart\Interpreters;
 
+use Ds\Map;
+
 class Intent
 {
+    /* @var string */
     private $label;
 
+    /* @var float */
     private $confidence;
 
-    private $source_event;
+    /* @var \Ds\Map  */
+    private $source_utterance;
 
-    public function __construct($label = null, $source_event = null, $confidence = 1)
+    public function __construct(string $label = '', Map $source_utterance = null, float $confidence = 1)
     {
         $this->label = $label;
-        $this->source_event = $source_event;
+        $this->$source_utterance = $source_utterance;
         $this->confidence = $confidence;
     }
 
     /**
      * @return mixed
      */
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
 
     /**
      * @param mixed $label
-     * @return Intent
+     * @return string
      */
     public function setLabel($label)
     {
@@ -36,27 +41,27 @@ class Intent
     }
 
     /**
-     * @return mixed
+     * @return Map
      */
-    public function getSourceEvent()
+    public function getSourceUtterance() : Map
     {
-        return $this->source_event;
+        return $this->source_utterance;
     }
 
     /**
-     * @param mixed $source_event
+     * @param Map $source_utterance
      * @return Intent
      */
-    public function setSourceEvent($source_event)
+    public function setSourceUtterance(Map $source_utterance)
     {
-        $this->source_event = $source_event;
+        $this->source_utterance = $source_utterance;
         return $this;
     }
 
     /**
      * @return int
      */
-    public function getConfidence()
+    public function getConfidence() : float
     {
         return $this->confidence;
     }
