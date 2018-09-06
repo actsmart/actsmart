@@ -3,7 +3,7 @@
 namespace actsmart\actsmart;
 
 use actsmart\actsmart\Conversations\ConditionInterface;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Controllers\ControllerInterface;
-use actsmart\actsmart\Interpreters\IntentInterpreter;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -38,8 +38,14 @@ class Agent
     /** @var array  */
     protected $intent_interpreters = [];
 
+    /** @var array */
+    protected $nlp_interpreters = [];
+
     /** @var IntentInterpreter */
     protected $default_intent_interpreter;
+
+    /** @var NLPInterpreter */
+    protected $default_nlp_interpreter;
 
     /** @var array */
     protected $intent_conditions = [];
@@ -92,6 +98,9 @@ class Agent
                 break;
             case $component instanceof IntentInterpreter:
                 $this->intent_interpreters[$component->getKey()] = $component;
+                break;
+            case $component instanceof NLPInterpreter:
+                $this->nlp_interpreters[$component->getKey()] = $component;
                 break;
             case $component instanceof ConditionInterface:
                 $this->conditions[$component->getKey()] = $component;
