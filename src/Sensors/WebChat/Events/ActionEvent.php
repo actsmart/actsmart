@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Sensors\WebChat\Events;
 
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 class ActionEvent extends WebChatEvent implements UtteranceEvent
 {
@@ -29,7 +30,7 @@ class ActionEvent extends WebChatEvent implements UtteranceEvent
         return self::EVENT_NAME;
     }
 
-    public function getUtterance()
+    public function getUtterance() : Map
     {
         /* @var \Ds\Map */
         $utterance = new Map();
