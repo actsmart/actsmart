@@ -2,11 +2,11 @@
 
 namespace actsmart\actsmart\Interpreters;
 
-use actsmart\actsmart\Sensors\UtteranceEvent;
+use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
-class BasicMessageInterpreter extends BaseInterpreter
+class BasicMessageInterpreter extends BaseIntentInterpreter
 {
     use RegularExpressionHelper;
 
@@ -14,20 +14,20 @@ class BasicMessageInterpreter extends BaseInterpreter
 
     private $hello = ['hello', 'howdy', 'hi', 'how are you'];
 
-    public function interpret(GenericEvent $e)
+    /**
+     * @param Map $utterance
+     * @return Intent
+     */
+    public function interpretUtterance(Map $utterance): Intent
     {
-        if ($e instanceof UtteranceEvent) {
-            $message = $e->getUtterance();
+        $message = $this->cleanseMessage($utterance->get(Literals::TEXT));
 
-            $message = $this->cleanseMessage($message);
+        if ($this->wordsMentioned($message, [$this->help])) {
+            return new Intent('ProvideHelp', $e, 1);
+        }
 
-            if ($this->wordsMentioned($message, [$this->help])) {
-                return new Intent('ProvideHelp', $e, 1);
-            }
-
-            if ($this->wordsMentioned($message, [$this->hello])) {
-                return new Intent('Hello', $e, 1);
-            }
+        if ($this->wordsMentioned($message, [$this->hello])) {
+            return new Intent('Hello', $e, 1);
         }
 
         // Return an empty Intent if nothing matches.

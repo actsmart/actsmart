@@ -2,9 +2,9 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
 interface ConditionInterface
 {
-    public function check(GenericEvent $e);
+    public function check(Map $utterance);
 }

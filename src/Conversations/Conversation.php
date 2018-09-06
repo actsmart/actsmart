@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Conversations;
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
@@ -245,7 +246,7 @@ class Conversation extends Graph
      * @param Agent $agent
      * @return array
      */
-    public function getPossibleFollowUps(Agent $agent, $current_sequence, $current_scene, GenericEvent $e)
+    public function getPossibleFollowUps(Agent $agent, $current_sequence, $current_scene, Map $source_utterance)
     {
         $current_utterance = $this->getUtteranceWithSequence($current_sequence);
 
@@ -283,7 +284,7 @@ class Conversation extends Graph
 
         // Before sending followups onwards check their preconditions
         foreach ($possible_followups as $followup) {
-            if ($agent->checkConditions($followup->getPreconditions(), $e)) {
+            if ($agent->checkIntentConditions($followup->getPreconditions(), $source_utterance)) {
                 $followups_with_matching_preconditions[$followup->getSequence()] = $followup;
             }
         }
@@ -299,13 +300,13 @@ class Conversation extends Graph
      * @param Intent $default_intent
      * @return array
      */
-    public function getMatchingUtterances(Agent $agent, $current_scene, $current_sequence, GenericEvent $e, $default_intent = null)
+    public function getMatchingUtterances(Agent $agent, $current_scene, $current_sequence, Map $source_utterance, $default_intent = null)
     {
         // Check each possible followup for a match
         $matching_followups = [];
 
         //@todo if we are checking against what the bot should say then matching intents might not be useful
-        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene, $e, $agent) as $followup) {
+        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene, $source_utterance, $agent) as $followup) {
             if ($followup->hasInterpreter()) {
                 if ($followup->intentMatches($followup->interpret($e))) {
                     $matching_followups[] = $followup;
@@ -326,10 +327,10 @@ class Conversation extends Graph
      * @param Intent $default_intent
      * @return bool
      */
-    public function getNextUtterance(Agent $agent, $current_scene, $sequence, SensorEvent $e, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, $current_scene, $sequence, Map $source_utterance, Intent $default_intent, $ongoing = true)
     {
-        $matching_utterances = $ongoing ? $this->getMatchingUtterances($agent, $current_scene, $sequence, $e, $default_intent)
-            :$this->getPossibleFollowUps($agent, $sequence, $current_scene, $e);
+        $matching_utterances = $ongoing ? $this->getMatchingUtterances($agent, $current_scene, $sequence, $source_utterance, $default_intent)
+            :$this->getPossibleFollowUps($agent, $sequence, $current_scene, $source_utterance);
 
         // We couldn't find any matching intent. Get out.
         if (count($matching_utterances) == 0) {

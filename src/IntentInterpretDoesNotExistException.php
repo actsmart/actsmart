@@ -4,7 +4,7 @@ namespace actsmart\actsmart;
 
 use \InvalidArgumentException;
 
-class DefaultInterpreterNotDefinedException extends InvalidArgumentException
+class IntentInterpretDoesNotExistException extends InvalidArgumentException
 {
     //
 }

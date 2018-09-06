@@ -12,6 +12,7 @@ use actsmart\actsmart\Agent;
 use actsmart\actsmart\Conversations\Slack\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
+use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 interface ConversationInstanceInterface
@@ -122,5 +123,5 @@ interface ConversationInstanceInterface
 
     public function saveConversationInstance();
 
-    public function getNextUtterance(Agent $agent, GenericEvent $e, Intent $default_intent, $ongoing = true);
+    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true);
 }

@@ -4,13 +4,14 @@ namespace actsmart\actsmart;
 
 use actsmart\actsmart\Conversations\ConditionInterface;
 use actsmart\actsmart\Interpreters\Intent;
+use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Controllers\ControllerInterface;
-use actsmart\actsmart\Interpreters\InterpreterInterface;
+use actsmart\actsmart\Interpreters\IntentInterpreter;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -35,13 +36,13 @@ class Agent
     protected $stores = [];
 
     /** @var array  */
-    protected $interpreters = [];
+    protected $intent_interpreters = [];
 
-    /** @var InterpreterInterface */
-    protected $default_conversation_interpreter;
+    /** @var IntentInterpreter */
+    protected $default_intent_interpreter;
 
     /** @var array */
-    protected $conditions = [];
+    protected $intent_conditions = [];
 
     /** @var EventDispatcher */
     protected $dispatcher;
@@ -89,8 +90,8 @@ class Agent
             case $component instanceof StoreInterface:
                 $this->stores[$component->getKey()] = $component;
                 break;
-            case $component instanceof InterpreterInterface:
-                $this->interpreters[$component->getKey()] = $component;
+            case $component instanceof IntentInterpreter:
+                $this->intent_interpreters[$component->getKey()] = $component;
                 break;
             case $component instanceof ConditionInterface:
                 $this->conditions[$component->getKey()] = $component;
@@ -131,32 +132,32 @@ class Agent
      * @param $key
      * @return mixed
      */
-    public function getInterpreter($key)
+    public function getIntentInterpreter($key)
     {
-        if (!isset($this->interpreters[$key])) {
-            throw new InterpretDoesNotExistException('No interpret with key ' . $key . ' exists.');
+        if (!isset($this->intent_interpreters[$key])) {
+            throw new IntentInterpretDoesNotExistException('No interpret with key ' . $key . ' exists.');
         }
 
-        return $this->interpreters[$key];
+        return $this->intent_interpreters[$key];
     }
 
     /**
-     * @return InterpreterInterface
+     * @return IntentInterpreter
      */
-    public function getDefaultConversationInterpreter()
+    public function getDefaultIntentInterpreter()
     {
-        if (!isset($this->default_conversation_interpreter)) {
-            throw new DefaultInterpreterNotDefinedException('This agent does not have a default interpreter defined.');
+        if (!isset($this->default_intent_interpreter)) {
+            throw new DefaultIntentInterpreterNotDefinedException('This agent does not have a default intent interpreter defined.');
         }
-        return $this->default_conversation_interpreter;
+        return $this->default_intent_interpreter;
     }
 
     /**
      * @param $key
      */
-    public function setDefaultConversationInterpreter($key)
+    public function setDefaultIntentInterpreter($key)
     {
-        $this->default_conversation_interpreter = $this->getInterpreter($key);
+        $this->default_intent_interpreter = $this->getIntentInterpreter($key);
     }
 
     /**
@@ -192,13 +193,13 @@ class Agent
 
     /**
      * @param $conditions
-     * @param $e
+     * @param Map $utterance
      * @return bool
      */
-    public function checkConditions($conditions, $e)
+    public function checkIntentConditions($conditions, Map $utterance)
     {
         foreach ($conditions as $condition) {
-            if (!$this->conditions[$condition]->check($e)) {
+            if (!$this->intent_conditions[$condition]->check($utterance)) {
                 return false;
             }
         }
@@ -206,15 +207,15 @@ class Agent
     }
 
     /**
-     * @param $interpreter_key
-     * @param $e
+     * @param string $interpreter_key
+     * @param Map $utterance
      * @return Intent
      */
-    public function interpret($interpreter_key, $e)
+    public function interpretIntent($interpreter_key, Map $utterance)
     {
-        foreach ($this->interpreters as $key => $interpreter) {
+        foreach ($this->intent_interpreters as $key => $interpreter) {
             if ($interpreter_key == $key) {
-                return $interpreter->interpret($e);
+                return $interpreter->interpretIntent($utterance);
             }
         }
 
