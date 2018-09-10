@@ -307,7 +307,6 @@ class Conversation extends Graph
         foreach ($this->getPossibleFollowUps($agent, $current_sequence, $current_scene, $source_utterance) as $followup) {
             if ($followup->hasInterpreter()) {
                 if ($followup->intentMatches($followup->interpret($source_utterance))) {
-                    dump($followup, 'getMatchingUtterances');
                     $matching_followups[] = $followup;
                 }
             } else {
