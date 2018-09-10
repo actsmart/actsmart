@@ -70,11 +70,18 @@ trait RegularExpressionHelper
                 return false;
             }
         }
+
         return $mentioned;
     }
 
     private function createCaptureGroup($words)
     {
-        return '(' . implode("|", $words) . ')';
+        $expression='';
+        foreach ($words as $word) {
+            $expression .='(\b' . $word . '\b)';
+            $expression .='|';
+        }
+        $expression = rtrim($expression, '|');
+        return $expression;
     }
 }
