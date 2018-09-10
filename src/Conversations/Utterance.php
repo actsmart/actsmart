@@ -3,6 +3,7 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Interpreters\Intent\Intent;
+use Ds\Map;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
 use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
@@ -24,7 +25,7 @@ class Utterance extends EdgeDirected
 
     private $preconditions = [];
 
-    private $interpreter;
+    private $intent_interpreter;
 
     public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false)
     {
@@ -161,23 +162,23 @@ class Utterance extends EdgeDirected
         return false;
     }
 
-    public function setInterpreter($interpreter)
+    public function setInterpreter($intent_interpreter)
     {
-        $this->interpreter = $interpreter;
+        $this->intent_interpreter = $intent_interpreter;
     }
 
-    public function getInterpreter()
+    public function getIntentInterpreter()
     {
-        return $this->interpreter;
+        return $this->intent_interpreter;
     }
 
-    public function hasInterpreter()
+    public function hasIntentInterpreter()
     {
-        return isset($this->interpreter);
+        return isset($this->intent_interpreter);
     }
 
-    public function interpret($e)
+    public function interpretIntent(Map $utterance)
     {
-        return $this->interpreter->interpret($e);
+        return $this->intent_interpreter->interpretIntent($utterance);
     }
 }
