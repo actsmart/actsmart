@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Controllers\ControllerInterface;
 use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
+use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -103,7 +104,7 @@ class Agent
                 $this->nlp_interpreters[$component->getKey()] = $component;
                 break;
             case $component instanceof ConditionInterface:
-                $this->conditions[$component->getKey()] = $component;
+                $this->intent_conditions[$component->getKey()] = $component;
                 break;
         }
 
@@ -208,7 +209,7 @@ class Agent
     public function checkIntentConditions($conditions, Map $utterance)
     {
         foreach ($conditions as $condition) {
-            if (!$this->intent_conditions[$condition]->check($utterance)) {
+            if (!$this->intent_conditions[$condition->getKey()]->check($utterance)) {
                 return false;
             }
         }
@@ -224,7 +225,7 @@ class Agent
     {
         foreach ($this->intent_interpreters as $key => $interpreter) {
             if ($interpreter_key == $key) {
-                return $interpreter->interpretIntent($utterance);
+                return $interpreter->interpretUtterance($utterance);
             }
         }
 
