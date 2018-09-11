@@ -151,17 +151,18 @@ class SlackActuator implements NotifierInterface, ComponentInterface, LoggerAwar
      */
     protected function createNotificationEvent($arguments)
     {
+        $message = $arguments['message'];
         $platform_user_id = (!empty($arguments['platform_user_id'])) ? $arguments['platform_user_id'] : null;
         $platform_channel_id = (!empty($arguments['platform_channel_id'])) ? $arguments['platform_channel_id'] : null;
         $notification_name = $arguments['notification_name'];
 
-        $arguments = [
+        $event_arguments = [
             'platform_user_id' => $platform_user_id,
             'platform_channel_id' => $platform_channel_id,
             'notification_name' => $notification_name,
         ];
 
-        return new SlackNotificationEvent($message, $arguments);
+        return new SlackNotificationEvent($message, $event_arguments);
     }
 
     /**
