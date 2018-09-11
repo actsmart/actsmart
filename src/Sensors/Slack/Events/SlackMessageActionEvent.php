@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Sensors\Slack\Events;
 
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 class SlackMessageActionEvent extends SlackEvent implements UtteranceEvent
 {
@@ -57,7 +59,10 @@ class SlackMessageActionEvent extends SlackEvent implements UtteranceEvent
 
     public function getUtterance()
     {
-        return $this->getCallbackId();
+        /* @var \Ds\Map */
+        $utterance = new Map();
+        $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
+        return $utterance;
     }
 
     /**

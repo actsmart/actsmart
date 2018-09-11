@@ -3,6 +3,8 @@
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
 use actsmart\actsmart\Sensors\UtteranceEvent;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
 {
@@ -38,7 +40,10 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
 
     public function getUtterance()
     {
-        return $this->callback_id;
+        /* @var \Ds\Map */
+        $utterance = new Map();
+        $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
+        return $utterance;
     }
 
     /**

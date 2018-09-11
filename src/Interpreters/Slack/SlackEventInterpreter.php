@@ -3,6 +3,7 @@ namespace actsmart\actsmart\Interpreters\Slack;
 
 use actsmart\actsmart\Interpreters\BaseIntentInterpreter;
 use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -21,7 +22,11 @@ class SlackEventInterpreter extends BaseIntentInterpreter implements ListenerInt
 
     public function listen(GenericEvent $e)
     {
-        $this->interpret($e);
+        if (!$e instanceof UtteranceEvent) return null;
+
+        $utterance = $e->getUtterance();
+
+        $this->interpretUtterance($utterance);
     }
 
     public function interpretUtterance(Map $utterance) : Intent

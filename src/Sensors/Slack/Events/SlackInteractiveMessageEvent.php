@@ -3,6 +3,8 @@
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
 use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
 {
@@ -42,7 +44,10 @@ class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
 
     public function getUtterance()
     {
-        return $this->callback_id;
+        /* @var \Ds\Map */
+        $utterance = new Map();
+        $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
+        return $utterance;
     }
 
 

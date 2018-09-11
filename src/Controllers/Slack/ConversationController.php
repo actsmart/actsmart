@@ -216,7 +216,8 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $intent = null;
         switch (true) {
             case $e instanceof SlackInteractiveMessageEvent:
-                $intent = new Intent($e->getCallbackId(), $e, 1);
+                $utterance = $e->getUtterance();
+                $intent = new Intent($e->getCallbackId(), $utterance, 1);
                 break;
             case $e instanceof SlackMessageEvent:
                 $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
@@ -228,7 +229,8 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
                 $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
                 break;
             case $e instanceof SlackMessageActionEvent:
-                $intent = new Intent($e->getCallbackId(), $e, 1);
+                $utterance = $e->getUtterance();
+                $intent = new Intent($e->getCallbackId(), $utterance, 1);
                 break;
             default:
                 $intent = new Intent();

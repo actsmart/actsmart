@@ -5,6 +5,8 @@ namespace actsmart\actsmart\Sensors\Slack\Events;
 use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
 use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 class SlackMessageEvent extends SlackRebuildableMessageEvent implements UtteranceEvent
 {
@@ -50,7 +52,9 @@ class SlackMessageEvent extends SlackRebuildableMessageEvent implements Utteranc
 
     public function getUtterance()
     {
-        return $this->getSubject()->event->text;
+        /* @var \Ds\Map */
+        $utterance = new Map();
+        return $utterance;
     }
 
     public function mentions($user_id)
