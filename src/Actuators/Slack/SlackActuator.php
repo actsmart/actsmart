@@ -8,8 +8,8 @@ use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
-use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
 /**
@@ -65,14 +65,14 @@ class SlackActuator implements NotifierInterface, ComponentInterface, LoggerAwar
             $event = $this->createNotificationEvent($arguments);
             $this->notify($event->getkey(), $event);
 
-            $response = $this->postMessage($message, SlackActuator::EPHEMERAL_MESSAGE);
+            $response = $this->postMessage($message, self::EPHEMERAL_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackStandardMessage) {
             $event = $this->createNotificationEvent($arguments);
             $this->notify($event->getkey(), $event);
 
-            $response = $this->postMessage($message, SlackActuator::STANDARD_MESSAGE);
+            $response = $this->postMessage($message, self::STANDARD_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackUpdateMessage) {
