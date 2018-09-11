@@ -215,7 +215,7 @@ class Agent
     {
         foreach ($this->intent_interpreters as $key => $interpreter) {
             if ($interpreter_key == $key) {
-                return $interpreter->interpretIntent($utterance);
+                return $interpreter->interpretUtterance($utterance);
             }
         }
 

@@ -15,9 +15,11 @@ use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
+use actsmart\actsmart\Utils\Literals;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
 class ConversationController implements ComponentInterface, ListenerInterface, LoggerAwareInterface
 {
@@ -35,18 +37,20 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             return false;
         }
 
+        $utterance = $e->getUtterance();
+
         // @todo Check top level preconditions (bot mentioned, direct message to bot, etc), if none of our top level preconditions match then give up early
-        if (!$this->handleOngoingConversation($e)) {
-            if (!$this->handleNewConversation($e)) {
-                $this->handleNothingMatched($e);
+        if (!$this->handleOngoingConversation($utterance)) {
+            if (!$this->handleNewConversation($utterance)) {
+                $this->handleNothingMatched($utterance);
             }
         }
     }
 
-    public function handleOngoingConversation(SlackEvent $e)
+    public function handleOngoingConversation(Map $utterance)
     {
         // If we don't get a CI object back there is no ongoing conversation that matches. Bail out.
-        if (!$ci=$this->ongoingConversation($e)) {
+        if (!$ci = $this->ongoingConversation($utterance)) {
             $this->logger->debug('Not an ongoing conversation.');
             return false;
         }
@@ -61,7 +65,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // If we can't figure out what is the next utterance bail out.
-        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent)) {
+        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent)) {
             return false;
         }
 
@@ -86,25 +90,30 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         return true;
     }
 
-    public function handleNewConversation(GenericEvent $e)
+    public function handleNewConversation(Map $utterance)
     {
         /* @var \actsmart\actsmart\Interpreters\intent $intent */
-        $intent = $this->determineEventIntent($e);
+        $intent = $this->determineEventIntent($utterance);
 
-        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($e, $intent);
+        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
 
         if (!$matching_conversation_id) {
             $this->logger->debug('No matching conversations.');
             return false;
         }
 
+        $workspace_id = $utterance->get(Literals::WORKSPACE_ID);
+        $user_id = $utterance->get(Literals::USER_ID);
+        $channel_id = $utterance->get(Literals::CHANNEL_ID);
+        $timestamp = $utterance->get(Literals::TIMESTAMP);
+
         $ci = new ConversationInstance($matching_conversation_id,
             $this->getAgent()->getStore('store.conversation_templates'),
-            $e->getWorkspaceId(),
-            $e->getUserId(),
-            $e->getChannelId(),
-            $e->getTimestamp(),
-            $e->getTimestamp());
+            $workspace_id,
+            $user_id,
+            $channel_id,
+            $timestamp,
+            $timestamp);
 
         /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
         $ci->initConversation();
@@ -117,10 +126,10 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
+        $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', [
-            'message' => $next_utterance->getMessage()->getSlackResponse($e->getChannelId(), $e->getWorkspaceId(), $action_result ?? $e)
+            'message' => $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance)
         ]);
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back and provide a fallback..
@@ -137,14 +146,14 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     }
 
     /**
-     * @param GenericEvent $e
+     * @param Map $utterance
      */
-    public function handleNothingMatched(GenericEvent $e)
+    public function handleNothingMatched(Map $utterance)
     {
         $this->logger->debug('Nothing Matched - resorting to default.');
 
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $intent = new Intent('NoMatch', $e, 1);
+        $intent = new Intent('NoMatch', $utterance, 1);
 
         $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($e, $intent);
 
@@ -153,13 +162,18 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             return false;
         }
 
+        $workspace_id = $utterance->get(Literals::WORKSPACE_ID);
+        $user_id = $utterance->get(Literals::USER_ID);
+        $channel_id = $utterance->get(Literals::CHANNEL_ID);
+        $timestamp = $utterance->get(Literals::TIMESTAMP);
+
         $ci = new ConversationInstance($matching_conversation_id,
             $this->getAgent()->getStore('store.conversation_templates'),
-            $e->getWorkspaceId(),
-            $e->getUserId(),
-            $e->getChannelId(),
-            $e->getTimestamp(),
-            $e->getTimestamp());
+            $workspace_id,
+            $user_id,
+            $channel_id,
+            $timestamp,
+            $timestamp);
 
         $ci->initConversation();
 
@@ -171,10 +185,10 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance($this->getAgent(), $e, $intent, false);
+        $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', [
-            'message' => $next_utterance->getMessage()->getSlackResponse($e->getChannelId(), $e->getWorkspaceId(), $action_result ?? $e)
+            'message' => $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $e)
         ]);
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back and provide a fallback..
@@ -190,15 +204,19 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         return true;
     }
 
-    private function ongoingConversation(SensorEvent $e)
+    private function ongoingConversation(Map $utterance)
     {
+        $workspace_id = $utterance->get(Literals::WORKSPACE_ID);
+        $user_id = $utterance->get(Literals::USER_ID);
+        $channel_id = $utterance->get(Literals::CHANNEL_ID);
+
         //Check if there is an ongoing conversation - instantiate a temp CI object
         //to check against.
         $temp_conversation_instance = new ConversationInstance(null,
             $this->agent->getStore('store.conversation_templates'),
-            $e->getWorkspaceId(),
-            $e->getUserId(),
-            $e->getChannelId());
+            $workspace_id,
+            $user_id,
+            $channel_id);
 
         // Attempt to retrieve a conversation store
         $conversation_instance_store = $this->agent->getStore('store.conversation_instance');
@@ -211,26 +229,24 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      * @param SensorEvent $e
      * @return Intent|null
      */
-    private function determineEventIntent(SensorEvent $e)
+    private function determineEventIntent(Map $utterance)
     {
         $intent = null;
-        switch (true) {
-            case $e instanceof SlackInteractiveMessageEvent:
-                $utterance = $e->getUtterance();
-                $intent = new Intent($e->getCallbackId(), $utterance, 1);
+        switch ($utterance->get(Literals::TYPE)) {
+            case Literals::SLACK_INTERACTIVE_MESSAGE:
+                $intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
                 break;
-            case $e instanceof SlackMessageEvent:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
+            case Literals::SLACK_MESSAGE:
+                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpretUtterance($utterance);
                 break;
-            case $e instanceof SlackCommandEvent:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
+            case Literals::SLACK_COMMAND:
+                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpretUtterance($utterance);
                 break;
-            case $e instanceof SlackDialogSubmissionEvent:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpret($e);
+            case Literals::SLACK_DIALOG_SUBMISSION:
+                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpretUtterance($utterance);
                 break;
-            case $e instanceof SlackMessageActionEvent:
-                $utterance = $e->getUtterance();
-                $intent = new Intent($e->getCallbackId(), $utterance, 1);
+            case Literals::SLACK_MESSAGE_ACTION:
+                $intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
                 break;
             default:
                 $intent = new Intent();
