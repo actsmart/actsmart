@@ -57,36 +57,33 @@ class SlackActuator implements NotifierInterface, ComponentInterface, LoggerAwar
         $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
 
         $message = $arguments['message'];
-        $platform_user_id = (!empty($arguments['platform_user_id'])) ? $arguments['platform_user_id'] : null;
-        $platform_channel_id = (!empty($arguments['platform_channel_id'])) ? $arguments['platform_channel_id'] : null;
-        $notification_name = $arguments['notification_name'];
 
         $response = null;
 
         // Determine the type
         if ($arguments['message'] instanceof SlackEphemeralMessage) {
-            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $event = $this->createNotificationEvent($arguments);
             $this->notify($event->getkey(), $event);
 
             $response = $this->postMessage($message, SlackActuator::EPHEMERAL_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackStandardMessage) {
-            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $event = $this->createNotificationEvent($arguments);
             $this->notify($event->getkey(), $event);
 
             $response = $this->postMessage($message, SlackActuator::STANDARD_MESSAGE);
         }
 
         if ($arguments['message'] instanceof SlackUpdateMessage) {
-            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $event = $this->createNotificationEvent($arguments);
             $this->notify($event->getkey(), $event);
 
             $response = $this->postUpdate($message);
         }
 
         if ($arguments['message'] instanceof SlackDialog) {
-            $event = $this->createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name);
+            $event = $this->createNotificationEvent($arguments);
             $this->notify($event->getkey(), $event);
 
             $response = $this->postDialog($message);
@@ -149,14 +146,15 @@ class SlackActuator implements NotifierInterface, ComponentInterface, LoggerAwar
     }
 
     /**
-     * @param $message
-     * @param $platform_user_id
-     * @param $platform_channel_id
-     * @param $notification_name
+     * @param $arguments
      * @return SlackNotificationEvent
      */
-    protected function createNotificationEvent($message, $platform_user_id, $platform_channel_id, $notification_name)
+    protected function createNotificationEvent($arguments)
     {
+        $platform_user_id = (!empty($arguments['platform_user_id'])) ? $arguments['platform_user_id'] : null;
+        $platform_channel_id = (!empty($arguments['platform_channel_id'])) ? $arguments['platform_channel_id'] : null;
+        $notification_name = $arguments['notification_name'];
+
         $arguments = [
             'platform_user_id' => $platform_user_id,
             'platform_channel_id' => $platform_channel_id,
