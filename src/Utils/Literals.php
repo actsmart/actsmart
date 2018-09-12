@@ -18,7 +18,6 @@ class Literals
     const SLACK_DIALOG_SUBMISSION = 'slack_dialog_submission';
     const SLACK_COMMAND = 'slack_command';
     const SLACK_MESSAGE = 'slack_message';
-    const UTTERANCE_EVENT = 'utterance';
 
     /* The text contained withing an utterance */
     const TEXT = 'text';
@@ -45,6 +44,9 @@ class Literals
     const CHANNEL_ID = 'channel_id';
 
     /* */
+    const ITEM_ID = 'item_id';
+
+    /* */
     const ACTION = 'action';
 
     /* */
@@ -58,6 +60,9 @@ class Literals
 
     /* */
     const TRIGGER_ID = 'trigger_id';
+
+    /* */
+    const ATTACHMENTS = 'attachments';
 
     /* Identifier for an utterance */
     const UTTERANCE = 'utterance';

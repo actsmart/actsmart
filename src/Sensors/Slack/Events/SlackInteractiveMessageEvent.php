@@ -42,11 +42,12 @@ class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
         $this->attachments = isset($subject->original_message->attachments) ? $subject->original_message->attachments : null;
     }
 
-    public function getUtterance()
+    public function getUtterance() : Map
     {
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::SLACK_INTERACTIVE_MESSAGE);
+        $utterance->put(Literals::TEXT, $this->getTextMessage());
         $utterance->put(Literals::WORKSPACE_ID, $this->getWorkspaceId());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
@@ -57,6 +58,7 @@ class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
         $utterance->put(Literals::RESPONSE_URL, $this->getResponseUrl());
         $utterance->put(Literals::TOKEN, $this->getToken());
         $utterance->put(Literals::TRIGGER_ID, $this->getTriggerId());
+        $utterance->put(Literals::ATTACHMENTS, $this->getAttachments());
         return $utterance;
     }
 

@@ -57,16 +57,19 @@ class SlackMessageActionEvent extends SlackEvent implements UtteranceEvent
         return SELF::EVENT_NAME;
     }
 
-    public function getUtterance()
+    public function getUtterance() : Map
     {
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::SLACK_MESSAGE_ACTION);
+        $utterance->put(Literals::TEXT, $this->getText());
         $utterance->put(Literals::WORKSPACE_ID, $this->getWorkspaceId());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
+        $utterance->put(Literals::TOKEN, $this->getToken());
+        $utterance->put(Literals::TRIGGER_ID, $this->getTriggerId());
         return $utterance;
     }
 

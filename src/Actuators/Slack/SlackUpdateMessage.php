@@ -2,7 +2,8 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use actsmart\actsmart\Sensors\Slack\Events\SlackRebuildableMessageEvent;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 /**
  * When a user interacts with an action on a Slack message attachment
@@ -59,21 +60,23 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message text.
      *
-     * @param SlackRebuildableMessageEvent $e
+     * @param Map $utterance
      */
-    public function rebuildOriginalMessageText(SlackRebuildableMessageEvent $e)
+    public function rebuildOriginalMessageText(Map $utterance)
     {
-        $this->setEncodedText($e->getTextMessage());
+        $this->setEncodedText($utterance->get(Literals::TEXT));
     }
 
     /**
      * Rebuilds the original message attachments.
      *
-     * @param SlackRebuildableMessageEvent $e
+     * @param Map $utterance
      */
-    public function rebuildOriginalMessageAttachments(SlackRebuildableMessageEvent $e)
+    public function rebuildOriginalMessageAttachments(Map $utterance)
     {
-        foreach ($e->getAttachments() as $attachment) {
+        $attachments = $utterance->get(Literals::ATTACHMENTS);
+
+        foreach ($attachments as $attachment) {
             $new_attachment = new SlackMessageAttachment();
             $new_attachment->rebuildAttachment($attachment);
             $this->addAttachment($new_attachment);
@@ -83,12 +86,12 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message this message is supposed to update.
      *
-     * @param SlackRebuildableMessageEvent $e
+     * @param Map $utterance
      */
-    public function rebuildOriginalMessage(SlackRebuildableMessageEvent $e)
+    public function rebuildOriginalMessage(Map $utterance)
     {
-        $this->rebuildOriginalMessageText($e);
-        $this->rebuildOriginalMessageAttachments($e);
+        $this->rebuildOriginalMessageText($utterance);
+        $this->rebuildOriginalMessageAttachments($utterance);
     }
 
     /**

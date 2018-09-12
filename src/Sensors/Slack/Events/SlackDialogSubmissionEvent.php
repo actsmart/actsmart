@@ -38,11 +38,12 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
         return SELF::EVENT_NAME;
     }
 
-    public function getUtterance()
+    public function getUtterance() : Map
     {
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::SLACK_DIALOG_SUBMISSION);
+        $utterance->put(Literals::TEXT, '');
         $utterance->put(Literals::WORKSPACE_ID, $this->getWorkspaceId());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());

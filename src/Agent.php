@@ -94,7 +94,7 @@ class Agent
                 $this->intent_interpreters[$component->getKey()] = $component;
                 break;
             case $component instanceof ConditionInterface:
-                $this->conditions[$component->getKey()] = $component;
+                $this->intent_conditions[$component->getKey()] = $component;
                 break;
         }
 

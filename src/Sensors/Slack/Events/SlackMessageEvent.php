@@ -50,15 +50,17 @@ class SlackMessageEvent extends SlackRebuildableMessageEvent implements Utteranc
         return self::EVENT_NAME;
     }
 
-    public function getUtterance()
+    public function getUtterance() : Map
     {
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::SLACK_MESSAGE);
+        $utterance->put(Literals::TEXT, $this->getTextMessage());
         $utterance->put(Literals::WORKSPACE_ID, $this->getWorkspaceId());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
+        $utterance->put(Literals::ATTACHMENTS, $this->getAttachments());
         return $utterance;
     }
 

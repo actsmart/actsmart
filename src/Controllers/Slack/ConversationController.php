@@ -57,11 +57,11 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         // Set up a default intent
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $intent = $this->determineEventIntent($e);
+        $intent = $this->determineEventIntent($utterance);
 
         // Before getting the next utterance let us perform any actions related to the current utterance
         if ($action = $ci->getCurrentAction()) {
-            $this->getAgent()->performAction($action, $e);
+            $this->getAgent()->performAction($action, $utterance);
         }
 
         // If we can't figure out what is the next utterance bail out.
@@ -70,7 +70,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         // We have an utterance - let's post the message.
-        $response = $this->getAgent()->getActuator['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($e));
+        $response = $this->getAgent()->getActuator['actuator.slack']->perform('action.slack.postmessage', $next_utterance->getMessage()->getSlackResponse($utterance));
 
         // @todo if an ongoing conversation finishes we have to get rid of the record on Dynamo!
         if ($next_utterance->isCompleting()) {
@@ -122,7 +122,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         // The action result is passed as an argument to a message.
         $action_result = null;
         if ($action = $ci->getCurrentAction()) {
-            $action_result = $this->getAgent()->performAction($action, ['event' => $e]);
+            $action_result = $this->getAgent()->performAction($action, ['utterance' => $utterance]);
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
@@ -155,7 +155,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $utterance, 1);
 
-        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($e, $intent);
+        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
 
         if (!$matching_conversation_id) {
             $this->logger->debug('No support for NoMatch conversation.');
@@ -181,14 +181,14 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         // The action result is passed as an argument to a message.
         $action_result = null;
         if ($action = $ci->getCurrentAction()) {
-            $action_result = $this->getAgent()->performAction($action, ['event' => $e]);
+            $action_result = $this->getAgent()->performAction($action, ['utterance' => $utterance]);
         }
 
         /* @var actsmart\actsmart\Conversations\Utterance $next_utterance */
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', [
-            'message' => $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $e)
+            'message' => $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance)
         ]);
 
         // @todo Improve this - we are trying to handle two different ways of sending timestamps back and provide a fallback..
@@ -226,7 +226,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     /**
      * Builds an apporpriate Intent object based on the event that should generate the Intent.
      *
-     * @param SensorEvent $e
+     * @param Map $utterance
      * @return Intent|null
      */
     private function determineEventIntent(Map $utterance)
@@ -237,13 +237,13 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
                 $intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
                 break;
             case Literals::SLACK_MESSAGE:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpretUtterance($utterance);
+                $intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
                 break;
             case Literals::SLACK_COMMAND:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpretUtterance($utterance);
+                $intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
                 break;
             case Literals::SLACK_DIALOG_SUBMISSION:
-                $intent = $this->getAgent()->getDefaultConversationInterpreter()->interpretUtterance($utterance);
+                $intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
                 break;
             case Literals::SLACK_MESSAGE_ACTION:
                 $intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
