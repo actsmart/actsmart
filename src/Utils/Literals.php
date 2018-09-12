@@ -34,34 +34,34 @@ class Literals
     /* The source event this utterance was created from */
     const SOURCE_EVENT = 'source_event';
 
-    /* */
+    /* The workspace id */
     const WORKSPACE_ID = 'workspace_id';
 
-    /* */
+    /* The user id */
     const USER_ID = 'user_id';
 
-    /* */
+    /* The channel id */
     const CHANNEL_ID = 'channel_id';
 
-    /* */
+    /* The item id */
     const ITEM_ID = 'item_id';
 
-    /* */
+    /* The action */
     const ACTION = 'action';
 
-    /* */
+    /* The action performed value */
     const ACTION_PERFORMED_VALUE = 'action_performed_value';
 
-    /* */
+    /* The response url */
     const RESPONSE_URL = 'response_url';
 
-    /* */
+    /* The token */
     const TOKEN = 'token';
 
-    /* */
+    /* The trigger id */
     const TRIGGER_ID = 'trigger_id';
 
-    /* */
+    /* The attachments */
     const ATTACHMENTS = 'attachments';
 
     /* Identifier for an utterance */
