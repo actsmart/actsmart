@@ -64,6 +64,9 @@ class Literals
     /* The attachments */
     const ATTACHMENTS = 'attachments';
 
+    /* The dialog submission */
+    const SUBMISSION = 'submission';
+
     /* Identifier for an utterance */
     const UTTERANCE = 'utterance';
 }

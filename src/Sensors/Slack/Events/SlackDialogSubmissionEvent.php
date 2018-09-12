@@ -49,7 +49,10 @@ class SlackDialogSubmissionEvent extends SlackEvent implements UtteranceEvent
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
+        $utterance->put(Literals::ITEM_ID, $this->getItemId());
         $utterance->put(Literals::ACTION, $this->getAction());
+        $utterance->put(Literals::SUBMISSION, $this->getSubmission());
+        $utterance->put(Literals::RESPONSE_URL, $this->getResponseUrl());
         return $utterance;
     }
 

@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Stores\Slack;
 use actsmart\actsmart\Stores\ConfigRequestEvent;
 use actsmart\actsmart\Stores\ConfigStore;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
 /**
  * Class SlackConfigStore
@@ -32,7 +33,10 @@ class SlackConfigStore extends ConfigStore
                     return;
                 } else {
                     $workspace_id = explode('_', $event->getArgument('topic'))[1];
-                    $this->getAgent()->performAction('action.slack.getbotinfo', ['workspace_id' => $workspace_id]);
+
+                    $arguments = new Map();
+                    $arguments->put('workspace_id', $workspace_id);
+                    $this->getAgent()->performAction('action.slack.getbotinfo', $arguments);
                 }
             }
         }

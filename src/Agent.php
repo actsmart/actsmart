@@ -182,7 +182,7 @@ class Agent
      * @param $object
      * @return mixed
      */
-    public function performAction($action_id, $arguments = [])
+    public function performAction($action_id, Map $arguments = null)
     {
         foreach ($this->actions as $actuator => $actions) {
             if (in_array($action_id, $actions)) {
