@@ -47,7 +47,7 @@ class SlackInteractiveMessageEvent extends SlackRebuildableMessageEvent
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::SLACK_INTERACTIVE_MESSAGE);
-        $utterance->put(Literals::TEXT, $this->getTextMessage());
+        $utterance->put(Literals::TEXT, '');
         $utterance->put(Literals::WORKSPACE_ID, $this->getWorkspaceId());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
