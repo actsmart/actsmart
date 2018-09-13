@@ -8,6 +8,7 @@ use actsmart\actsmart\Utils\ComponentTrait;
 use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerAwareTrait;
+use Ds\Map;
 
 class SlackConversationsHistory implements ComponentInterface, LoggerAwareInterface, ActuatorInterface
 {
@@ -24,13 +25,13 @@ class SlackConversationsHistory implements ComponentInterface, LoggerAwareInterf
         $this->client = new Client();
     }
 
-    public function perform(string $action, $arguments = [])
+    public function perform(string $action, Map $arguments = null)
     {
-        $this->token = $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $arguments['workspace'], 'bot_token');
+        $this->token = $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $arguments->get('workspace'), 'bot_token');
 
         $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
 
-        $response = $this->getMessage($arguments['channel'], $arguments['timestamp']);
+        $response = $this->getMessage($arguments->get('channel'), $arguments->get('timestamp'));
 
         if ($response) {
             $this->logger->debug($response->getStatusCode());
