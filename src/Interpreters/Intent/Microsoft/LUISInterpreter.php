@@ -7,7 +7,7 @@ use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use GuzzleHttp\Client;
 
-class LUISInterpreter extends BaseIntentInterpreter
+class LUISIntentInterpreter extends BaseIntentInterpreter
 {
     private $client;
 
