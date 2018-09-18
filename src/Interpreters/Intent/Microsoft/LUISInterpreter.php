@@ -1,5 +1,5 @@
 <?php
-namespace actsmart\actsmart\Interpreters\NLP;
+namespace actsmart\actsmart\Interpreters\NLP\Microsoft;
 
 use actsmart\actsmart\Interpreters\Intent\BaseIntentInterpreter;
 use actsmart\actsmart\Interpreters\Intent\Intent;
