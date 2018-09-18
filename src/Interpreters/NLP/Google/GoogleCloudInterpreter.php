@@ -4,10 +4,17 @@ namespace actsmart\actsmart\Interpreters\NLP\Google;
 
 use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
 use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use Google\Cloud\Language\LanguageClient;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class GoogleCloudInterpreter implements NLPInterpreter
+class GoogleCloudInterpreter implements NLPInterpreter, ComponentInterface, LoggerAwareInterface
 {
+    use ComponentTrait, LoggerAwareTrait;
+
     private $features = ['syntax', 'entities'];
 
     /** @var LanguageClient */
@@ -37,5 +44,9 @@ class GoogleCloudInterpreter implements NLPInterpreter
         $annotation = $this->client->annotateText($utterance, ['features' => $this->features]);
 
         return new GoogleCloudNLPAnalysis($annotation, $utterance);
+    }
+
+    public function getKey() {
+        return Literals::GOOGLE_CLOUD_NLP;
     }
 }
