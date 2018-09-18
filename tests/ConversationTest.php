@@ -204,8 +204,6 @@ class ConversationTest extends TestCase
     {
         $conversation = new Conversation();
 
-        $conversation = new Conversation();
-
         $conversation->createScene('init')
             ->addParticipantToScene('init', 'bot1')
             ->addParticipantToScene('init', 'bot2')
