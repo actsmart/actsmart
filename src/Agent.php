@@ -3,7 +3,8 @@
 namespace actsmart\actsmart;
 
 use actsmart\actsmart\Conversations\ConditionInterface;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -11,7 +12,10 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Controllers\ControllerInterface;
-use actsmart\actsmart\Interpreters\IntentInterpreter;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
+use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
+use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
+use actsmart\actsmart\Interpreters\KnowledgeGraph\KnowledgeGraphInterpreter;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -38,8 +42,20 @@ class Agent
     /** @var array  */
     protected $intent_interpreters = [];
 
+    /** @var array */
+    protected $nlp_interpreters = [];
+
+    /** @var array */
+    protected $kg_interpreters = [];
+
     /** @var IntentInterpreter */
     protected $default_intent_interpreter;
+
+    /** @var NLPInterpreter */
+    protected $default_nlp_interpreter;
+
+    /** @var KnowledgeGraphInterpreter */
+    protected $default_kg_interpreter;
 
     /** @var array */
     protected $intent_conditions = [];
@@ -93,8 +109,14 @@ class Agent
             case $component instanceof IntentInterpreter:
                 $this->intent_interpreters[$component->getKey()] = $component;
                 break;
+            case $component instanceof NLPInterpreter:
+                $this->nlp_interpreters[$component->getKey()] = $component;
+                break;
+            case $component instanceof KnowledgeGraphInterpreter:
+                $this->kg_interpreters[$component->getKey()] = $component;
+                break;
             case $component instanceof ConditionInterface:
-                $this->conditions[$component->getKey()] = $component;
+                $this->intent_conditions[$component->getKey()] = $component;
                 break;
         }
 
@@ -135,10 +157,36 @@ class Agent
     public function getIntentInterpreter($key)
     {
         if (!isset($this->intent_interpreters[$key])) {
-            throw new IntentInterpretDoesNotExistException('No interpret with key ' . $key . ' exists.');
+            throw new IntentInterpretDoesNotExistException('No intent interpreter with key ' . $key . ' exists.');
         }
 
         return $this->intent_interpreters[$key];
+    }
+
+    /**
+     * @param $key
+     * @return mixed
+     */
+    public function getNLPInterpreter($key)
+    {
+        if (!isset($this->nlp_interpreters[$key])) {
+            throw new NLPInterpretDoesNotExistException('No NLP interpreter with key ' . $key . ' exists.');
+        }
+
+        return $this->nlp_interpreters[$key];
+    }
+
+    /**
+     * @param $key
+     * @return mixed
+     */
+    public function getKGInterpreter($key)
+    {
+        if (!isset($this->kg_interpreters[$key])) {
+            throw new KGInterpreterDoesNotExistException('No KG interpreter with key ' . $key . ' exists.');
+        }
+
+        return $this->kg_interpreters[$key];
     }
 
     /**
@@ -199,7 +247,7 @@ class Agent
     public function checkIntentConditions($conditions, Map $utterance)
     {
         foreach ($conditions as $condition) {
-            if (!$this->intent_conditions[$condition]->check($utterance)) {
+            if (!$this->intent_conditions[$condition->getKey()]->check($utterance)) {
                 return false;
             }
         }
@@ -207,19 +255,45 @@ class Agent
     }
 
     /**
-     * @param string $interpreter_key
+     * @param string $intent_interpreter_key
      * @param Map $utterance
      * @return Intent
      */
-    public function interpretIntent($interpreter_key, Map $utterance)
+    public function interpretIntent($intent_interpreter_key, Map $utterance)
     {
-        foreach ($this->intent_interpreters as $key => $interpreter) {
-            if ($interpreter_key == $key) {
-                return $interpreter->interpretIntent($utterance);
-            }
+        if (array_key_exists($intent_interpreter_key, $this->intent_interpreters)) {
+            return $this->intent_interpreters[$intent_interpreter_key]->interpretUtterance($utterance);
         }
 
         return new Intent();
+    }
+
+    /**
+     * @param string $nlp_interpreter_key
+     * @param Map $utterance
+     * @return NLPAnalysis | null
+     */
+    public function interpretNLP($nlp_interpreter_key, Map $utterance)
+    {
+        if (array_key_exists($nlp_interpreter_key, $this->nlp_interpreters)) {
+            return $this->nlp_interpreters[$nlp_interpreter_key]->analyse($utterance->get(Literals::TEXT));
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $kg_interpreter_key
+     * @param Map $utterance
+     * @return NLPAnalysis | null
+     */
+    public function analyseKG($kg_interpreter_key, NLPAnalysis $nlp_analysis)
+    {
+        if (array_key_exists($kg_interpreter_key, $this->kg_interpreters)) {
+            return $this->kg_interpreters[$kg_interpreter_key]->analyse($nlp_analysis);
+        }
+
+        return null;
     }
 
     /**

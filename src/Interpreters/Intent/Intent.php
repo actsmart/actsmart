@@ -1,6 +1,6 @@
 <?php
 
-namespace actsmart\actsmart\Interpreters;
+namespace actsmart\actsmart\Interpreters\Intent;
 
 use Ds\Map;
 
@@ -18,7 +18,7 @@ class Intent
     public function __construct(string $label = '', Map $source_utterance = null, float $confidence = 1)
     {
         $this->label = $label;
-        $this->$source_utterance = $source_utterance;
+        $this->source_utterance = $source_utterance;
         $this->confidence = $confidence;
     }
 

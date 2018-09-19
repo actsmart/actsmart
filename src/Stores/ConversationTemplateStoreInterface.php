@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use Ds\Map;
 
 interface ConversationTemplateStoreInterface

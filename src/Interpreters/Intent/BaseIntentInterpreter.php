@@ -1,5 +1,5 @@
 <?php
-namespace actsmart\actsmart\Interpreters;
+namespace actsmart\actsmart\Interpreters\Intent;
 
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;

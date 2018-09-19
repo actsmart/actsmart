@@ -1,6 +1,6 @@
 <?php
 
-namespace actsmart\actsmart\Interpreters;
+namespace actsmart\actsmart\Interpreters\Intent;
 
 use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;

@@ -1,13 +1,13 @@
 <?php
-namespace actsmart\actsmart\Interpreters\NLP;
+namespace actsmart\actsmart\Interpreters\NLP\Microsoft;
 
-use actsmart\actsmart\Interpreters\BaseIntentInterpreter;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\BaseIntentInterpreter;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use GuzzleHttp\Client;
 
-class LUISInterpreter extends BaseIntentInterpreter
+class LUISIntentInterpreter extends BaseIntentInterpreter
 {
     private $client;
 

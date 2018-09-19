@@ -4,7 +4,7 @@ namespace actsmart\actsmart\Tests;
 
 use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Conversations\Message;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Conversations\Scene;
 use actsmart\actsmart\Conversations\Participant;
 use Fhaculty\Graph\Graph as Graph;
@@ -202,8 +202,6 @@ class ConversationTest extends TestCase
 
     private function buildConversation()
     {
-        $conversation = new Conversation();
-
         $conversation = new Conversation();
 
         $conversation->createScene('init')
