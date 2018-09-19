@@ -7,10 +7,10 @@ class DGraphClient
 {
 
     /** @var \Guzzle\Http\Client */
-    private $client;
+    protected $client;
 
     /** @var string */
-    private $dGraphQueries;
+    protected $dGraphQueries;
 
     const QUERY  = 'query';
     const MUTATE = 'mutate';
@@ -42,21 +42,6 @@ class DGraphClient
     {
         $schema = $this->getQueryFromFile("schema");
         return $this->alter($schema);
-    }
-
-    /**
-     * @param array $keywords
-     * @return mixed|string
-     */
-    public function getDomainObjectsByKeywords(array $keywords)
-    {
-        $query = $this->getQueryFromFile('match_domain_objects');
-
-        $keywordsString = implode(" ", $keywords);
-
-        $withVariables = sprintf($query, $keywordsString, $keywordsString);
-
-        return $this->query($withVariables);
     }
 
     public function query(string $query)
@@ -117,9 +102,7 @@ class DGraphClient
             throw new Exception($error);
         }
 
-
-        $data = $response['data'];
-        return array_first($data);
+       return $response['data'];
     }
 
     /**
@@ -128,7 +111,7 @@ class DGraphClient
      * @param $fileName
      * @return bool|string
      */
-    private function getQueryFromFile($fileName)
+    protected function getQueryFromFile($fileName)
     {
         $filePath = $this->dGraphQueriesFilePath . "/" . $fileName;
 

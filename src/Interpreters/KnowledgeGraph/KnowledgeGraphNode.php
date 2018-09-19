@@ -16,14 +16,14 @@ class KnowledgeGraphNode
     protected $weight;
 
     /* @var \Ds\Map */
-    protected $keywords;
+    protected $keyphrases;
 
-    public function __construct(string $name, string $type, float $weight, Map $keywords)
+    public function __construct(string $name, string $type, float $weight, Map $keyphrases)
     {
         $this->name = $name;
         $this->type = $type;
         $this->weight = $weight;
-        $this->keywords = $keywords;
+        $this->$keyphrases = $keyphrases;
     }
 
     /**

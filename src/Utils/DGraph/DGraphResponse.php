@@ -8,20 +8,7 @@ namespace actsmart\actsmart\Utils\DGraph;
 abstract class DGraphResponse
 {
 
-    /**
-     * Creates an response object based on the data returned from DGraph
-     * @param $response array Response from DGraph query
-     */
-    public function __construct($response)
-    {
-        foreach ($response as $node) {
-            $type = $this->toCamelCase($node['type']);
-            $this->{$type}[] = $this->formatNode($node, $type);
-        }
-    }
-
-
-    private function toCamelCase($words)
+    protected function toCamelCase($words)
     {
         return lcfirst(str_replace(' ', '', $words));
     }
