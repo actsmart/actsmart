@@ -21,8 +21,8 @@ class ActionEvent extends WebChatEvent implements UtteranceEvent
         parent::__construct($subject, $arguments = []);
 
         $this->callback_id = $subject->callback_id ?? null;
-        $this->user_id = $subject->author;
-        $this->timestamp = now();
+        $this->user_id = $subject->user_id;
+        $this->timestamp = time();
     }
 
     public function getKey()
@@ -37,18 +37,21 @@ class ActionEvent extends WebChatEvent implements UtteranceEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_ACTION);
         $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
         $utterance->put(Literals::SOURCE_EVENT, $this);
-        $utterance->put(Literals::UID, $this->user_id);
-        $utterance->put(Literals::TIMESTAMP, $this->timestamp);
+        $utterance->put(Literals::UID, $this->getUserId());
+        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         return $utterance;
     }
 
+    /**
+     * @return string
+     */
     public function getCallbackId()
     {
         return $this->callback_id;
     }
 
     /**
-     * @return null
+     * @return string
      */
     public function getUserId()
     {
@@ -56,12 +59,10 @@ class ActionEvent extends WebChatEvent implements UtteranceEvent
     }
 
     /**
-     * @return \Illuminate\Support\Carbon|null
+     * @return int
      */
     public function getTimestamp()
     {
         return $this->timestamp;
     }
-
-
 }
