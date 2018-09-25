@@ -1,4 +1,5 @@
 <?php
+
 namespace actsmart\actsmart\Interpreters\Slack;
 
 use actsmart\actsmart\Interpreters\BaseInterpreter;

@@ -70,7 +70,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            'message' => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance)
+            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance)
         ]);
 
         if ($nextUtterance->isCompleting()) {
@@ -116,7 +116,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            'message' => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance)
+            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance)
         ]);
 
         if ($nextUtterance->isCompleting()) {

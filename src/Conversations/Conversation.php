@@ -3,11 +3,11 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
 use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\SensorEvent;
-use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * A conversation is a Graph structure that describes the possible utterances
@@ -174,8 +174,8 @@ class Conversation extends Graph
 
 
         if (isset($utterance)) {
-            if (isset($options['message'])) {
-                $utterance->setMessage($options['message']);
+            if (isset($options[Literals::MESSAGE])) {
+                $utterance->setMessage($options[Literals::MESSAGE]);
             }
 
             if (isset($options['intent'])) {
@@ -238,11 +238,10 @@ class Conversation extends Graph
      * Given a current utterance from a sender to a receiver the possible followups
      * are all the replies within the scene from the receiver to the sender.
      *
+     * @param Agent $agent
      * @param $current_sequence
      * @param $current_scene
-     * @param GenericEvent $e
-     * @param Agent $agent
-     * @return array
+     * @return Map source_utterance
      */
     public function getPossibleFollowUps(Agent $agent, $current_sequence, $current_scene, Map $source_utterance)
     {

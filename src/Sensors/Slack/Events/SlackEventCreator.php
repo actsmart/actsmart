@@ -3,6 +3,7 @@
 namespace actsmart\actsmart\Sensors\Slack\Events;
 
 use actsmart\actsmart\Sensors\Slack\SlackEventTypeNotSupportedException;
+use actsmart\actsmart\Utils\Literals;
 
 class SlackEventCreator
 {
@@ -12,7 +13,7 @@ class SlackEventCreator
      */
     public $slack_event_map = [
         'url_verification' => SlackUrlVerificationEvent::class,
-        'message' => SlackMessageEvent::class,
+        Literals::MESSAGE => SlackMessageEvent::class,
         'app_mention' => SlackMessageEvent::class,
         'interactive_message' => SlackInteractiveMessageEvent::class,
         'command' => SlackCommandEvent::class,

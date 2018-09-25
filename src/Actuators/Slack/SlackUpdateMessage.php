@@ -2,7 +2,8 @@
 
 namespace actsmart\actsmart\Actuators\Slack;
 
-use actsmart\actsmart\Sensors\Slack\Events\SlackRebuildableMessageEvent;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 /**
  * When a user interacts with an action on a Slack message attachment
@@ -59,21 +60,21 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message text.
      *
-     * @param SlackRebuildableMessageEvent $e
+     * @param string $text
      */
-    public function rebuildOriginalMessageText(SlackRebuildableMessageEvent $e)
+    public function rebuildOriginalMessageText(string $text)
     {
-        $this->setEncodedText($e->getTextMessage());
+        $this->setEncodedText($text);
     }
 
     /**
      * Rebuilds the original message attachments.
      *
-     * @param SlackRebuildableMessageEvent $e
+     * @param array $attachments
      */
-    public function rebuildOriginalMessageAttachments(SlackRebuildableMessageEvent $e)
+    public function rebuildOriginalMessageAttachments(array $attachments)
     {
-        foreach ($e->getAttachments() as $attachment) {
+        foreach ($attachments as $attachment) {
             $new_attachment = new SlackMessageAttachment();
             $new_attachment->rebuildAttachment($attachment);
             $this->addAttachment($new_attachment);
@@ -83,12 +84,17 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message this message is supposed to update.
      *
-     * @param SlackRebuildableMessageEvent $e
+     * @param Map $utterance
      */
-    public function rebuildOriginalMessage(SlackRebuildableMessageEvent $e)
+    public function rebuildOriginalMessage(Map $utterance)
     {
-        $this->rebuildOriginalMessageText($e);
-        $this->rebuildOriginalMessageAttachments($e);
+        if ($utterance->hasKey(Literals::TEXT)) {
+            $this->rebuildOriginalMessageText($utterance->get(Literals::TEXT));
+        }
+
+        if ($utterance->hasKey(Literals::ATTACHMENTS)) {
+            $this->rebuildOriginalMessageAttachments($utterance->get(Literals::ATTACHMENTS));
+        }
     }
 
     /**
