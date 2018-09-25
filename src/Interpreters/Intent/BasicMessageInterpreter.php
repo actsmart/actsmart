@@ -23,11 +23,11 @@ class BasicMessageInterpreter extends BaseIntentInterpreter
         $message = $this->cleanseMessage($utterance->get(Literals::TEXT));
 
         if ($this->wordsMentioned($message, [$this->help])) {
-            return new Intent('ProvideHelp', $e, 1);
+            return new Intent('ProvideHelp', $utterance, 1);
         }
 
         if ($this->wordsMentioned($message, [$this->hello])) {
-            return new Intent('Hello', $e, 1);
+            return new Intent('Hello', $utterance, 1);
         }
 
         // Return an empty Intent if nothing matches.
