@@ -4,18 +4,16 @@ namespace actsmart\actsmart\Controllers\WebChat;
 
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
-use actsmart\actsmart\Sensors\UtteranceEvent;
-use actsmart\actsmart\Sensors\WebChat\Events\ActionEvent;
-use actsmart\actsmart\Sensors\WebChat\Events\MessageEvent;
+use actsmart\actsmart\Sensors\WebChat\Events\WebChatUtteranceEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
 use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
-use Ds\Map;
 
 class ConversationController implements ComponentInterface, ListenerInterface, LoggerAwareInterface
 {
@@ -31,7 +29,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      */
     public function listen(GenericEvent $e)
     {
-        if (!$e instanceof UtteranceEvent) return null;
+        if (!$e instanceof WebChatUtteranceEvent) return null;
 
         $utterance = $e->getUtterance();
 
@@ -42,8 +40,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
     public function handleNewConversation(Map $utterance)
     {
-
-        /* @var \actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($utterance);
 
         $matchingConversationId = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
@@ -83,14 +79,13 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     }
 
     /**
-     * @param MessageEvent $e
+     * @param Map $utterance
      * @return bool
      */
     public function handleNothingMatched(Map $utterance)
     {
         $this->logger->debug('Nothing Matched - resorting to default.');
 
-        /* @var \actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $utterance, 1);
 
         $matchingConversationId = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
@@ -159,6 +154,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
     public function listensForEvents()
     {
-        return [ActionEvent::EVENT_NAME, MessageEvent::EVENT_NAME];
+        return [WebChatUtteranceEvent::KEY];
     }
 }

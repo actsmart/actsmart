@@ -2,32 +2,31 @@
 
 namespace actsmart\actsmart\Sensors\WebChat\Events;
 
-use actsmart\actsmart\Actuators\Slack\SlackMessageAttachment;
 use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
-use actsmart\actsmart\Sensors\UtteranceEvent;
 use Ds\Map;
 
-class MessageEvent extends WebChatEvent implements UtteranceEvent
+class MessageEvent extends WebChatEvent
 {
     use RegularExpressionHelper;
 
     const EVENT_NAME = 'event.webchat.message';
 
-    private $user_id = null;
+    protected $user_id = null;
 
-    private $timestamp = null;
+    protected $timestamp = null;
 
-    private $text = null;
+    protected $text = null;
 
-    private $data = null;
+    protected $data = null;
 
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments = []);
 
         // TODO pull the values out of the message
-        $this->user_id = $subject->user_id ?? null;
+        $this->user_id = $subject->author;
+        // TODO What are we doing here? Should this be a datetime?
         $this->timestamp = now();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;

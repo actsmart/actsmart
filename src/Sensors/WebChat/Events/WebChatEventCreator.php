@@ -6,9 +6,14 @@ use UnexpectedValueException;
 
 class WebChatEventCreator
 {
+    const MESSAGE            = 'message';
+    const ACTION             = 'action';
+    const LONGTEXT_RESPONSE  = 'longtext_response';
+
     public $eventMap = [
-        'message' => MessageEvent::class,
-        'action' => ActionEvent::class,
+        self::MESSAGE => MessageEvent::class,
+        self::ACTION  => ActionEvent::class,
+        self::LONGTEXT_RESPONSE => LongTextEvent::class
     ];
 
     /**

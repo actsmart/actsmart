@@ -2,11 +2,10 @@
 
 namespace actsmart\actsmart\Sensors\WebChat\Events;
 
-use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 
-class ActionEvent extends WebChatEvent implements UtteranceEvent
+class ActionEvent extends WebChatEvent
 {
     const EVENT_NAME = 'event.webchat.action';
 
@@ -56,6 +55,7 @@ class ActionEvent extends WebChatEvent implements UtteranceEvent
     }
 
     /**
+     * TODO ?
      * @return \Illuminate\Support\Carbon|null
      */
     public function getTimestamp()
