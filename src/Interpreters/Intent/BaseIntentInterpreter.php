@@ -1,7 +1,8 @@
 <?php
+
 namespace actsmart\actsmart\Interpreters\Intent;
 
-namespace actsmart\actsmart\Interpreters;
+use actsmart\actsmart\Interpreters\BaseInterpreter;
 
 abstract class BaseIntentInterpreter extends BaseInterpreter implements IntentInterpreter
 {
