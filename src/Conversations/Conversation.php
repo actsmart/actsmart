@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Conversations;
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
 use actsmart\actsmart\Interpreters\Intent;
@@ -176,8 +177,8 @@ class Conversation extends Graph
 
 
         if (isset($utterance)) {
-            if (isset($options['message'])) {
-                $utterance->setMessage($options['message']);
+            if (isset($options[Literals::MESSAGE])) {
+                $utterance->setMessage($options[Literals::MESSAGE]);
             }
 
             if (isset($options['intent'])) {

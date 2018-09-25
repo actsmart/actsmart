@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Actuators\Slack;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use GuzzleHttp\Client;
@@ -43,11 +44,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
      */
     public function perform(string $action, Map $arguments = null)
     {
-        if ($action != 'action.slack.postmessage' || !$arguments->hasKey('message')) {
+        try {
+            $message = $arguments->get(Literals::MESSAGE);
+        } catch (\OutOfBoundsException $e) {
             return null;
         }
-
-        $message = $arguments->get('message');
 
         $this->headers = [
             'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $message->getWorkspace(), 'bot_token'),

@@ -60,22 +60,20 @@ class SlackUpdateMessage extends SlackMessage
     /**
      * Rebuilds the original message text.
      *
-     * @param Map $utterance
+     * @param string $text
      */
-    public function rebuildOriginalMessageText(Map $utterance)
+    public function rebuildOriginalMessageText(string $text)
     {
-        $this->setEncodedText($utterance->get(Literals::TEXT));
+        $this->setEncodedText($text);
     }
 
     /**
      * Rebuilds the original message attachments.
      *
-     * @param Map $utterance
+     * @param array $attachments
      */
-    public function rebuildOriginalMessageAttachments(Map $utterance)
+    public function rebuildOriginalMessageAttachments(array $attachments)
     {
-        $attachments = $utterance->get(Literals::ATTACHMENTS);
-
         foreach ($attachments as $attachment) {
             $new_attachment = new SlackMessageAttachment();
             $new_attachment->rebuildAttachment($attachment);
@@ -90,8 +88,13 @@ class SlackUpdateMessage extends SlackMessage
      */
     public function rebuildOriginalMessage(Map $utterance)
     {
-        $this->rebuildOriginalMessageText($utterance);
-        $this->rebuildOriginalMessageAttachments($utterance);
+        if ($utterance->hasKey(Literals::TEXT)) {
+            $this->rebuildOriginalMessageText($utterance->get(Literals::TEXT));
+        }
+
+        if ($utterance->hasKey(Literals::ATTACHMENTS)) {
+            $this->rebuildOriginalMessageAttachments($utterance->get(Literals::ATTACHMENTS));
+        }
     }
 
     /**

@@ -69,4 +69,7 @@ class Literals
 
     /* Identifier for an utterance */
     const UTTERANCE = 'utterance';
+
+    /* Identifier for message */
+    const MESSAGE = 'message';
 }

@@ -27,11 +27,15 @@ class SlackConversationsHistory implements ComponentInterface, LoggerAwareInterf
 
     public function perform(string $action, Map $arguments = null)
     {
-        $this->token = $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $arguments->get('workspace'), 'bot_token');
+        try {
+            $this->token = $this->getAgent()->getStore('store.config')->get('slackworkspace_' . $arguments->get('workspace'), 'bot_token');
 
-        $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
+            $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
 
-        $response = $this->getMessage($arguments->get('channel'), $arguments->get('timestamp'));
+            $response = $this->getMessage($arguments->get('channel'), $arguments->get('timestamp'));
+        } catch (\OutOfBoundsException $e) {
+            return null;
+        }
 
         if ($response) {
             $this->logger->debug($response->getStatusCode());

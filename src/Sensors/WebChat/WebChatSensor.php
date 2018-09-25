@@ -6,6 +6,7 @@ use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatEventCreator;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -56,7 +57,7 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
      */
     public function process($message)
     {
-        $event_type = 'message';
+        $event_type = Literals::MESSAGE;
         if (isset($message->callback_id)) {
             $event_type = 'action';
         }

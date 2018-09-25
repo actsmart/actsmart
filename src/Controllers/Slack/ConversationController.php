@@ -131,7 +131,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $arguments = new Map();
-        $arguments->put('message', $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance));
+        $arguments->put(Literals::MESSAGE, $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance));
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $arguments);
 
@@ -193,7 +193,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $arguments = new Map();
-        $arguments->put('message', $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance));
+        $arguments->put(Literals::MESSAGE, $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance));
 
         $response = $this->getAgent()->getActuator('actuator.slack')->perform('action.slack.postmessage', $arguments);
 
