@@ -27,7 +27,7 @@ class MessageEvent extends WebChatEvent implements UtteranceEvent
         parent::__construct($subject, $arguments = []);
 
         // TODO pull the values out of the message
-        $this->user_id = $subject->author;
+        $this->user_id = $subject->user_id ?? null;
         $this->timestamp = now();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;
