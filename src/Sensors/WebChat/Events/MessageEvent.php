@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart\Sensors\WebChat\Events;
 
+use actsmart\actsmart\Sensors\UtteranceEvent;
 use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
 use Ds\Map;
@@ -24,10 +25,8 @@ class MessageEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments = []);
 
-        // TODO pull the values out of the message
-        $this->user_id = $subject->author;
-        // TODO What are we doing here? Should this be a datetime?
-        $this->timestamp = now();
+        $this->user_id = $subject->user_id;
+        $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;
     }
@@ -44,9 +43,25 @@ class MessageEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_MESSAGE);
         $utterance->put(Literals::TEXT, $this->getTextMessage());
         $utterance->put(Literals::SOURCE_EVENT, $this);
-        $utterance->put(Literals::UID, $this->user_id);
-        $utterance->put(Literals::TIMESTAMP, $this->timestamp);
+        $utterance->put(Literals::UID, $this->getUserId());
+        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         return $utterance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTimestamp()
+    {
+        return $this->timestamp;
     }
 
     /**
