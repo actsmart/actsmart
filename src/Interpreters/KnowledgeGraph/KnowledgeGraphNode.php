@@ -12,11 +12,8 @@ class KnowledgeGraphNode
     /* @var string */
     protected $type;
 
-    /* @var float */
-    protected $weight;
-
     /* @var \Ds\Map */
-    protected $keyphrases;
+    protected $matchedKeyphrases;
 
     public function __construct(string $name, string $type, float $weight, Map $keyphrases)
     {
