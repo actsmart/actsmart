@@ -21,6 +21,6 @@ abstract class DGraphInterpreter implements KnowledgeGraphInterpreter, Component
         $this->dGraphClient = $dGraphclient;
     }
 
-    public abstract function analyse(NLPAnalysis $analysis) : KnowledgeGraphObject;
+    public abstract function analyse(NLPAnalysis $analysis);
 
 }
