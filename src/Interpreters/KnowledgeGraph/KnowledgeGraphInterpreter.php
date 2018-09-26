@@ -6,5 +6,5 @@ use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
 
 interface KnowledgeGraphInterpreter
 {
-    public function analyse(NLPAnalysis $nlp): KnowledgeGraphObject;
+    public function analyse(NLPAnalysis $nlp);
 }
