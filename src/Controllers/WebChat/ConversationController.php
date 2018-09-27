@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Controllers\WebChat;
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatUtteranceEvent;
+use actsmart\actsmart\Stores\ConversationTemplateStore;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
@@ -25,11 +26,10 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      * Implementation of listen function.
      *
      * @param GenericEvent $e
-     * @return bool
      */
     public function listen(GenericEvent $e)
     {
-        if (!$e instanceof WebChatUtteranceEvent) return null;
+        if (!$e instanceof WebChatUtteranceEvent) return;
 
         $utterance = $e->getUtterance();
 
@@ -42,7 +42,9 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
     {
         $intent = $this->determineEventIntent($utterance);
 
-        $matchingConversationId = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
+        /** @var ConversationTemplateStore $store */
+        $store = $this->getAgent()->getStore('store.conversation_templates');
+        $matchingConversationId = $store->getMatchingConversation($utterance, $intent);
 
         if (!$matchingConversationId) {
             $this->logger->debug('No matching conversations.');
@@ -62,19 +64,22 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             $actionResult = $this->getAgent()->performAction($action, $utterance);
         }
 
+        $informationResponse = null;
+        if ($informationRequest = $ci->getCurrentInformationRequest()) {
+            $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
+        }
+
         /* @var \actsmart\actsmart\Conversations\Utterance $nextUtterance */
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance)
+            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse)
         ]);
 
         if ($nextUtterance->isCompleting()) {
             return true;
         }
 
-        $ci->setCurrentUtteranceSequenceId($nextUtterance->getSequence());
-        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 
@@ -88,7 +93,9 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         $intent = new Intent('NoMatch', $utterance, 1);
 
-        $matchingConversationId = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
+        /** @var ConversationTemplateStore $store */
+        $store = $this->getAgent()->getStore('store.conversation_templates');
+        $matchingConversationId = $store->getMatchingConversation($utterance, $intent);
 
         if (!$matchingConversationId) {
             $this->logger->debug('No support for NoMatch conversation.');
@@ -107,7 +114,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             $actionResult = $this->getAgent()->performAction($action, ['event' => $utterance->get(Literals::SOURCE_EVENT)]);
         }
 
-        /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
+        /* @var \actsmart\actsmart\Conversations\Utterance $nextUtterance */
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
@@ -118,8 +125,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             return true;
         }
 
-        $ci->setCurrentUtteranceSequenceId($ci->getNextUtterance()->getSequence());
-        $this->getAgent()->getStore('store.conversation_instance')->save($ci);
         return true;
     }
 

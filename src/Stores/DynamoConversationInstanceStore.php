@@ -7,7 +7,7 @@ use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use Aws\DynamoDb\DynamoDbClient;
 
-class DynamoConversationInstanceStore implements ComponentInterface, StoreInterface
+class DynamoConversationInstanceStore extends BaseStore implements ComponentInterface, StoreInterface
 {
     use ComponentTrait;
 
@@ -42,7 +42,7 @@ class DynamoConversationInstanceStore implements ComponentInterface, StoreInterf
         ];
 
         try {
-            $result = $this->client->putItem([
+            $this->client->putItem([
                 'TableName' => $this->table_name,
                 'Item' => $ci_record,
             ]);
@@ -119,7 +119,7 @@ class DynamoConversationInstanceStore implements ComponentInterface, StoreInterf
                 )
             ));
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            $this->logger->error(sprintf("Error deleting conversation ", $e->getMessage()));
         }
     }
 

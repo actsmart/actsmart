@@ -2,25 +2,25 @@
 
 namespace actsmart\actsmart;
 
+use actsmart\actsmart\Actuators\ActuatorInterface;
+use actsmart\actsmart\Controllers\ControllerInterface;
 use actsmart\actsmart\Conversations\ConditionInterface;
 use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
+use actsmart\actsmart\Interpreters\KnowledgeGraph\KnowledgeGraphInterpreter;
+use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
+use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
+use actsmart\actsmart\Sensors\SensorInterface;
+use actsmart\actsmart\Stores\StoreInterface;
+use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\Literals;
+use actsmart\actsmart\Utils\NotifierInterface;
 use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
-use actsmart\actsmart\Actuators\ActuatorInterface;
-use actsmart\actsmart\Controllers\ControllerInterface;
-use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
-use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
-use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
-use actsmart\actsmart\Interpreters\KnowledgeGraph\KnowledgeGraphInterpreter;
-use actsmart\actsmart\Sensors\SensorInterface;
-use actsmart\actsmart\Stores\StoreInterface;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ListenerInterface;
-use actsmart\actsmart\Utils\NotifierInterface;
 
 class Agent
 {
@@ -38,6 +38,9 @@ class Agent
 
     /** @var array */
     protected $stores = [];
+
+    /** @var array the set of information requests that the registered stores can perform */
+    protected $information_requests = [];
 
     /** @var array  */
     protected $intent_interpreters = [];
@@ -88,6 +91,7 @@ class Agent
      * may need are bound.
      *
      * @param ComponentInterface $component
+     * @return Agent
      */
     public function addComponent(ComponentInterface $component)
     {
@@ -105,6 +109,7 @@ class Agent
                 break;
             case $component instanceof StoreInterface:
                 $this->stores[$component->getKey()] = $component;
+                $this->information_requests[$component->getKey()] = $component->handlesInformationRequests();
                 break;
             case $component instanceof IntentInterpreter:
                 $this->intent_interpreters[$component->getKey()] = $component;
@@ -134,7 +139,7 @@ class Agent
      * Returns a store based on the key.
      *
      * @param $key
-     * @return mixed
+     * @return StoreInterface
      */
     public function getStore($key)
     {
@@ -227,7 +232,7 @@ class Agent
 
     /**
      * @param $action_id
-     * @param $object
+     * @param Map|null $arguments
      * @return mixed
      */
     public function performAction($action_id, Map $arguments = null)
@@ -237,7 +242,30 @@ class Agent
                 return $this->getActuator($actuator)->perform($action_id, $arguments);
             }
         }
+
+        $this->logger->info(sprintf('No supporting Store found for information request %', $action_id));
+        return null;
     }
+
+    /**
+     * Loops through all available information requests and if they support the requested
+     *
+     * @param $information_request_id
+     * @param Map $utterance
+     * @return mixed|null
+     */
+    public function performInformationRequest($information_request_id, Map $utterance)
+    {
+        foreach ($this->information_requests as $store => $information_request_ids) {
+            if (in_array($information_request_id, $information_request_ids)) {
+                return $this->getStore($store)->getInformation($information_request_id, $utterance);
+            }
+        }
+
+        $this->logger->info(sprintf('No supporting Store found for information request %', $information_request_id));
+        return null;
+    }
+
 
     /**
      * @param $conditions
@@ -298,6 +326,7 @@ class Agent
 
     /**
      * @param Response $response
+     * @return Agent
      */
     public function setHttpReaction(Response $response)
     {

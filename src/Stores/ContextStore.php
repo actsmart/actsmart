@@ -9,7 +9,7 @@ use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-class ContextStore implements ComponentInterface, ListenerInterface, StoreInterface
+class ContextStore extends BaseStore implements ComponentInterface, ListenerInterface
 {
     use ComponentTrait, ListenerTrait;
 

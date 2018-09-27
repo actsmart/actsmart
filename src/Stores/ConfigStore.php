@@ -19,7 +19,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * [topic][key][value]. The added topic level allows us to store multiple configuration settings
  * relating to a specific group or context.
  */
-class ConfigStore implements ComponentInterface, StoreInterface, ListenerInterface, NotifierInterface
+class ConfigStore extends BaseStore implements ComponentInterface, ListenerInterface, NotifierInterface
 {
     use ComponentTrait, NotifierTrait, ListenerTrait;
 
