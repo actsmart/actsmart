@@ -10,6 +10,10 @@ class WebChatLongTextMessage extends WebChatMessage
 
     private $callbackId = null;
 
+    private $initialText = null;
+
+    private $placeholder = null;
+
     /**
      * @param $characterLimit
      * @return $this
@@ -64,6 +68,38 @@ class WebChatLongTextMessage extends WebChatMessage
         return $this->callbackId;
     }
 
+    /**
+     * @return null
+     */
+    public function getInitialText()
+    {
+        return $this->initialText;
+    }
+
+    /**
+     * @param null $initialText
+     */
+    public function setInitialText($initialText)
+    {
+        $this->initialText = $initialText;
+    }
+
+    /**
+     * @return null
+     */
+    public function getPlaceholder()
+    {
+        return $this->placeholder;
+    }
+
+    /**
+     * @param null $placeholder
+     */
+    public function setPlaceholder($placeholder): void
+    {
+        $this->placeholder = $placeholder;
+    }
+
     public function getMessageToPost()
     {
         return [
@@ -73,7 +109,9 @@ class WebChatLongTextMessage extends WebChatMessage
                 'text' => $this->getText(),
                 'character_limit' => $this->getCharacterLimit(),
                 'submit_text' => $this->getSubmitText(),
-                'callback_id' => $this->getCallbackId()
+                'callback_id' => $this->getCallbackId(),
+                'initial_text' => $this->getInitialText(),
+                'placeholder' => $this->getPlaceholder()
             ]
         ];
     }
