@@ -6,7 +6,6 @@ use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatEventCreator;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
-use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -67,11 +66,9 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
 
         if ($message->type === WebChatEventCreator::LONGTEXT_RESPONSE) {
             $event_type = WebChatEventCreator::LONGTEXT_RESPONSE;
-
-        } else if ($message->type == 'chat_open') {
+        } else if ($message->type == WebChatEventCreator::CHAT_OPEN) {
             $event_type = WebChatEventCreator::CHAT_OPEN;
-        }
-        else if (isset($message->callback_id)) {
+        } else if (isset($message->callback_id)) {
             $event_type = WebChatEventCreator::ACTION;
         }
 

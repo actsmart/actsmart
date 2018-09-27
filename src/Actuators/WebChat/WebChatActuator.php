@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Actuators\WebChat;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,12 +22,12 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
     /**
      * WebChat messages are sent by replying to the original request
-     *
-     * @param $action
-     * @param array $arguments
+     * TODO this is using arguments as an array. Actuators expect a MAP
+     * @param string $action
+     * @param Map $arguments
      * @return mixed
      */
-    public function perform(string $action, $arguments = [])
+    public function perform(string $action, $arguments)
     {
         if ($action != self::POST_MESSAGE || !isset($arguments['message'])) {
             return null;

@@ -1,7 +1,6 @@
 <?php
 namespace actsmart\actsmart\Actuators;
 
-use Symfony\Component\EventDispatcher\GenericEvent;
 use Ds\Map;
 
 interface ActuatorInterface
@@ -11,7 +10,7 @@ interface ActuatorInterface
      * @param Map $arguments - a set of arguments the action will required in order to execute.
      * @return mixed
      */
-    public function perform(string $action_id, Map $arguments = null);
+    public function perform(string $action_id, Map $arguments);
 
     /**
      * @return array - an array of action ids.

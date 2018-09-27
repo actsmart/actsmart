@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
-use actsmart\actsmart\Conversations\Scene;
+use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
@@ -48,10 +48,11 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {
-            $scene = $conversation->getInitialScene();
+                $scene = $conversation->getInitialScene();
 
             // Check preconditions and if good then check interpreter
             if ($this->getAgent()->checkIntentConditions($scene->getPreconditions(), $utterance)) {
+                /** @var Utterance $u */
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
                 // TODO - we are overwriting the original Intent here and if the conversations that follow do not have their own interpreter, it doesn't get changed back

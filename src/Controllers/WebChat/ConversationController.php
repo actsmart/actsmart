@@ -59,7 +59,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         $actionResult = null;
         if ($action = $ci->getCurrentAction()) {
-            $actionResult = $this->getAgent()->performAction($action, [Literals::UTTERANCE => $utterance]);
+            $actionResult = $this->getAgent()->performAction($action, $utterance);
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $nextUtterance */
