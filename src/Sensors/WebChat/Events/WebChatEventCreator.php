@@ -9,11 +9,13 @@ class WebChatEventCreator
     const MESSAGE            = 'message';
     const ACTION             = 'action';
     const LONGTEXT_RESPONSE  = 'longtext_response';
+    const CHAT_OPEN          = 'chat_open';
 
     public $eventMap = [
         self::MESSAGE => MessageEvent::class,
         self::ACTION  => ActionEvent::class,
-        self::LONGTEXT_RESPONSE => LongTextEvent::class
+        self::LONGTEXT_RESPONSE => LongTextEvent::class,
+        self::CHAT_OPEN => ChatOpenEvent::class
     ];
 
     /**

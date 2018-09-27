@@ -16,7 +16,7 @@ class LongTextEvent extends MessageEvent
 
     public function __construct($subject, $arguments = [])
     {
-        parent::__construct($subject, $arguments = []);
+        parent::__construct($subject, $arguments = [], self::EVENT_NAME);
 
         $this->callback_id = $subject->data->callback_id ?? null;
     }

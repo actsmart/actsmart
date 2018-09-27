@@ -23,7 +23,7 @@ class MessageEvent extends WebChatEvent
 
     public function __construct($subject, $arguments = [])
     {
-        parent::__construct($subject, $arguments = []);
+        parent::__construct($subject, $arguments = [], self::EVENT_NAME);
 
         $this->user_id = $subject->user_id;
         $this->timestamp = time();
