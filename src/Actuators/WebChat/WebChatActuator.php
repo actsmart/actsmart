@@ -22,12 +22,12 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
     /**
      * WebChat messages are sent by replying to the original request
-     *
+     * TODO this is using arguments as an array. Actuators expect a MAP
      * @param string $action
      * @param Map $arguments
      * @return mixed
      */
-    public function perform(string $action, Map $arguments)
+    public function perform(string $action, $arguments)
     {
         if ($action != self::POST_MESSAGE || !isset($arguments['message'])) {
             return null;
