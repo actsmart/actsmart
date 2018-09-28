@@ -3,16 +3,18 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
+use actsmart\actsmart\Conversations\Scene;
 use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use Ds\Map;
 
-abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
+abstract class ConversationTemplateStore extends BaseStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
 {
     use ComponentTrait;
 
+    /** @var Conversation[] */
     protected $conversations = [];
 
     /**
@@ -48,7 +50,9 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {
-                $scene = $conversation->getInitialScene();
+
+            /** @var Scene $scene */
+            $scene = $conversation->getInitialScene();
 
             // Check preconditions and if good then check interpreter
             if ($this->getAgent()->checkIntentConditions($scene->getPreconditions(), $utterance)) {

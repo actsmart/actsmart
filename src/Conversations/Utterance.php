@@ -6,10 +6,6 @@ use actsmart\actsmart\Interpreters\Intent\Intent;
 use Ds\Map;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
-use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
-use actsmart\actsmart\Actions\ActionInterface;
-use actsmart\actsmart\Conversations\ConditionInterface;
-use actsmart\actsmart\Sensors\SensorEvent;
 
 class Utterance extends EdgeDirected
 {
@@ -17,11 +13,14 @@ class Utterance extends EdgeDirected
 
     private $sequence;
 
+    /** @var Intent */
     private $intent;
 
     private $completes;
 
     private $action;
+
+    private $informationRequest;
 
     private $preconditions = [];
 
@@ -82,6 +81,7 @@ class Utterance extends EdgeDirected
 
     /**
      * @param mixed $completes
+     * @return Utterance
      */
     public function setCompletes($completes)
     {
@@ -90,7 +90,7 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return ActionInterface
+     * @return string
      */
     public function getAction()
     {
@@ -104,6 +104,24 @@ class Utterance extends EdgeDirected
     public function setAction($action)
     {
         $this->action = $action;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInformationRequest()
+    {
+        return $this->informationRequest;
+    }
+
+    /**
+     * @param mixed $informationRequest
+     * @return Utterance
+     */
+    public function setInformationRequest($informationRequest)
+    {
+        $this->informationRequest = $informationRequest;
         return $this;
     }
 

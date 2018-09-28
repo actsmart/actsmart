@@ -80,6 +80,9 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         return $this->conversation;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setCurrentUtteranceSequenceId($current_utterance_sequence_id)
     {
         $this->current_utterance_sequence_id = $current_utterance_sequence_id;
@@ -91,6 +94,9 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         return $this->current_utterance_sequence_id;
     }
 
+    /**
+     * @return Utterance
+     */
     public function getCurrentUtterance()
     {
         return $this->conversation->getUtteranceWithSequence($this->current_utterance_sequence_id);
@@ -99,6 +105,14 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
     public function getCurrentAction()
     {
         return $this->getCurrentUtterance()->getAction();
+    }
+
+    /**
+     * Gets the information request on the current Utterance if there is one
+     */
+    public function getCurrentInformationRequest()
+    {
+        return $this->getCurrentUtterance()->getInformationRequest();
     }
 
     /**

@@ -25,6 +25,10 @@ interface ConversationInstanceInterface
 
     public function getConversation();
 
+    /**
+     * @param $current_utterance_sequence_id
+     * @return ConversationInstanceInterface
+     */
     public function setCurrentUtteranceSequenceId($current_utterance_sequence_id);
 
     public function getCurrentUtteranceSequenceId();
