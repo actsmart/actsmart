@@ -243,7 +243,7 @@ class Agent
             }
         }
 
-        $this->logger->info(sprintf('No supporting Store found for information request %', $action_id));
+        $this->logger->info(sprintf('No supporting actuator found for action %', $action_id));
         return null;
     }
 
@@ -251,14 +251,14 @@ class Agent
      * Loops through all available information requests and if they support the requested
      *
      * @param $information_request_id
-     * @param Map $utterance
+     * @param Map $arguments
      * @return mixed|null
      */
-    public function performInformationRequest($information_request_id, Map $utterance)
+    public function performInformationRequest($information_request_id, Map $arguments)
     {
         foreach ($this->information_requests as $store => $information_request_ids) {
             if (in_array($information_request_id, $information_request_ids)) {
-                return $this->getStore($store)->getInformation($information_request_id, $utterance);
+                return $this->getStore($store)->getInformation($information_request_id, $arguments);
             }
         }
 
