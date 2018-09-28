@@ -304,7 +304,7 @@ class Conversation extends Graph
 
         //@todo if we are checking against what the bot should say then matching intents might not be useful
         foreach ($this->getPossibleFollowUps($agent, $current_sequence, $current_scene, $source_utterance) as $followup) {
-            if ($followup->hasInterpreter()) {
+            if ($followup->hasIntentInterpreter()) {
                 if ($followup->intentMatches($followup->interpret($source_utterance))) {
                     $matching_followups[] = $followup;
                 }
