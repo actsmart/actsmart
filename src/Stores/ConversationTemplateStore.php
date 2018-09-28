@@ -7,6 +7,7 @@ use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 
 abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
@@ -14,6 +15,8 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
     use ComponentTrait;
 
     protected $conversations = [];
+
+    private $default_intent = null;
 
     /**
      * @param Conversation $conversation
@@ -41,10 +44,9 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * matches the $intent.
      *
      * @param Map $utterance
-     * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(Map $utterance, Intent $intent)
+    public function getMatchingConversations(Map $utterance)
     {
         $matches = [];
         foreach ($this->conversations as $conversation) {
@@ -55,11 +57,10 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
                 /** @var Utterance $u */
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
-                // TODO - we are overwriting the original Intent here and if the conversations that follow do not have their own interpreter, it doesn't get changed back
                 if ($u->hasIntentInterpreter()) {
                     $conversationIntent = $this->getAgent()->interpretIntent($u->getIntentInterpreter(), $utterance);
                 } else {
-                    $conversationIntent = $intent;
+                    $conversationIntent = $this->determineEventIntent($utterance);
                 }
 
                 if ($u->intentMatches($conversationIntent)) {
@@ -81,12 +82,12 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      * @todo This should become more sophisticated than simply return the first
      * conversation.
      *
-     * @param Intent $intent
+     * @param Map $utterance
      * @return mixed
      */
-    public function getMatchingConversation(Map $utterance, Intent $intent)
+    public function getMatchingConversation(Map $utterance)
     {
-        $matches = $this->getMatchingConversations($utterance, $intent);
+        $matches = $this->getMatchingConversations($utterance);
 
         if (!$matches) {
             return false;
@@ -98,5 +99,40 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
         $match = array_pop($reversed_matches);
 
         return $match;
+    }
+
+    /**
+     * Builds an apporpriate Intent object based on the event that should generate the Intent.
+     *
+     * @param Map $utterance
+     * @return Intent|null
+     */
+    private function determineEventIntent(Map $utterance)
+    {
+        if ($this->default_intent) {
+            return $this->default_intent;
+        }
+
+        switch ($utterance->get(Literals::TYPE)) {
+            case Literals::SLACK_INTERACTIVE_MESSAGE:
+                $this->default_intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
+                break;
+            case Literals::SLACK_MESSAGE:
+                $this->default_intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
+                break;
+            case Literals::SLACK_COMMAND:
+                $this->default_intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
+                break;
+            case Literals::SLACK_DIALOG_SUBMISSION:
+                $this->default_intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
+                break;
+            case Literals::SLACK_MESSAGE_ACTION:
+                $this->default_intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
+                break;
+            default:
+                $this->default_intent = new Intent();
+        }
+
+        return $this->default_intent;
     }
 }

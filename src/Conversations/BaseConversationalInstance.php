@@ -191,7 +191,7 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         return $this;
     }
 
-    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent = null, $ongoing = true)
     {
         // If the conversation is not ongoing we are dealing with a new conversation and just need to get
         // the next thing the bot should say based on what the user just said.

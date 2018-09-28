@@ -324,7 +324,7 @@ class Conversation extends Graph
      * @param Intent $default_intent
      * @return bool
      */
-    public function getNextUtterance(Agent $agent, $current_scene, $sequence, Map $source_utterance, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, $current_scene, $sequence, Map $source_utterance, Intent $default_intent = null, $ongoing = true)
     {
         $matching_utterances = $ongoing ? $this->getMatchingUtterances($agent, $current_scene, $sequence, $source_utterance, $default_intent)
             :$this->getPossibleFollowUps($agent, $sequence, $current_scene, $source_utterance);

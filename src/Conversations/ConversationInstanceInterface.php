@@ -122,5 +122,5 @@ interface ConversationInstanceInterface
 
     public function saveConversationInstance();
 
-    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true);
+    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent = null, $ongoing = true);
 }

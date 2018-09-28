@@ -55,17 +55,13 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
             return false;
         }
 
-        // Set up a default intent
-        /* @var actsmart\actsmart\Interpreters\Intent $intent */
-        $intent = $this->determineEventIntent($utterance);
-
         // Before getting the next utterance let us perform any actions related to the current utterance
         if ($action = $ci->getCurrentAction()) {
             $this->getAgent()->performAction($action, $utterance);
         }
 
         // If we can't figure out what is the next utterance bail out.
-        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent)) {
+        if (!$next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance)) {
             return false;
         }
 
@@ -92,10 +88,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
     public function handleNewConversation(Map $utterance)
     {
-        /* @var \actsmart\actsmart\Interpreters\intent $intent */
-        $intent = $this->determineEventIntent($utterance);
-
-        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
+        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance);
 
         if (!$matching_conversation_id) {
             $this->logger->debug('No matching conversations.');
@@ -128,7 +121,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         }
 
         /* @var \actsmart\actsmart\Conversations\Utterance $next_utterance */
-        $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
+        $next_utterance = $ci->getNextUtterance($this->getAgent(), $utterance, null, false);
 
         $arguments = new Map();
         $arguments->put(Literals::MESSAGE, $next_utterance->getMessage()->getSlackResponse($channel_id, $workspace_id, $action_result ?? $utterance));
@@ -227,39 +220,6 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         // Attempt to retrieve a conversation store
         $conversation_instance_store = $this->agent->getStore('store.conversation_instance');
         return $conversation_instance_store->retrieve($temp_conversation_instance);
-    }
-
-    /**
-     * Builds an apporpriate Intent object based on the event that should generate the Intent.
-     *
-     * @param Map $utterance
-     * @return Intent|null
-     */
-    private function determineEventIntent(Map $utterance)
-    {
-        $intent = null;
-        switch ($utterance->get(Literals::TYPE)) {
-            case Literals::SLACK_INTERACTIVE_MESSAGE:
-                $intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
-                break;
-            case Literals::SLACK_MESSAGE:
-                $intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
-                break;
-            case Literals::SLACK_COMMAND:
-                $intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
-                break;
-            case Literals::SLACK_DIALOG_SUBMISSION:
-                $intent = $this->getAgent()->getDefaultIntentInterpreter()->interpretUtterance($utterance);
-                break;
-            case Literals::SLACK_MESSAGE_ACTION:
-                $intent = new Intent($utterance->get(Literals::CALLBACK_ID), $utterance, 1);
-                break;
-            default:
-                $intent = new Intent();
-        }
-
-        $this->logger->debug('Created an intent', (array)$intent);
-        return $intent;
     }
 
 

@@ -30,10 +30,9 @@ interface ConversationTemplateStoreInterface
      * matches the $intent.
      *
      * @param Map $utterance
-     * @param Intent $intent
      * @return array | boolean
      */
-    public function getMatchingConversations(Map $utterance, Intent $intent);
+    public function getMatchingConversations(Map $utterance);
 
     /**
      * Returns a single match - the first conversation that matches for now.
@@ -42,10 +41,9 @@ interface ConversationTemplateStoreInterface
      * conversation.
      *
      * @param Map $utterance
-     * @param Intent $intent
      * @return mixed
      */
-    public function getMatchingConversation(Map $utterance, Intent $intent);
+    public function getMatchingConversation(Map $utterance);
 
     /**
      * Creates the conversations objects this store will deal with.
