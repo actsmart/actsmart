@@ -2,9 +2,10 @@
 
 namespace actsmart\actsmart\Sensors\WebChat\Events;
 
+use actsmart\actsmart\Sensors\SensorEvent;
 use Ds\Map;
 
-class ChatOpenEvent extends WebChatEvent
+class ChatOpenEvent extends SensorEvent
 {
     const EVENT_NAME = 'event.webchat.chat_open';
 
@@ -16,7 +17,7 @@ class ChatOpenEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments = [], self::EVENT_NAME);
 
-        $this->userId = $subject->userId;
+        $this->userId = $subject->user§_id;
         $this->timestamp = time();
     }
 

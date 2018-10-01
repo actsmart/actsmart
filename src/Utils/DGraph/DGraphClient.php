@@ -52,7 +52,7 @@ class DGraphClient
 
         try {
             return $this->getData($response);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "Error processing query - {$e->getMessage()}";
         }
     }
@@ -77,7 +77,7 @@ class DGraphClient
 
         try {
             return $this->getData($response);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "Error processing alter {$e->getMessage()}";
         }
     }
@@ -85,7 +85,7 @@ class DGraphClient
     /**
      * @param $response
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
     private function getData($response)
     {
@@ -99,7 +99,7 @@ class DGraphClient
         }
 
         if ($error) {
-            throw new Exception($error);
+            throw new \Exception($error);
         }
 
        return $response['data'];

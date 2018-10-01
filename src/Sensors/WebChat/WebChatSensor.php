@@ -32,16 +32,9 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
 
     public function receive(SymfonyRequest $message)
     {
-        if ($message->isMethod('get')) {
-            $message = ($message->query->all());
-            $message['type'] = 'chat_open';
-            // Turn into object;
-            $message = json_decode(json_encode($message));
-        } elseif ($message->isMethod('post')) {
-            $this->logger->debug('Got a message: ' . $message->getContent());
+        $this->logger->debug('Got a message: ' . $message->getContent());
 
-            $message = json_decode($message->getContent());
-        }
+        $message = json_decode($message->getContent());
 
         $event = $this->process($message);
         $this->notify($event->getkey(), $event);
