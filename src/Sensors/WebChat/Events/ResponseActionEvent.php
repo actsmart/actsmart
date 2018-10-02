@@ -5,11 +5,9 @@ namespace actsmart\actsmart\Sensors\WebChat\Events;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 
-class ActionEvent extends WebChatEvent
+class ResponseActionEvent extends WebChatEvent
 {
-    const EVENT_NAME = 'event.webchat.action';
-
-    private $callback_id = null;
+    const EVENT_NAME = 'event.webchat.response_action';
 
     private $user_id = null;
 
@@ -21,10 +19,9 @@ class ActionEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments);
 
-        $this->callback_id = $subject->data->callback_id ?? null;
-        $this->user_id = $subject->user_id;
+        $this->user_id = $arguments[Literals::USER_ID];
         $this->timestamp = time();
-        $this->text = $subject->data->text ?? null;
+        $this->text = $subject->getText();
     }
 
     public function getKey()
@@ -37,21 +34,12 @@ class ActionEvent extends WebChatEvent
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_ACTION);
-        $utterance->put(Literals::CALLBACK_ID, $this->getCallbackId());
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::UID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, $this->text);
 
         return $utterance;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCallbackId()
-    {
-        return $this->callback_id;
     }
 
     /**

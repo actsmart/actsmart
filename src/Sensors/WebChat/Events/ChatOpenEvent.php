@@ -15,7 +15,7 @@ class ChatOpenEvent extends SensorEvent
 
     public function __construct($subject, $arguments = [])
     {
-        parent::__construct($subject, $arguments = [], self::EVENT_NAME);
+        parent::__construct($subject, $arguments, self::EVENT_NAME);
 
         $this->userId = $subject->user_id;
         $this->timestamp = time();
