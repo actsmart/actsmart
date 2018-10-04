@@ -14,14 +14,6 @@ abstract class DGraphResponse
     }
 
     /**
-     * Formats the node
-     *
-     * @param $node
-     * @return array
-     */
-     abstract protected function formatNode($node, $type);
-
-    /**
      * Sums the weight value of all keywords matching keywords
      *
      * @param $has_keywords
