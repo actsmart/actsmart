@@ -2,10 +2,8 @@
 
 namespace actsmart\actsmart\Utils\DGraph;
 
-
 class DGraphClient
 {
-
     /** @var \Guzzle\Http\Client */
     protected $client;
 
@@ -19,7 +17,7 @@ class DGraphClient
     public function __construct($dgraphUrl, $dGraphPort, $dGraphQueriesFilePath)
     {
         $client = new \GuzzleHttp\Client([
-            'base_uri' => $dgraphUrl . ":" . env($dGraphPort, 8080)
+            'base_uri' => $dgraphUrl . ":" . $dGraphPort
         ]);
 
         $this->client = $client;
@@ -40,8 +38,9 @@ class DGraphClient
      */
     public function initSchema()
     {
-        $schema = $this->getQueryFromFile("schema");
-        return $this->alter($schema);
+        $schema = $this->getCurrentSchema();
+        $outcome = $this->alter($schema);
+        return $outcome;
     }
 
     public function query(string $query)
@@ -83,6 +82,17 @@ class DGraphClient
     }
 
     /**
+     * Returns the contents of the schema file
+     *
+     * @return bool|string
+     */
+    public function getCurrentSchema()
+    {
+        $schema = $this->getQueryFromFile("schema");
+        return $schema;
+    }
+
+    /**
      * @param $response
      * @return mixed
      * @throws \Exception
@@ -102,7 +112,7 @@ class DGraphClient
             throw new \Exception($error);
         }
 
-       return $response['data'];
+        return $response['data'];
     }
 
     /**
@@ -121,5 +131,4 @@ class DGraphClient
 
         return null;
     }
-
 }

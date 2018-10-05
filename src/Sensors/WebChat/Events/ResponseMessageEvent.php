@@ -7,11 +7,11 @@ use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
 use Ds\Map;
 
-class MessageEvent extends WebChatEvent
+class ResponseMessageEvent extends WebChatEvent
 {
     use RegularExpressionHelper;
 
-    const EVENT_NAME = 'event.webchat.message';
+    const EVENT_NAME = 'event.webchat.response_message';
 
     protected $user_id = null;
 
@@ -25,10 +25,10 @@ class MessageEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
-        $this->user_id = $subject->user_id;
+        $this->user_id = $arguments[Literals::USER_ID];
         $this->timestamp = time();
-        $this->text = $subject->data->text ?? null;
-        $this->data = $subject->data ?? null;
+        $this->text = $subject->getText();
+        $this->data = null;
     }
 
     public function getKey()

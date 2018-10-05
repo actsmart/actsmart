@@ -111,7 +111,8 @@ class WebChatLongTextMessage extends WebChatMessage
                 'submit_text' => $this->getSubmitText(),
                 'callback_id' => $this->getCallbackId(),
                 'initial_text' => $this->getInitialText(),
-                'placeholder' => $this->getPlaceholder()
+                'placeholder' => $this->getPlaceholder(),
+                'disable_text' => $this->getDisableText()
             ]
         ];
     }

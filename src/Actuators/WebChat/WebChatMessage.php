@@ -7,6 +7,8 @@ class WebChatMessage
     /** The message text. */
     private $text = null;
 
+    private $disable_text = false;
+
     /**
      * Sets text for a standard Web Chat message. The main text is escaped
      *
@@ -29,13 +31,34 @@ class WebChatMessage
         return $this->text;
     }
 
+    /**
+     * Set disable_text property
+     *
+     * @param $disable_text
+     * @return $this
+     */
+    public function setDisableText($disable_text)
+    {
+        $this->disable_text = $disable_text;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDisableText()
+    {
+        return $this->disable_text;
+    }
+
     public function getMessageToPost()
     {
         return [
             'author' => 'them',
             'type' => 'text',
             'data' => [
-                'text' => $this->getText()
+                'text' => $this->getText(),
+                'disable_text' => $this->getDisableText()
             ]
         ];
     }
