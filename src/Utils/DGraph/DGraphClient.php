@@ -3,6 +3,8 @@
 namespace actsmart\actsmart\Utils\DGraph;
 
 
+use Illuminate\Support\Facades\Log;
+
 class DGraphClient
 {
 
@@ -40,8 +42,11 @@ class DGraphClient
      */
     public function initSchema()
     {
-        $schema = $this->getQueryFromFile("schema");
-        return $this->alter($schema);
+        $schema = $this->getCurrentSchema();
+        Log::info('Updating Schema');
+        $outcome = $this->alter($schema);
+        Log::info('Outcome of running schema', [$outcome]);
+        return $outcome;
     }
 
     public function query(string $query)
@@ -83,6 +88,17 @@ class DGraphClient
     }
 
     /**
+     * Returns the contents of the schema file
+     *
+     * @return bool|string
+     */
+    public function getCurrentSchema()
+    {
+        $schema = $this->getQueryFromFile("schema");
+        return $schema;
+    }
+
+    /**
      * @param $response
      * @return mixed
      * @throws \Exception
@@ -102,7 +118,7 @@ class DGraphClient
             throw new \Exception($error);
         }
 
-       return $response['data'];
+        return $response['data'];
     }
 
     /**
@@ -121,5 +137,4 @@ class DGraphClient
 
         return null;
     }
-
 }
