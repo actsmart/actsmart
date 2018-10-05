@@ -3,17 +3,23 @@
 namespace actsmart\actsmart\Actuators\WebChat;
 
 use actsmart\actsmart\Actuators\ActuatorInterface;
+use actsmart\actsmart\Sensors\WebChat\Events\ResponseActionEvent;
+use actsmart\actsmart\Sensors\WebChat\Events\ResponseLongTextEvent;
+use actsmart\actsmart\Sensors\WebChat\Events\ResponseMessageEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
+use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\NotifierTrait;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class WebChatActuator implements ComponentInterface, LoggerAwareInterface, ActuatorInterface
+class WebChatActuator implements ComponentInterface, LoggerAwareInterface, ActuatorInterface, NotifierInterface
 {
-    use LoggerAwareTrait, ComponentTrait;
+    use LoggerAwareTrait, ComponentTrait, NotifierTrait;
 
     const KEY           = 'actuator.webchat';
     const POST_MESSAGE  = 'action.webchat.postmessage';
@@ -40,19 +46,21 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
         $response = null;
 
         if (is_array($arguments['message'])) {
-            return $this->postMultipleMessages($arguments['message']);
+            return $this->postMultipleMessages($arguments['message'], $arguments['user_id']);
         }
 
-        return $this->postMessage($arguments['message']);
+        return $this->postMessage($arguments['message'], $arguments['user_id']);
     }
 
     /**
      * @param WebChatMessage $message
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    protected function postMessage(WebChatMessage $message)
+    protected function postMessage(WebChatMessage $message, $user_id)
     {
         $this->logger->debug('Attempting a Web Chat response message.', $message->getMessageToPost());
+
+        $this->notifyMessageEvent($message, $user_id);
 
         $this->agent->setHttpReaction(
             new JsonResponse($message->getMessageToPost(),
@@ -64,13 +72,15 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
         return $this->agent->httpReact();
     }
 
-    protected function postMultipleMessages(array $messages)
+    protected function postMultipleMessages(array $messages, $user_id)
     {
         $this->logger->debug('Attempting a Web Chat response message.');
 
         $response = [];
         foreach ($messages as $message) {
             $response[] = $message->getMessageToPost();
+
+            $this->notifyMessageEvent($message, $user_id);
         }
 
         $this->agent->setHttpReaction(
@@ -79,6 +89,22 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
                 $this->headers
             )
         );
+    }
+
+    protected function notifyMessageEvent(WebChatMessage $message, $user_id)
+    {
+        switch (true) {
+            case $message instanceof WebChatButtonMessage:
+                $event = new ResponseActionEvent($message, [Literals::USER_ID => $user_id]);
+                break;
+            case $message instanceof WebChatLongTextMessage:
+                $event = new ResponseLongTextEvent($message, [Literals::USER_ID => $user_id]);
+                break;
+            default:
+                $event = new ResponseMessageEvent($message, [Literals::USER_ID => $user_id]);
+        }
+
+        $this->notify($event->getkey(), $event);
     }
 
     /**

@@ -6,19 +6,17 @@ use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\RegularExpressionHelper;
 use Ds\Map;
 
-class LongTextEvent extends MessageEvent
+class ResponseLongTextEvent extends ResponseMessageEvent
 {
     use RegularExpressionHelper;
 
-    const EVENT_NAME = 'event.webchat.longtext';
-
-    protected $callback_id;
+    const EVENT_NAME = 'event.webchat.response_longtext';
 
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
-        $this->callback_id = $subject->data->callback_id ?? null;
+        $this->user_id = $arguments[Literals::USER_ID];
     }
 
     public function getKey()
@@ -32,7 +30,6 @@ class LongTextEvent extends MessageEvent
     public function getUtterance() : Map
     {
         $utterance = parent::getUtterance();
-        $utterance->put(Literals::CALLBACK_ID, $this->callback_id);
 
         return $utterance;
     }
