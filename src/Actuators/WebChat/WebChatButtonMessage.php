@@ -70,7 +70,8 @@ class WebChatButtonMessage extends WebChatMessage
             'type' => 'button',
             'data' => [
                 'text' => $this->getText(),
-                'buttons' => $this->getButtonsArray()
+                'buttons' => $this->getButtonsArray(),
+                'disable_text' => $this->getDisableText()
             ]
         ];
     }
