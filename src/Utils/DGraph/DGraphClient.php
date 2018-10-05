@@ -2,12 +2,8 @@
 
 namespace actsmart\actsmart\Utils\DGraph;
 
-
-use Illuminate\Support\Facades\Log;
-
 class DGraphClient
 {
-
     /** @var \Guzzle\Http\Client */
     protected $client;
 
@@ -21,7 +17,7 @@ class DGraphClient
     public function __construct($dgraphUrl, $dGraphPort, $dGraphQueriesFilePath)
     {
         $client = new \GuzzleHttp\Client([
-            'base_uri' => $dgraphUrl . ":" . env($dGraphPort, 8080)
+            'base_uri' => $dgraphUrl . ":" . $dGraphPort
         ]);
 
         $this->client = $client;
@@ -43,9 +39,7 @@ class DGraphClient
     public function initSchema()
     {
         $schema = $this->getCurrentSchema();
-        Log::info('Updating Schema');
         $outcome = $this->alter($schema);
-        Log::info('Outcome of running schema', [$outcome]);
         return $outcome;
     }
 
