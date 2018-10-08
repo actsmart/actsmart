@@ -28,6 +28,9 @@ class Literals
     /* The callback id contained within an utterance */
     const CALLBACK_ID = 'callback_id';
 
+    /* The callback data contained within an utterance */
+    const CALLBACK_DATA = 'callback_data';
+
     /* The user id of the user the message originated from */
     const UID = 'uid';
 
