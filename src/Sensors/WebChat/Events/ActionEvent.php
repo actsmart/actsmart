@@ -93,8 +93,7 @@ class ActionEvent extends WebChatEvent
     {
         $data = explode(self::CALLBACK_DELIMITER, $callback);
         if (count($data) > 1) {
-            $data = array_reverse($data);
-            array_pop($data);
+            array_shift($data);
             return $data;
         } else {
             return null;
