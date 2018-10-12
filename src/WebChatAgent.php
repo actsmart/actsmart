@@ -7,7 +7,6 @@ use actsmart\actsmart\Controllers\WebChat\ConversationController;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatEventCreator;
 use actsmart\actsmart\Sensors\WebChat\WebChatSensor;
 use actsmart\actsmart\Stores\ContextStore;
-use actsmart\actsmart\Stores\ContextStore;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

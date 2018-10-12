@@ -5,6 +5,7 @@ namespace actsmart\actsmart;
 use actsmart\actsmart\Actuators\Slack\SlackActuator;
 use actsmart\actsmart\Actuators\Slack\SlackConversationsHistory;
 use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
+use actsmart\actsmart\Stores\ContextInformation;
 use actsmart\actsmart\Stores\ContextStore;
 use actsmart\actsmart\Sensors\Slack\SlackSensor;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
@@ -45,13 +46,11 @@ class SlackAgent extends Agent
         $contextStore = new ContextStore();
         $contextStore->storeInformation();
 
-        $slackConfiguration = new ContextInformation()
+        $contextStore->storeInformation(new ContextInformation('slack', 'app.token', $this->slack_verification_token));
+        $contextStore->storeInformation(new ContextInformation('slack', 'uri.base', $this->slack_base_uri));
+        $contextStore->storeInformation(new ContextInformation('slack', 'reply_early', $this->slack_reply_early));
 
-        $config_store->add('slack', 'app.token', $this->slack_verification_token);
-        $config_store->add('slack', 'uri.base', $this->slack_base_uri);
-        $config_store->add('slack', 'reply_early', $this->slack_reply_early);
-
-        $this->addComponent($config_store);
+        $this->addComponent($contextStore);
 
         // We need to pickup Slack events so need to add a Slack sensor
         $this->addComponent(new SlackSensor(new SlackEventCreator()));
