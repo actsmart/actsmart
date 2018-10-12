@@ -6,16 +6,20 @@ use Ds\Map;
 interface StoreInterface
 {
     /**
-     * @param $information_request_id string The id of the
-     * @param $arguments
-     * @return mixed
+     * Retrieves an Information object based on the optional key and Map arguments.
+     *
+     * @param string $type - the type of information to retrieve
+     * @param string $id - a unique identified for that info
+     * @param Map $arguments - a set of arguments for the Store to apply to the information retrieval search
+     * @return InformationInterface | null
      */
-    public function getInformation($information_request_id, Map $arguments);
+    public function getInformation(string $type, string $id = '', Map $arguments = null);
+
 
     /**
-     * Returns an array of information requests that will be listened to
-     *
-     * @return string[]
+     * @param InformationInterface $information
+     * @return mixed
      */
-    public function handlesInformationRequests();
+    public function storeInformation(InformationInterface $information);
+
 }

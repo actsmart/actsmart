@@ -3,56 +3,20 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Actuators\ActionEvent;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
- * Class ConfigStore
+ * Class ContextStore
  * @package actsmart\actsmart\Stores
  *
- * Stores any configuration that various components may require using a simple structure of
+ * Stores contextual information that various components may require using a simple structure of
  * [topic][key][value]. The added topic level allows us to store multiple configuration settings
  * relating to a specific group or context.
  */
-class ConfigStore extends BaseStore
+class ContextStore extends EphemeralStore
 {
-    /* @var Map $store */
-    protected $store;
-
-   public function storeInformation(InformationInterface $information)
-   {
-       // TODO: Implement storeInformation() method.
-   }
-
-   public function getInformation(string $key = '', Map $arguments = null) {
-
-   }
-
-    /**
-     * @param $topic
-     * @param $key
-     * @param $value
-     */
-    public function add($topic, $key, $value)
-    {
-        $this->configuration[$topic][$key] = $value;
-    }
-
-    /**
-     * Retrieve the value associated with $key for a given $topic.
-     * @param $topic
-     * @param $key
-     * @return mixed
-     */
-    public function get($topic, $key)
-    {
-        $this->notify('config.store.request', new ConfigRequestEvent(null, ['topic' => $topic, 'key' => $key]));
-        if (!isset($this->configuration[$topic][$key])) {
-            throw new ConfigurationStoreValueNotSetException('Value for ' . $key . ' not set');
-        }
-        return $this->configuration[$topic][$key];
-    }
-
     /**
      * Listens to events and registers the required info.
      * @param GenericEvent $e
@@ -63,7 +27,7 @@ class ConfigStore extends BaseStore
             $subject = $e->getSubject();
             foreach ($subject as $topic =>  $content) {
                 foreach ($content as $key => $value) {
-                    $this->add($topic, $key, $value);
+                    $this->storeInformation(new ContextInformation($subject, $topic, $content));
                 }
             }
         }
@@ -79,6 +43,6 @@ class ConfigStore extends BaseStore
      */
     public function getKey()
     {
-        return 'store.config';
+        return Literals::CONTEXT_STORE;
     }
 }
