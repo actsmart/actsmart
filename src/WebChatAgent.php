@@ -6,7 +6,7 @@ use actsmart\actsmart\Actuators\WebChat\WebChatActuator;
 use actsmart\actsmart\Controllers\WebChat\ConversationController;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatEventCreator;
 use actsmart\actsmart\Sensors\WebChat\WebChatSensor;
-use actsmart\actsmart\Stores\ConfigStore;
+use actsmart\actsmart\Stores\ContextStore;
 use actsmart\actsmart\Stores\ContextStore;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -25,8 +25,8 @@ class WebChatAgent extends Agent
      */
     private function configure()
     {
-        $config_store = new ConfigStore();
-        $this->addComponent($config_store);
+        $contextStore = new ContextStore();
+        $this->addComponent($contextStore);
 
         // We need to pickup WebChat events so need to add a WebChat sensor
         $this->addComponent(new WebChatSensor(new WebChatEventCreator()));
