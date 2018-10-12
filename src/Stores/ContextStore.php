@@ -3,12 +3,7 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Actuators\ActionEvent;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
-use actsmart\actsmart\Utils\ListenerInterface;
-use actsmart\actsmart\Utils\ListenerTrait;
-use actsmart\actsmart\Utils\NotifierInterface;
-use actsmart\actsmart\Utils\NotifierTrait;
+use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -19,11 +14,19 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * [topic][key][value]. The added topic level allows us to store multiple configuration settings
  * relating to a specific group or context.
  */
-class ConfigStore extends BaseStore implements ComponentInterface, ListenerInterface, NotifierInterface
+class ConfigStore extends BaseStore
 {
-    use ComponentTrait, NotifierTrait, ListenerTrait;
+    /* @var Map $store */
+    protected $store;
 
-    protected $configuration = [];
+   public function storeInformation(InformationInterface $information)
+   {
+       // TODO: Implement storeInformation() method.
+   }
+
+   public function getInformation(string $key = '', Map $arguments = null) {
+
+   }
 
     /**
      * @param $topic
