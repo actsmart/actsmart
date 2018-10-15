@@ -28,7 +28,7 @@ class WebChatFormMessage extends WebChatMessage
      * @param string $element
      * @return $this
      */
-    public function addElement(string $element)
+    public function addElement(WebChatFormElement $element)
     {
       $this->elements[] = $element;
       return $this;
@@ -68,6 +68,24 @@ class WebChatFormMessage extends WebChatMessage
         return $this->submitText;
     }
 
+    /**
+     * @return array
+     */
+    public function getElementsArray()
+    {
+        $elements = [];
+
+        foreach ($this->elements as $element) {
+            $elements[] = [
+                'name' => $element->getName(),
+                'display' => $element->getDisplay(),
+                'required' => $element->getRequired()
+            ];
+        }
+
+        return $elements;
+    }
+
     public function getMessageToPost()
     {
         return [
@@ -75,7 +93,7 @@ class WebChatFormMessage extends WebChatMessage
             'type' => 'webchat_form',
             'data' => [
                 'text' => $this->getText(),
-                'elements' => $this->getElements(),
+                'elements' => $this->getElementsArray(),
                 'submit_text' => $this->getSubmitText()
             ]
         ];
