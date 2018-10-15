@@ -27,6 +27,7 @@ abstract class EphemeralStore extends BaseStore
         if ($this->store->hasKey($information->getType())) {
             $typeStore = $this->store->get($information->getType());
             $typeStore[$information->getId()] = $information->getValue();
+            $this->store->put($information->getType(), $typeStore);
         } else {
             $typeStore = [$information->getId() => $information->getValue()];
             $this->store->put($information->getType(), $typeStore);
