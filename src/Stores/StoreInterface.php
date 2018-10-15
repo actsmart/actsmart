@@ -22,4 +22,12 @@ interface StoreInterface
      */
     public function storeInformation(InformationInterface $information);
 
+    /**
+     * Returns an array of information requests that this store can handle. This can be used to trigger
+     * information requests based on speech acts.
+     *
+     * @return string[]
+     */
+    public function handlesInformationRequests();
+
 }
