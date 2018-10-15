@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Sensors\WebChat\Events\ResponseActionEvent;
+use actsmart\actsmart\Sensors\WebChat\Events\ResponseFormEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\ResponseLongTextEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\ResponseMessageEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -96,6 +97,9 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
         switch (true) {
             case $message instanceof WebChatButtonMessage:
                 $event = new ResponseActionEvent($message, [Literals::USER_ID => $user_id]);
+                break;
+            case $message instanceof WebChatFormMessage:
+                $event = new ResponseFormEvent($message, [Literals::USER_ID => $user_id]);
                 break;
             case $message instanceof WebChatLongTextMessage:
                 $event = new ResponseLongTextEvent($message, [Literals::USER_ID => $user_id]);
