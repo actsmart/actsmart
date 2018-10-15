@@ -11,14 +11,12 @@ use Ds\Map;
 abstract class ConversationTemplateStore extends EphemeralStore
 {
 
-    const TYPE = 'conversation';
-
     /**
      * @param Conversation $conversation
      */
     public function addConversation(Conversation $conversation)
     {
-        $this->storeInformation(new ContextInformation(self::TYPE, $conversation->getConversationTemplateId(), $conversation));
+        $this->storeInformation(new ContextInformation(Conversation::INFORMATION_TYPE, $conversation->getConversationTemplateId(), $conversation));
     }
 
     /**
@@ -32,13 +30,22 @@ abstract class ConversationTemplateStore extends EphemeralStore
     }
 
     /**
+     * Returns all conversations (assumes there is just a single type);
+     *
+     * @return mixed
+     */
+    public function getAllConversations() {
+        return $this->store->get(Conversation::INFORMATION_TYPE);
+    }
+
+    /**
      * @param $conversation_template_id
      * @return Conversation | null
      */
     public function getConversation($conversation_template_id)
     {
         /* @var ContextInformation $information */
-        $information = $this->getInformation(self::TYPE, $conversation_template_id);
+        $information = $this->getInformation(Conversation::INFORMATION_TYPE, $conversation_template_id);
         return $information->getValue();
     }
 
@@ -53,7 +60,7 @@ abstract class ConversationTemplateStore extends EphemeralStore
     public function getMatchingConversations(Map $utterance, Intent $intent)
     {
         $matches = [];
-        foreach ($this->conversations as $conversation) {
+        foreach ($this->getAllConversations() as $conversation_id => $conversation) {
 
             /** @var Scene $scene */
             $scene = $conversation->getInitialScene();
