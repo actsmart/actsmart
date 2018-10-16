@@ -4,8 +4,8 @@ namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Interpreters\Intent\Intent;
-use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Stores\InformationInterface;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
 
@@ -294,6 +294,7 @@ class Conversation extends Graph implements InformationInterface
             }
         }
 
+        // TODO this is returning the wrong type
         return $followups_with_matching_preconditions;
     }
 
@@ -384,16 +385,18 @@ class Conversation extends Graph implements InformationInterface
 
     //Support for InformationInterface implementation.
 
-    public function getType() {
+    public function getType()
+    {
         return self::INFORMATION_TYPE;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->getConversationTemplateId();
     }
 
-    public function getValue() {
+    public function getValue()
+    {
         return $this;
     }
-
 }

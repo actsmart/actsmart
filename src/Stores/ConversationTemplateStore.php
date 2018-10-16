@@ -34,7 +34,8 @@ abstract class ConversationTemplateStore extends EphemeralStore
      *
      * @return mixed
      */
-    public function getAllConversations() {
+    public function getAllConversations()
+    {
         return $this->store->get(Conversation::INFORMATION_TYPE);
     }
 
@@ -60,6 +61,7 @@ abstract class ConversationTemplateStore extends EphemeralStore
     public function getMatchingConversations(Map $utterance, Intent $intent)
     {
         $matches = [];
+        /** @var Conversation $conversation */
         foreach ($this->getAllConversations() as $conversation_id => $conversation) {
 
             /** @var Scene $scene */
@@ -96,6 +98,7 @@ abstract class ConversationTemplateStore extends EphemeralStore
      * @todo This should become more sophisticated than simply return the first
      * conversation.
      *
+     * @param Map $utterance
      * @param Intent $intent
      * @return mixed
      */

@@ -4,16 +4,15 @@ namespace actsmart\actsmart;
 
 use actsmart\actsmart\Actuators\Slack\SlackActuator;
 use actsmart\actsmart\Actuators\Slack\SlackConversationsHistory;
-use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
-use actsmart\actsmart\Stores\ContextInformation;
-use actsmart\actsmart\Stores\ContextStore;
-use actsmart\actsmart\Sensors\Slack\SlackSensor;
-use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
 use actsmart\actsmart\Controllers\Slack\ConversationController;
 use actsmart\actsmart\Controllers\Slack\URLVerificationController;
-use actsmart\actsmart\Stores\Slack\SlackContextStore;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
+use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
+use actsmart\actsmart\Sensors\Slack\SlackSensor;
+use actsmart\actsmart\Stores\ContextInformation;
+use actsmart\actsmart\Stores\ContextStore;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class SlackAgent extends Agent
 {
@@ -44,7 +43,6 @@ class SlackAgent extends Agent
     {
         // We use a store to keep external config
         $contextStore = new ContextStore();
-        $contextStore->storeInformation();
 
         $contextStore->storeInformation(new ContextInformation('slack', 'app.token', $this->slack_verification_token));
         $contextStore->storeInformation(new ContextInformation('slack', 'uri.base', $this->slack_base_uri));

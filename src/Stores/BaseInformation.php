@@ -12,7 +12,8 @@ abstract class BaseInformation implements InformationInterface
 
     private $value;
 
-    public function __construct($type, $id, $value) {
+    public function __construct($type, $id, $value)
+    {
         $this->type = $type;
         $this->id = $id;
         $this->value = $value;
@@ -65,8 +66,4 @@ abstract class BaseInformation implements InformationInterface
     {
         $this->value = $value;
     }
-
-
-
-
 }

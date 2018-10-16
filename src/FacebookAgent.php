@@ -7,6 +7,7 @@ use actsmart\actsmart\Controllers\Facebook\ConversationController;
 use actsmart\actsmart\Controllers\Facebook\URLVerificationController;
 use actsmart\actsmart\Sensors\Facebook\Events\FacebookEventCreator;
 use actsmart\actsmart\Sensors\Facebook\FacebookSensor;
+use actsmart\actsmart\Stores\ContextInformation;
 use actsmart\actsmart\Stores\ContextStore;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -41,11 +42,11 @@ class FacebookAgent extends Agent
      */
     private function configureForFacebook()
     {
-        $config_store = new ConfigStore();
-        $config_store->add('facebook', 'app.token', $this->facebook_verification_token);
-        $config_store->add('facebook', 'reply_early', $this->facebook_reply_early);
-        $config_store->add('facebook', 'uri.base', $this->facebook_base_uri);
-        $config_store->add('facebook', 'access.token', $this->facebook_access_token);
+        $config_store = new ContextStore();
+        $config_store->storeInformation(new ContextInformation('facebook', 'app.token', $this->facebook_verification_token));
+        $config_store->storeInformation(new ContextInformation('facebook', 'reply_early', $this->facebook_reply_early));
+        $config_store->storeInformation(new ContextInformation('facebook', 'uri.base', $this->facebook_base_uri));
+        $config_store->storeInformation(new ContextInformation('facebook', 'access.token', $this->facebook_access_token));
 
         $this->addComponent($config_store);
 
