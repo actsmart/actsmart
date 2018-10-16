@@ -76,8 +76,10 @@ class Literals
     /* Identifier for an utterance */
     const UTTERANCE = 'utterance';
 
-
     /* NLP Interpreters */
     const GOOGLE_CLOUD_NLP = 'interpreter.nlp.google_nlp';
+
+    /* Stores */
+    const CONTEXT_STORE = 'store.context';
 
 }

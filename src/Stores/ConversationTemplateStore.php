@@ -6,23 +6,17 @@ use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Conversations\Scene;
 use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
 use Ds\Map;
 
-abstract class ConversationTemplateStore extends BaseStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
+abstract class ConversationTemplateStore extends EphemeralStore
 {
-    use ComponentTrait;
-
-    /** @var Conversation[] */
-    protected $conversations = [];
 
     /**
      * @param Conversation $conversation
      */
     public function addConversation(Conversation $conversation)
     {
-        $this->conversations[$conversation->getConversationTemplateId()] = $conversation;
+        $this->storeInformation(new ContextInformation(Conversation::INFORMATION_TYPE, $conversation->getConversationTemplateId(), $conversation));
     }
 
     /**
@@ -30,12 +24,30 @@ abstract class ConversationTemplateStore extends BaseStore implements Conversati
      */
     public function addConversations($conversations)
     {
-        $this->conversations = $conversations;
+        foreach ($conversations as $conversation) {
+            $this->addConversation($conversation);
+        }
     }
 
+    /**
+     * Returns all conversations (assumes there is just a single type);
+     *
+     * @return mixed
+     */
+    public function getAllConversations()
+    {
+        return $this->store->get(Conversation::INFORMATION_TYPE);
+    }
+
+    /**
+     * @param $conversation_template_id
+     * @return Conversation | null
+     */
     public function getConversation($conversation_template_id)
     {
-        return $this->conversations[$conversation_template_id];
+        /* @var ContextInformation $information */
+        $information = $this->getInformation(Conversation::INFORMATION_TYPE, $conversation_template_id);
+        return $information->getValue();
     }
 
     /**
@@ -49,7 +61,8 @@ abstract class ConversationTemplateStore extends BaseStore implements Conversati
     public function getMatchingConversations(Map $utterance, Intent $intent)
     {
         $matches = [];
-        foreach ($this->conversations as $conversation) {
+        /** @var Conversation $conversation */
+        foreach ($this->getAllConversations() as $conversation_id => $conversation) {
 
             /** @var Scene $scene */
             $scene = $conversation->getInitialScene();
@@ -85,6 +98,7 @@ abstract class ConversationTemplateStore extends BaseStore implements Conversati
      * @todo This should become more sophisticated than simply return the first
      * conversation.
      *
+     * @param Map $utterance
      * @param Intent $intent
      * @return mixed
      */
