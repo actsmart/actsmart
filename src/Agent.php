@@ -258,7 +258,7 @@ class Agent
     {
         foreach ($this->information_requests as $store => $information_request_ids) {
             if (in_array($information_request_id, $information_request_ids)) {
-                return $this->getStore($store)->getInformation($information_request_id, $arguments);
+                return $this->getStore($store)->getInformation($information_request_id, null, $arguments);
             }
         }
 
