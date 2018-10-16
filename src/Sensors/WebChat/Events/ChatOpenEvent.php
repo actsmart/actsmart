@@ -2,10 +2,10 @@
 
 namespace actsmart\actsmart\Sensors\WebChat\Events;
 
-use actsmart\actsmart\Sensors\SensorEvent;
+use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 
-class ChatOpenEvent extends SensorEvent
+class ChatOpenEvent extends WebChatEvent
 {
     const EVENT_NAME = 'event.webchat.chat_open';
 
@@ -25,9 +25,14 @@ class ChatOpenEvent extends SensorEvent
 
     private $userTimezone = null;
 
-    public function __construct($subject, $arguments = [])
+    private $callbackId = null;
+
+    protected $event_key;
+
+    public function __construct($subject, $arguments = [], $key = null)
     {
-        parent::__construct($subject, $arguments, self::EVENT_NAME);
+        $this->event_key = $key == null ? self::EVENT_NAME : $key;
+        parent::__construct($subject, $arguments, $this->event_key);
 
         $this->userId = $subject->user_id;
         $this->timestamp = time();
@@ -38,11 +43,12 @@ class ChatOpenEvent extends SensorEvent
         $this->userOS = $subject->data->user->os ?? null;
         $this->userBrowser = $subject->data->user->browser ?? null;
         $this->userTimezone = $subject->data->user->timezone ?? null;
+        $this->callbackId = $subject->data->callback_id ?? null;
     }
 
     public function getKey()
     {
-        return self::EVENT_NAME;
+        return $this->event_key;
     }
 
     // This needs to go away but we have to clean up the hierarchy from SensorEvent to WebChatEvent
@@ -50,6 +56,12 @@ class ChatOpenEvent extends SensorEvent
     {
         /* @var \Ds\Map */
         $utterance = new Map();
+        $utterance->put(Literals::TYPE, Literals::WEB_CHAT_OPEN);
+        $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
+        $utterance->put(Literals::UID, $this->getUserId());
+        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
+        $utterance->put(Literals::TEXT, '');
+
         return $utterance;
     }
 
@@ -107,6 +119,14 @@ class ChatOpenEvent extends SensorEvent
     public function getUserTimezone()
     {
         return $this->userTimezone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCallbackId()
+    {
+        return $this->callbackId;
     }
 
     /**
