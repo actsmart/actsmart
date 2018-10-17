@@ -9,10 +9,6 @@ class ChatOpenEvent extends WebChatEvent
 {
     const EVENT_NAME = 'event.webchat.chat_open';
 
-    private $userId = null;
-
-    private $timestamp = null;
-
     private $userIPAddress = null;
 
     private $userCountry = null;
