@@ -4,16 +4,15 @@ namespace actsmart\actsmart;
 
 use actsmart\actsmart\Actuators\Slack\SlackActuator;
 use actsmart\actsmart\Actuators\Slack\SlackConversationsHistory;
-use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
-use actsmart\actsmart\Stores\ConfigStore;
-use actsmart\actsmart\Sensors\Slack\SlackSensor;
-use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
 use actsmart\actsmart\Controllers\Slack\ConversationController;
 use actsmart\actsmart\Controllers\Slack\URLVerificationController;
+use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
+use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
+use actsmart\actsmart\Sensors\Slack\SlackSensor;
+use actsmart\actsmart\Stores\ContextInformation;
 use actsmart\actsmart\Stores\ContextStore;
-use actsmart\actsmart\Stores\Slack\SlackConfigStore;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class SlackAgent extends Agent
 {
@@ -43,12 +42,13 @@ class SlackAgent extends Agent
     private function configureForSlack()
     {
         // We use a store to keep external config
-        $config_store = new SlackConfigStore();
-        $config_store->add('slack', 'app.token', $this->slack_verification_token);
-        $config_store->add('slack', 'uri.base', $this->slack_base_uri);
-        $config_store->add('slack', 'reply_early', $this->slack_reply_early);
+        $contextStore = new ContextStore();
 
-        $this->addComponent($config_store);
+        $contextStore->storeInformation(new ContextInformation('slack', 'app.token', $this->slack_verification_token));
+        $contextStore->storeInformation(new ContextInformation('slack', 'uri.base', $this->slack_base_uri));
+        $contextStore->storeInformation(new ContextInformation('slack', 'reply_early', $this->slack_reply_early));
+
+        $this->addComponent($contextStore);
 
         // We need to pickup Slack events so need to add a Slack sensor
         $this->addComponent(new SlackSensor(new SlackEventCreator()));

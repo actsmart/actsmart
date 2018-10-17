@@ -11,6 +11,7 @@ class Literals
     /* WebChat Utterance Types */
     const WEB_CHAT_MESSAGE = 'web_chat_message';
     const WEB_CHAT_ACTION = 'web_chat_action';
+    const WEB_CHAT_FORM = 'web_chat_form';
     const WEB_CHAT_OPEN = 'web_chat_open';
 
     /* Slack Utterance Types */
@@ -77,8 +78,10 @@ class Literals
     /* Identifier for an utterance */
     const UTTERANCE = 'utterance';
 
-
     /* NLP Interpreters */
     const GOOGLE_CLOUD_NLP = 'interpreter.nlp.google_nlp';
+
+    /* Stores */
+    const CONTEXT_STORE = 'store.context';
 
 }

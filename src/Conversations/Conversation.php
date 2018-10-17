@@ -4,6 +4,7 @@ namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Stores\InformationInterface;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
@@ -21,7 +22,7 @@ use Fhaculty\Graph\Graph as Graph;
  * Class Conversation
  * @package actsmart\actsmart\Conversations
  */
-class Conversation extends Graph
+class Conversation extends Graph implements InformationInterface
 {
 
     //@todo Could use an attributebag for these.
@@ -33,6 +34,7 @@ class Conversation extends Graph
     const PARTICIPATING = 'participating';
     const ID = 'id';
     const INITIAL_SCENE = 'init';
+    const INFORMATION_TYPE = 'conversation';
 
     private $conversation_template_id;
 
@@ -292,6 +294,7 @@ class Conversation extends Graph
             }
         }
 
+        // TODO this is returning the wrong type
         return $followups_with_matching_preconditions;
     }
 
@@ -378,5 +381,22 @@ class Conversation extends Graph
     public function getAllUtterancesKeyedBySequenceForScene($scene_id)
     {
         return $this->getScene($scene_id)->getAllUtterancesKeyedBySequence();
+    }
+
+    //Support for InformationInterface implementation.
+
+    public function getType()
+    {
+        return self::INFORMATION_TYPE;
+    }
+
+    public function getId()
+    {
+        return $this->getConversationTemplateId();
+    }
+
+    public function getValue()
+    {
+        return $this;
     }
 }
