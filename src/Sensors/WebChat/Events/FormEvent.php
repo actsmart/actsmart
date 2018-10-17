@@ -9,10 +9,6 @@ class FormEvent extends WebChatEvent
 {
     const EVENT_NAME = 'event.webchat.form';
 
-    private $userId = null;
-
-    private $timestamp = null;
-
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
@@ -40,21 +36,5 @@ class FormEvent extends WebChatEvent
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
 
         return $utterance;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
     }
 }

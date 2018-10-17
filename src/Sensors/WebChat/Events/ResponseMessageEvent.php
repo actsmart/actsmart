@@ -13,10 +13,6 @@ class ResponseMessageEvent extends WebChatEvent
 
     const EVENT_NAME = 'event.webchat.response_message';
 
-    protected $user_id = null;
-
-    protected $timestamp = null;
-
     protected $text = null;
 
     protected $data = null;
@@ -25,7 +21,7 @@ class ResponseMessageEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
-        $this->user_id = $arguments[Literals::USER_ID];
+        $this->userId = $arguments[Literals::USER_ID];
         $this->timestamp = time();
         $this->text = $subject->getText();
         $this->data = null;
@@ -46,22 +42,6 @@ class ResponseMessageEvent extends WebChatEvent
         $utterance->put(Literals::UID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         return $utterance;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
     }
 
     /**
