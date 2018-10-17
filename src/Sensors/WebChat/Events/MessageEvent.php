@@ -13,10 +13,6 @@ class MessageEvent extends WebChatEvent
 
     const EVENT_NAME = 'event.webchat.message';
 
-    protected $user_id = null;
-
-    protected $timestamp = null;
-
     protected $text = null;
 
     protected $data = null;
@@ -25,7 +21,7 @@ class MessageEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
-        $this->user_id = $subject->user_id;
+        $this->userId = $subject->user_id;
         $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;
@@ -46,22 +42,6 @@ class MessageEvent extends WebChatEvent
         $utterance->put(Literals::UID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         return $utterance;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
     }
 
     /**

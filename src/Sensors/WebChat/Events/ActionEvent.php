@@ -19,10 +19,6 @@ class ActionEvent extends WebChatEvent
      */
     private $callbackData = null;
 
-    private $userId = null;
-
-    private $timestamp = null;
-
     private $text;
 
     protected $event_key;
@@ -98,21 +94,5 @@ class ActionEvent extends WebChatEvent
         } else {
             return null;
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
     }
 }

@@ -5,9 +5,9 @@ namespace actsmart\actsmart\Sensors\WebChat\Events;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 
-class ResponseActionEvent extends WebChatEvent
+class ResponseFormEvent extends WebChatEvent
 {
-    const EVENT_NAME = 'event.webchat.response_action';
+    const EVENT_NAME = 'event.webchat.response_form';
 
     private $text;
 

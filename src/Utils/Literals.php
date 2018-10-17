@@ -11,6 +11,7 @@ class Literals
     /* WebChat Utterance Types */
     const WEB_CHAT_MESSAGE = 'web_chat_message';
     const WEB_CHAT_ACTION = 'web_chat_action';
+    const WEB_CHAT_FORM = 'web_chat_form';
 
     /* Slack Utterance Types */
     const SLACK_MESSAGE_ACTION = 'slack_message_action';
