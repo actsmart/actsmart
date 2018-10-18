@@ -3,6 +3,7 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
 use Ds\Map;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
@@ -188,6 +189,9 @@ class Utterance extends EdgeDirected
         $this->intent_interpreter = $intent_interpreter;
     }
 
+    /**
+     * @return IntentInterpreter
+     */
     public function getIntentInterpreter()
     {
         return $this->intent_interpreter;
