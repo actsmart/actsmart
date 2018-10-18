@@ -16,7 +16,7 @@ class Utterance extends EdgeDirected
     /** @var Intent */
     private $intent;
 
-    private $completes;
+    private $completes = false;
 
     private $action;
 
