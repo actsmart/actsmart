@@ -201,6 +201,11 @@ class Conversation extends Graph implements InformationInterface
                 $utterance->setCompletes($options['completes']);
             }
 
+            if (isset($options['repeating'])) {
+                $utterance->setRepeating($options['repeating']);
+            }
+
+
             if (isset($options['preconditions'])) {
                 foreach ($options['preconditions'] as $precondition) {
                     $utterance->addPrecondition($precondition);
