@@ -69,7 +69,7 @@ abstract class BaseConversationController implements ComponentInterface, Listene
      */
     protected function ongoingConversation(Map $utterance)
     {
-        $userId = $utterance->get(Literals::UID);
+        $userId = $utterance->get(Literals::USER_ID);
         return $this->agent->getConversationInstanceStore()->retrieve($userId);
     }
 }

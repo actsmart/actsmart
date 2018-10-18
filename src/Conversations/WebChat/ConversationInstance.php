@@ -17,16 +17,6 @@ class ConversationInstance extends BaseConversationalInstance
         // does nothing
     }
 
-    public function getUserId()
-    {
-        // does nothing
-    }
-
-    public function setUserId($user_id)
-    {
-        // does nothing
-    }
-
     public function getChannelId()
     {
         // does nothing

@@ -158,7 +158,7 @@ class ConversationController extends BaseConversationController
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
             Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse),
-            Literals::USER_ID => $utterance->get(Literals::UID)
+            Literals::USER_ID => $utterance->get(Literals::USER_ID)
         ]);
     }
 
@@ -172,7 +172,7 @@ class ConversationController extends BaseConversationController
         $ci = new ConversationInstance (
             $matchingConversationId,
             $this->getAgent()->getStore('store.conversation_templates'),
-            $utterance->get(Literals::UID),
+            $utterance->get(Literals::USER_ID),
             new \DateTime());
 
         /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
