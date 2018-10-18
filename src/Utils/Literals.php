@@ -33,9 +33,6 @@ class Literals
     /* The callback data contained within an utterance */
     const CALLBACK_DATA = 'callback_data';
 
-    /* The user id of the user the message originated from */
-    const UID = 'uid';
-
     /* The timestamp associated with an utterance */
     const TIMESTAMP = 'timestamp';
 
