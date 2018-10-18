@@ -4,10 +4,7 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatButtonMessage extends WebChatMessage
 {
-    /** The message text. */
-    private $text = null;
-
-    /** The message buttons. */
+    /** The message buttons. @var WebChatButton[] */
     private $buttons = [];
 
     /**
@@ -38,7 +35,8 @@ class WebChatButtonMessage extends WebChatMessage
         foreach ($this->buttons as $button) {
             $buttons[] = [
                 'text' => $button->getText(),
-                'callback_id' => $button->getCallbackId()
+                'callback_id' => $button->getCallbackId(),
+                'value' => $button->getValue()
             ];
         }
 
