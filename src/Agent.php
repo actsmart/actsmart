@@ -11,6 +11,7 @@ use actsmart\actsmart\Interpreters\KnowledgeGraph\KnowledgeGraphInterpreter;
 use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
 use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
 use actsmart\actsmart\Sensors\SensorInterface;
+use actsmart\actsmart\Stores\ConversationInstanceStoreInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ListenerInterface;
@@ -72,6 +73,9 @@ class Agent
     /** @var  Response */
     protected $http_response = null;
 
+    /** @var ConversationInstanceStoreInterface */
+    protected $conversationInstanceStore;
+
     /**
      * Agent constructor.
      *
@@ -122,6 +126,9 @@ class Agent
                 break;
             case $component instanceof ConditionInterface:
                 $this->intent_conditions[$component->getKey()] = $component;
+                break;
+            case $component instanceof ConversationInstanceStoreInterface:
+                $this->conversationInstanceStore = $component;
                 break;
         }
 
@@ -211,6 +218,17 @@ class Agent
     public function setDefaultIntentInterpreter($key)
     {
         $this->default_intent_interpreter = $this->getIntentInterpreter($key);
+    }
+
+    /**
+     * @return ConversationInstanceStoreInterface
+     */
+    public function getConversationInstanceStore()
+    {
+        if (!isset($this->conversationInstanceStore)) {
+            throw new ConversationInstanceStoreNotSetException('A conversation instance store has not been set');
+        }
+         return $this->conversationInstanceStore;
     }
 
     /**

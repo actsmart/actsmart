@@ -336,7 +336,7 @@ class Conversation extends Graph implements InformationInterface
      * @param Map $source_utterance
      * @param Intent $default_intent
      * @param bool $ongoing
-     * @return bool
+     * @return Utterance|false
      */
     public function getNextUtterance(Agent $agent, $current_scene, $sequence, Map $source_utterance, Intent $default_intent, $ongoing = true)
     {

@@ -38,6 +38,9 @@ class Utterance extends EdgeDirected
         return $this;
     }
 
+    /**
+     * @return Message
+     */
     public function getMessage()
     {
         return $this->message;

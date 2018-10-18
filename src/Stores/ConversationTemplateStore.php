@@ -117,4 +117,6 @@ abstract class ConversationTemplateStore extends EphemeralStore
 
         return $match;
     }
+
+    abstract public function buildConversations();
 }

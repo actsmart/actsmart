@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: stuarthaigh
- * Date: 17/05/2018
- * Time: 11:52
- */
 
 namespace actsmart\actsmart\Conversations;
 
@@ -118,13 +112,15 @@ interface ConversationInstanceInterface
      */
     public function getCurrentSceneId();
 
+    public function isCompleting();
+    
+    public function setCompleting(bool $completing);
+    
     /**
      * @param mixed $current_scene_id
      * @return ConversationInstance
      */
     public function setCurrentSceneId($current_scene_id);
-
-    public function saveConversationInstance();
 
     public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true);
 }

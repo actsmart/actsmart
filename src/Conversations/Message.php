@@ -9,7 +9,8 @@ namespace actsmart\actsmart\Conversations;
  * A message is a structured piece of information that an Utterance will
  * carry from one conversation participant in a scene to another.
  *
- * @todo - we probably want to bring the Slack Message structure here.
+ * @todo - we probably want to bring the Slack Message structure here and webchat and facebook. The the conversation
+ * controller can decide which method to use
  */
 class Message
 {
