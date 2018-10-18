@@ -31,6 +31,7 @@ class ChatOpenEvent extends WebChatEvent
         parent::__construct($subject, $arguments, $this->event_key);
 
         $this->userId = $subject->user_id;
+        $this->channelId = $subject->channel_id;
         $this->timestamp = time();
 
         $this->userIPAddress = $subject->data->user->ip_address ?? null;
@@ -55,6 +56,7 @@ class ChatOpenEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_OPEN);
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
         $utterance->put(Literals::USER_ID, $this->getUserId());
+        $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, '');
 

@@ -32,6 +32,7 @@ class ResponseActionEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_ACTION);
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::USER_ID, $this->getUserId());
+        $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, $this->text);
 

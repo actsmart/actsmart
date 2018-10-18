@@ -11,10 +11,20 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 
     protected $timestamp = null;
 
+    protected $channelId = null;
+
     public function __construct($subject, $arguments, $event_key = 'event.webchat.generic')
     {
         parent::__construct($subject, $arguments);
         $this->event_key = $event_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChannelId()
+    {
+        return $this->channelId;
     }
 
     /**

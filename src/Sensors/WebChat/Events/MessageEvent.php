@@ -22,6 +22,7 @@ class MessageEvent extends WebChatEvent
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
         $this->userId = $subject->user_id;
+        $this->channelId = $subject->channel_id;
         $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;
@@ -40,6 +41,7 @@ class MessageEvent extends WebChatEvent
         $utterance->put(Literals::TEXT, $this->getTextMessage());
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::USER_ID, $this->getUserId());
+        $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         return $utterance;
     }
