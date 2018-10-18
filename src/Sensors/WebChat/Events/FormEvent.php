@@ -32,7 +32,7 @@ class FormEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_FORM);
         $utterance->put(Literals::TEXT, '');
         $utterance->put(Literals::SOURCE_EVENT, $this);
-        $utterance->put(Literals::UID, $this->getUserId());
+        $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
 
         return $utterance;
