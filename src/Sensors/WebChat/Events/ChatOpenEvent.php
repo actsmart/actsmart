@@ -54,7 +54,7 @@ class ChatOpenEvent extends WebChatEvent
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_OPEN);
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
-        $utterance->put(Literals::UID, $this->getUserId());
+        $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, '');
 

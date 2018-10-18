@@ -39,7 +39,7 @@ class ResponseMessageEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_MESSAGE);
         $utterance->put(Literals::TEXT, $this->getTextMessage());
         $utterance->put(Literals::SOURCE_EVENT, $this);
-        $utterance->put(Literals::UID, $this->getUserId());
+        $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         return $utterance;
     }
