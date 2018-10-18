@@ -2,24 +2,17 @@
 
 namespace actsmart\actsmart\Controllers\WebChat;
 
+use actsmart\actsmart\Controllers\BaseConversationController;
+use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatUtteranceEvent;
-use actsmart\actsmart\Stores\ConversationTemplateStore;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
-use actsmart\actsmart\Utils\ListenerInterface;
-use actsmart\actsmart\Utils\ListenerTrait;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-class ConversationController implements ComponentInterface, ListenerInterface, LoggerAwareInterface
+class ConversationController extends BaseConversationController
 {
-    use ComponentTrait, LoggerAwareTrait, ListenerTrait;
-
     const KEY = 'controller.webchat.conversation_controller';
 
     /**
@@ -32,54 +25,67 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         if (!$e instanceof WebChatUtteranceEvent) return;
 
         $utterance = $e->getUtterance();
+        $intent = $this->determineEventIntent($utterance);
 
-        if (!$this->handleNewConversation($utterance)) {
-            $this->handleNothingMatched($utterance);
+        if (!$this->handleOngoingConversation($utterance, $intent)) {
+            if (!$this->handleNewConversation($utterance, $intent)) {
+                $this->logger->info('Nothing Matched - resorting to default.');
+                $this->handleNothingMatched($utterance);
+            }
         }
     }
 
-    public function handleNewConversation(Map $utterance)
+    /**
+     * Logic for ongoing conversations. If there is no ongoing conversation for the user, or there is no further utterance
+     * on the current scene returns false.
+     *
+     * Otherwise, sends the message and saves the current instance in the conversation instance store
+     *
+     * @param Map $utterance
+     * @param Intent $intent
+     * @return bool
+     */
+    public function handleOngoingConversation(Map $utterance, Intent $intent)
     {
-        $intent = $this->determineEventIntent($utterance);
-
-        /** @var ConversationTemplateStore $store */
-        $store = $this->getAgent()->getStore('store.conversation_templates');
-        $matchingConversationId = $store->getMatchingConversation($utterance, $intent);
-
-        if (!$matchingConversationId) {
-            $this->logger->debug('No matching conversations.');
+        if (!$ci = $this->ongoingConversation($utterance)) {
+            $this->logger->debug('Not an ongoing conversation');
             return false;
         }
 
-        $ci = new ConversationInstance(
-            $matchingConversationId,
-            $this->getAgent()->getStore('store.conversation_templates'),
-            $utterance->get(Literals::USER_ID));
-
-        /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
-        $ci->initConversation();
-
-        $actionResult = null;
-        if ($action = $ci->getCurrentAction()) {
-            $actionResult = $this->getAgent()->performAction($action, $utterance);
+        if (!$nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent)) {
+            $this->logger->debug('No next utterance within ongoing conversation');
+            return false;
         }
 
-        $informationResponse = null;
-        if ($informationRequest = $ci->getCurrentInformationRequest()) {
-            $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
+        $this->sendMessage($utterance, $ci, $nextUtterance);
+
+        $this->saveConversationInstance($ci, $nextUtterance);
+
+        return true;
+    }
+
+    /**
+     * Logic for new conversations. If there is no conversation matching the intent, returns false.
+     * Otherwise creates a new conversation instance, sends the message and updates the conversation instance store
+     *
+     * @param Map $utterance
+     * @param Intent $intent
+     * @return bool
+     */
+    public function handleNewConversation(Map $utterance, Intent $intent)
+    {
+        $matchingConversationId = $this->getMatchingConversationId($utterance, $intent);
+        if (!$matchingConversationId) {
+            return false;
         }
 
-        /* @var \actsmart\actsmart\Conversations\Utterance $nextUtterance */
+        $ci = $this->createConversationInstance($utterance, $matchingConversationId);
+
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
-        $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse),
-            Literals::USER_ID => $utterance->get(Literals::USER_ID)
-        ]);
+        $this->sendMessage($utterance, $ci, $nextUtterance);
 
-        if ($nextUtterance->isCompleting()) {
-            return true;
-        }
+        $this->saveConversationInstance($ci, $nextUtterance);
 
         return true;
     }
@@ -90,42 +96,21 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
      */
     public function handleNothingMatched(Map $utterance)
     {
-        $this->logger->debug('Nothing Matched - resorting to default.');
+        $intent = $this->noMatchIntent($utterance);
 
-        $intent = new Intent('NoMatch', $utterance, 1);
-
-        /** @var ConversationTemplateStore $store */
-        $store = $this->getAgent()->getStore('store.conversation_templates');
-        $matchingConversationId = $store->getMatchingConversation($utterance, $intent);
-
+        $matchingConversationId = $this->getMatchingConversationId($utterance, $intent);
         if (!$matchingConversationId) {
             $this->logger->debug('No support for NoMatch conversation.');
             return false;
         }
 
-        $ci = new ConversationInstance(
-            $matchingConversationId,
-            $this->getAgent()->getStore('store.conversation_templates'),
-            $utterance->get(Literals::USER_ID));
+        $ci = $this->createConversationInstance($utterance, $matchingConversationId);
 
-        $ci->initConversation();
-
-        $actionResult = null;
-        if ($action = $ci->getCurrentAction()) {
-            $actionResult = $this->getAgent()->performAction($action, ['event' => $utterance->get(Literals::SOURCE_EVENT)]);
-        }
-
-        /* @var \actsmart\actsmart\Conversations\Utterance $nextUtterance */
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
-        $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance),
-            Literals::USER_ID => $utterance->get(Literals::USER_ID)
-        ]);
+        $this->sendMessage($utterance, $ci, $nextUtterance);
 
-        if ($nextUtterance->isCompleting()) {
-            return true;
-        }
+        $this->saveConversationInstance($ci, $nextUtterance);
 
         return true;
     }
@@ -152,6 +137,47 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
 
         $this->logger->debug('Created an intent', (array)$intent);
         return $intent;
+    }
+
+    /**
+     * @param Map $utterance
+     * @param $ci ConversationInstance
+     * @param $nextUtterance Utterance
+     */
+    private function sendMessage(Map $utterance, $ci, $nextUtterance): void
+    {
+        $actionResult = null;
+        if ($action = $ci->getCurrentAction()) {
+            $actionResult = $this->getAgent()->performAction($action, $utterance);
+        }
+
+        $informationResponse = null;
+        if ($informationRequest = $ci->getCurrentInformationRequest()) {
+            $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
+        }
+
+        $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
+            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse),
+            Literals::USER_ID => $utterance->get(Literals::USER_ID)
+        ]);
+    }
+
+    /**
+     * @param Map $utterance
+     * @param $matchingConversationId
+     * @return ConversationInstance
+     */
+    private function createConversationInstance(Map $utterance, $matchingConversationId): ConversationInstance
+    {
+        $ci = new ConversationInstance (
+            $matchingConversationId,
+            $this->getAgent()->getStore('store.conversation_templates'),
+            $utterance->get(Literals::USER_ID),
+            new \DateTime());
+
+        /* @var \actsmart\actsmart\Conversations\Conversation $conversation */
+        $ci->initConversation();
+        return $ci;
     }
 
     public function getKey()

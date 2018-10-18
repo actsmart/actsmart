@@ -2,12 +2,9 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use \Fhaculty\Graph\Graph as Graph;
-use \Fhaculty\Graph\Vertex;
-use \Fhaculty\Graph\Set\Edges;
-use actsmart\actsmart\Interpreters\InterpreterInterface;
-use actsmart\actsmart\Interpeters\Intent;
-use actsmart\actsmart\Sensors\SensorEvent;
+use Fhaculty\Graph\Graph as Graph;
+use Fhaculty\Graph\Set\Edges;
+use Fhaculty\Graph\Vertex;
 
 class Scene extends Vertex
 {
@@ -114,7 +111,7 @@ class Scene extends Vertex
     /**
      * Get the opening utterance to this scene.
      *
-     * @return \Fhaculty\Graph\Edge\Base
+     * @return Utterance
      */
     public function getInitialUtterance()
     {

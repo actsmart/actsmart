@@ -45,6 +45,9 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
      */
     protected $user_id;
 
+    /** @var bool Whether the next utterance is completing or not */
+    protected $completing = false;
+
     public function __construct($conversation_template_id = null, ConversationTemplateStore $conversation_store, $user_id, $start_ts = 0, $update_ts = 0)
     {
         $this->conversation_template_id = $conversation_template_id;
@@ -205,6 +208,29 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isCompleting(): bool
+    {
+        return $this->completing;
+    }
+
+    /**
+     * @param bool $completing
+     */
+    public function setCompleting(bool $completing)
+    {
+        $this->completing = $completing;
+    }
+
+    /**
+     * @param Agent $agent
+     * @param Map $source_utterance
+     * @param Intent $default_intent
+     * @param bool $ongoing
+     * @return Utterance|false
+     */
     public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true)
     {
         // If the conversation is not ongoing we are dealing with a new conversation and just need to get
@@ -217,7 +243,7 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
 
         // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was.
         // The conversation model could support the user saying any number of things - so we need to get all of them,
-        // interpret them, decide which one was actually said and the move the converation forward based on that.
+        // interpret them, decide which one was actually said and the move the conversation forward based on that.
         $user_current_utterance = $this->conversation->getNextUtterance($agent, $this->current_scene_id, $this->current_utterance_sequence_id, $source_utterance, $default_intent, $ongoing);
 
         if (!$user_current_utterance) {
@@ -249,10 +275,5 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
     {
         $this->current_scene_id = $current_scene_id;
         return $this;
-    }
-
-    public function saveConversationInstance()
-    {
-        $this->conversation_instance_store->save($this);
     }
 }

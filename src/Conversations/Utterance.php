@@ -16,7 +16,7 @@ class Utterance extends EdgeDirected
     /** @var Intent */
     private $intent;
 
-    private $completes;
+    private $completes = false;
 
     private $action;
 
@@ -38,6 +38,9 @@ class Utterance extends EdgeDirected
         return $this;
     }
 
+    /**
+     * @return Message
+     */
     public function getMessage()
     {
         return $this->message;
