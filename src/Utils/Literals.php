@@ -34,6 +34,9 @@ class Literals
     /* The callback data contained within an utterance */
     const CALLBACK_DATA = 'callback_data';
 
+    /* The value associated to an action performed */
+    const VALUE = 'value';
+
     /* The timestamp associated with an utterance */
     const TIMESTAMP = 'timestamp';
 

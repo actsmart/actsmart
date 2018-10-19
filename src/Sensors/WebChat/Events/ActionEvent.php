@@ -21,6 +21,8 @@ class ActionEvent extends WebChatEvent
 
     private $text;
 
+    private $value;
+
     protected $event_key;
 
     public function __construct($subject, $arguments = [], $key = null)
@@ -33,6 +35,7 @@ class ActionEvent extends WebChatEvent
         $this->userId = $subject->user_id;
         $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
+        $this->value = $subject->data->value ?? null;
     }
 
     public function getKey()
@@ -51,6 +54,7 @@ class ActionEvent extends WebChatEvent
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, $this->text);
+        $utterance->put(Literals::VALUE, $this->value);
 
         return $utterance;
     }

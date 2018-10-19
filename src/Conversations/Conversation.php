@@ -201,6 +201,11 @@ class Conversation extends Graph implements InformationInterface
                 $utterance->setCompletes($options['completes']);
             }
 
+            if (isset($options['repeating'])) {
+                $utterance->setRepeating($options['repeating']);
+            }
+
+
             if (isset($options['preconditions'])) {
                 foreach ($options['preconditions'] as $precondition) {
                     $utterance->addPrecondition($precondition);
@@ -274,7 +279,7 @@ class Conversation extends Graph implements InformationInterface
 
             // If we reached utterances where the sender and receiver are not what we expect get out.
             if ($sender_receiver_control != $sender_receiver_tracker) {
-                break;
+                continue;
             }
 
             // Now we are dealing with utterances that are after the current utterance and the receiver of the
@@ -314,9 +319,12 @@ class Conversation extends Graph implements InformationInterface
         $matching_followups = [];
 
         //@todo if we are checking against what the bot should say then matching intents might not be useful
+        /** @var Utterance $followup */
         foreach ($this->getPossibleFollowUps($agent, $current_sequence, $current_scene, $source_utterance) as $followup) {
             if ($followup->hasIntentInterpreter()) {
-                if ($followup->intentMatches($followup->interpret($source_utterance))) {
+                $intent = $agent->interpretIntent($followup->getIntentInterpreter(), $source_utterance);
+
+                if ($followup->intentMatches($intent)) {
                     $matching_followups[] = $followup;
                 }
             } else {

@@ -3,6 +3,7 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
 use Ds\Map;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
@@ -16,6 +17,7 @@ class Utterance extends EdgeDirected
     /** @var Intent */
     private $intent;
 
+    /** @var bool - set to true if this Utterance completes a conversation */
     private $completes = false;
 
     private $action;
@@ -26,7 +28,10 @@ class Utterance extends EdgeDirected
 
     private $intent_interpreter;
 
-    public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false)
+    /** @var bool - set to true if this utterance allows us to repeat the previous utterance that got us here */
+    private $repeating = false;
+
+    public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false, $repeating = true)
     {
         parent::__construct($from, $to);
         $this->sequence = $sequence;
@@ -75,7 +80,7 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function isCompleting()
     {
@@ -91,6 +96,24 @@ class Utterance extends EdgeDirected
         $this->completes = $completes;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isRepeating(): bool
+    {
+        return $this->repeating;
+    }
+
+    /**
+     * @param bool $repeating
+     */
+    public function setRepeating(bool $repeating): void
+    {
+        $this->repeating = $repeating;
+    }
+
+    
 
     /**
      * @return string
@@ -188,6 +211,9 @@ class Utterance extends EdgeDirected
         $this->intent_interpreter = $intent_interpreter;
     }
 
+    /**
+     * @return IntentInterpreter
+     */
     public function getIntentInterpreter()
     {
         return $this->intent_interpreter;

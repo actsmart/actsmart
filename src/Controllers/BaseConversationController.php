@@ -56,7 +56,11 @@ abstract class BaseConversationController implements ComponentInterface, Listene
     protected function saveConversationInstance($ci, $nextUtterance)
     {
         $ci->setUpdateTs(new \DateTime());
-        $ci->setCurrentUtteranceSequenceId($nextUtterance->getSequence());
+        if ($nextUtterance->isRepeating()) {
+            $ci->setCurrentUtteranceSequenceId($ci->getPreviousUtteranceId());
+        } else {
+            $ci->setCurrentUtteranceSequenceId($nextUtterance->getSequence());
+        }
         $ci->setCompleting($nextUtterance->isCompleting());
         $this->getAgent()->getConversationInstanceStore()->save($ci);
     }
