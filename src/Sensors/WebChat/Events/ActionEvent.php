@@ -35,6 +35,7 @@ class ActionEvent extends WebChatEvent
         $this->userId = $subject->user_id;
         $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
+        $this->value = $subject->data->value ?? null;
     }
 
     public function getKey()
