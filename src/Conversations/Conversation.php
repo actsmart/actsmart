@@ -279,7 +279,7 @@ class Conversation extends Graph implements InformationInterface
 
             // If we reached utterances where the sender and receiver are not what we expect get out.
             if ($sender_receiver_control != $sender_receiver_tracker) {
-                break;
+                continue;
             }
 
             // Now we are dealing with utterances that are after the current utterance and the receiver of the
