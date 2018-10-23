@@ -14,6 +14,8 @@ class WebChatLongTextMessage extends WebChatMessage
 
     private $placeholder = null;
 
+    private $confirmationText = null;
+
     /**
      * @param $characterLimit
      * @return $this
@@ -45,6 +47,36 @@ class WebChatLongTextMessage extends WebChatMessage
     }
 
     /**
+     * @param $initialText
+     * @return $this
+     */
+    public function setInitialText($initialText)
+    {
+        $this->initialText = $initialText;
+        return $this;
+    }
+
+    /**
+     * @param $placeholder
+     * @return $this
+     */
+    public function setPlaceholder($placeholder)
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
+     * @param $confirmationText
+     * @return $this
+     */
+    public function setConfirmationText($confirmationText)
+    {
+        $this->confirmationText = $confirmationText;
+        return $this;
+    }
+
+    /**
      * @return null|int
      */
     public function getCharacterLimit()
@@ -69,7 +101,7 @@ class WebChatLongTextMessage extends WebChatMessage
     }
 
     /**
-     * @return null
+     * @return null|string
      */
     public function getInitialText()
     {
@@ -77,15 +109,7 @@ class WebChatLongTextMessage extends WebChatMessage
     }
 
     /**
-     * @param null $initialText
-     */
-    public function setInitialText($initialText)
-    {
-        $this->initialText = $initialText;
-    }
-
-    /**
-     * @return null
+     * @return null|string
      */
     public function getPlaceholder()
     {
@@ -93,11 +117,11 @@ class WebChatLongTextMessage extends WebChatMessage
     }
 
     /**
-     * @param null $placeholder
+     * @return null|string
      */
-    public function setPlaceholder($placeholder): void
+    public function getConfirmationText()
     {
-        $this->placeholder = $placeholder;
+        return $this->confirmationText;
     }
 
     public function getMessageToPost()
@@ -112,6 +136,7 @@ class WebChatLongTextMessage extends WebChatMessage
                 'callback_id' => $this->getCallbackId(),
                 'initial_text' => $this->getInitialText(),
                 'placeholder' => $this->getPlaceholder(),
+                'confirmation_text' => $this->getConfirmationText(),
                 'disable_text' => $this->getDisableText()
             ]
         ];
