@@ -9,10 +9,16 @@ class FormEvent extends WebChatEvent
 {
     const EVENT_NAME = 'event.webchat.form';
 
+    private $callbackId = null;
+
+    private $formValues = null;
+
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
+        $this->callbackId = $subject->callback_id;
+        $this->formValues = $subject->data;
         $this->userId = $subject->user_id;
         $this->timestamp = time();
     }
@@ -20,6 +26,22 @@ class FormEvent extends WebChatEvent
     public function getKey()
     {
         return self::EVENT_NAME;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCallbackId()
+    {
+        return $this->callbackId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFormValues()
+    {
+        return $this->formValues;
     }
 
     /**
@@ -31,6 +53,8 @@ class FormEvent extends WebChatEvent
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_FORM);
         $utterance->put(Literals::TEXT, '');
+        $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
+        $utterance->put(Literals::FORM_VALUES, $this->formValues);
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());

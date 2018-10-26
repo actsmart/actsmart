@@ -73,6 +73,8 @@ class Literals
     /* The attachments */
     const ATTACHMENTS = 'attachments';
 
+    const FORM_VALUES = 'form_values';
+
     /* The dialog submission */
     const SUBMISSION = 'submission';
 

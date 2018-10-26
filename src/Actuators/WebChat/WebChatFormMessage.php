@@ -10,6 +10,8 @@ class WebChatFormMessage extends WebChatMessage
 
     private $elements = [];
 
+    private $callbackId = null;
+
     /**
      * @param WebChatFormElement $element
      * @return $this
@@ -31,6 +33,16 @@ class WebChatFormMessage extends WebChatMessage
     }
 
     /**
+     * @param $callbackId
+     * @return $this
+     */
+    public function setCallbackId($callbackId)
+    {
+        $this->callbackId = $callbackId;
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getElements()
@@ -44,6 +56,14 @@ class WebChatFormMessage extends WebChatMessage
     public function getSubmitText()
     {
         return $this->submitText;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCallbackId()
+    {
+        return $this->callbackId;
     }
 
     /**
@@ -70,6 +90,7 @@ class WebChatFormMessage extends WebChatMessage
             'author' => 'them',
             'type' => 'webchat_form',
             'data' => [
+                'callback_id' => $this->getCallbackId(),
                 'text' => $this->getText(),
                 'elements' => $this->getElementsArray(),
                 'submit_text' => $this->getSubmitText()
