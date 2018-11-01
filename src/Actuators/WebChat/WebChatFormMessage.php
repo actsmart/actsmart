@@ -93,7 +93,8 @@ class WebChatFormMessage extends WebChatMessage
                 'callback_id' => $this->getCallbackId(),
                 'text' => $this->getText(),
                 'elements' => $this->getElementsArray(),
-                'submit_text' => $this->getSubmitText()
+                'submit_text' => $this->getSubmitText(),
+                'disable_text' => $this->getDisableText()
             ]
         ];
     }
