@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart\Sensors\WebChat;
 
+use actsmart\actsmart\Sensors\ReadMessageEvent;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatEventCreator;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -37,6 +38,11 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
         $message = json_decode($message->getContent());
 
         $event = $this->process($message);
+dd($event);
+        // Generate a read receipt
+        $this->notify(ReadMessageEvent::EVENT_NAME, ReadMessageEvent($this, ['message_id' => 'dummy']));
+
+        // Notify listerns of the actual event
         $this->notify($event->getkey(), $event);
     }
 
