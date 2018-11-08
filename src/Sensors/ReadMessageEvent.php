@@ -34,7 +34,7 @@ class ReadMessageEvent extends GenericEvent
     }
 
     /**
-     * @param mixed $message_id
+     * @param $messageId
      */
     public function setMessageId($messageId): void
     {
@@ -42,7 +42,7 @@ class ReadMessageEvent extends GenericEvent
     }
 
     /**
-     * @param mixed $user_id
+     * @param $userId
      */
     public function setUserId($userId): void
     {
