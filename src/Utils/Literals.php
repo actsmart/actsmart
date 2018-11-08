@@ -2,7 +2,6 @@
 
 namespace actsmart\actsmart\Utils;
 
-
 class Literals
 {
     /* The utterance type */
@@ -46,8 +45,13 @@ class Literals
     /* The workspace id */
     const WORKSPACE_ID = 'workspace_id';
 
+    /* The user */
+    const USER = 'user';
+
     /* The user id */
     const USER_ID = 'user_id';
+
+    const LOGGED_IN_USER = 'logged_in_user';
 
     /* The channel id */
     const CHANNEL_ID = 'channel_id';

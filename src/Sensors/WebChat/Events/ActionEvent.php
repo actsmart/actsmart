@@ -32,6 +32,7 @@ class ActionEvent extends WebChatEvent
 
         $this->callbackId = $this->extractCallbackId($subject->data->callback_id);
         $this->callbackData = $this->extractCallbackData($subject->data->callback_id);
+        $this->user = $subject->user ?? null;
         $this->userId = $subject->user_id;
         $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
@@ -51,6 +52,8 @@ class ActionEvent extends WebChatEvent
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
         $utterance->put(Literals::CALLBACK_DATA, $this->callbackData);
         $utterance->put(Literals::SOURCE_EVENT, $this);
+        $utterance->put(Literals::LOGGED_IN_USER, $this->isLoggedIn());
+        $utterance->put(Literals::USER, $this->getUser());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, $this->text);

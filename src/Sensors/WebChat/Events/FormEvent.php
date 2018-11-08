@@ -19,6 +19,7 @@ class FormEvent extends WebChatEvent
 
         $this->callbackId = $subject->callback_id;
         $this->formValues = $subject->data;
+        $this->user = $subject->user ?? null;
         $this->userId = $subject->user_id;
         $this->timestamp = time();
     }
@@ -56,6 +57,8 @@ class FormEvent extends WebChatEvent
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
         $utterance->put(Literals::FORM_VALUES, $this->formValues);
         $utterance->put(Literals::SOURCE_EVENT, $this);
+        $utterance->put(Literals::LOGGED_IN_USER, $this->isLoggedIn());
+        $utterance->put(Literals::USER, $this->getUser());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
 

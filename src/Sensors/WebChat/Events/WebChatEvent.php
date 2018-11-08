@@ -7,6 +7,8 @@ use actsmart\actsmart\Sensors\UtteranceEvent;
 
 abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 {
+    protected $user = null;
+
     protected $userId = null;
 
     protected $timestamp = null;
@@ -15,6 +17,14 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
     {
         parent::__construct($subject, $arguments);
         $this->event_key = $event_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 
     /**
@@ -31,5 +41,17 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
     public function getTimestamp()
     {
         return $this->timestamp;
+    }
+
+    /**
+     * @return int
+     */
+    public function isLoggedIn()
+    {
+        if ($this->user && !empty($this->user->email) && $this->user->email == $this->userId) {
+            return true;
+        }
+
+        return false;
     }
 }
