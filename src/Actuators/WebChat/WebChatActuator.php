@@ -9,10 +9,10 @@ use actsmart\actsmart\Sensors\WebChat\Events\ResponseImageEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\ResponseLongTextEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\ResponseMessageEvent;
 use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
-use actsmart\actsmart\Utils\NotifierTrait;
 use actsmart\actsmart\Utils\Literals;
+use actsmart\actsmart\Utils\NotifierInterface;
+use actsmart\actsmart\Utils\NotifierTrait;
 use Ds\Map;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -30,14 +30,14 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
     /**
      * WebChat messages are sent by replying to the original request
-     * TODO this is using arguments as an array. Actuators expect a MAP
+     *
      * @param string $action
      * @param Map $arguments
      * @return mixed
      */
-    public function perform(string $action, $arguments)
+    public function perform(string $action, Map $arguments)
     {
-        if ($action != self::POST_MESSAGE || !isset($arguments['message'])) {
+        if ($action != self::POST_MESSAGE || $arguments->hasKey('message')) {
             return null;
         }
 
@@ -47,11 +47,11 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
         $response = null;
 
-        if (is_array($arguments['message'])) {
-            return $this->postMultipleMessages($arguments['message'], $arguments['user_id']);
+        if (is_array($arguments->get('message'))) {
+            return $this->postMultipleMessages($arguments->get('message'), $arguments->get('user_id'));
         }
 
-        return $this->postMessage($arguments['message'], $arguments['user_id']);
+        return $this->postMessage($arguments->get('message'), $arguments->get('user_id'));
     }
 
     /**

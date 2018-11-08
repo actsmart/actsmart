@@ -156,10 +156,11 @@ class ConversationController extends BaseConversationController
             $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
         }
 
-        $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', [
-            Literals::MESSAGE => $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse),
-            Literals::USER_ID => $utterance->get(Literals::USER_ID)
-        ]);
+        $arguments = new Map();
+        $arguments->put(Literals::MESSAGE, $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse));
+        $arguments->put(Literals::USER_ID, $utterance->get(Literals::USER_ID));
+
+        $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', $arguments);
     }
 
     /**
