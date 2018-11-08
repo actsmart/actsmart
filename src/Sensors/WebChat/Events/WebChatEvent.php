@@ -7,6 +7,7 @@ use actsmart\actsmart\Sensors\UtteranceEvent;
 
 abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 {
+    protected $messageId = null;
     protected $userId = null;
 
     protected $timestamp = null;
@@ -15,6 +16,14 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
     {
         parent::__construct($subject, $arguments);
         $this->event_key = $event_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->messageId;
     }
 
     /**

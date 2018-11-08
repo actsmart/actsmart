@@ -30,6 +30,7 @@ class ChatOpenEvent extends WebChatEvent
         $this->event_key = $key == null ? self::EVENT_NAME : $key;
         parent::__construct($subject, $arguments, $this->event_key);
 
+        $this->messageId = $subject->id;
         $this->userId = $subject->user_id;
         $this->timestamp = time();
 
@@ -59,6 +60,14 @@ class ChatOpenEvent extends WebChatEvent
         $utterance->put(Literals::TEXT, '');
 
         return $utterance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->messageId;
     }
 
     /**

@@ -8,11 +8,13 @@ class ReadMessageEvent extends GenericEvent
     const EVENT_NAME = 'event.webchat.action';
 
     private $messageId;
+    private $userId;
 
     public function __construct($subject = null, array $arguments = array())
     {
         parent::__construct($subject, $arguments);
         $this->messageId = isset($arguments['message_id']) ? $arguments['message_id'] : null;
+        $this->userId = isset($arguments['user_id']) ? $arguments['user_id'] : null;
     }
 
     /**
@@ -24,11 +26,27 @@ class ReadMessageEvent extends GenericEvent
     }
 
     /**
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
      * @param mixed $message_id
      */
     public function setMessageId($messageId): void
     {
         $this->messageId = $messageId;
+    }
+
+    /**
+     * @param mixed $user_id
+     */
+    public function setUserId($userId): void
+    {
+        $this->userId = $userId;
     }
 
     public function getKey()

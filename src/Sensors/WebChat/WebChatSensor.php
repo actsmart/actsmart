@@ -36,13 +36,12 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
         $this->logger->debug('Got a message: ' . $message->getContent());
 
         $message = json_decode($message->getContent());
-
         $event = $this->process($message);
-dd($event);
-        // Generate a read receipt
-        $this->notify(ReadMessageEvent::EVENT_NAME, ReadMessageEvent($this, ['message_id' => 'dummy']));
 
-        // Notify listerns of the actual event
+        // Generate a read receipt.
+        $this->notify(ReadMessageEvent::EVENT_NAME, new ReadMessageEvent($this, ['message_id' => $event->getMessageId(), 'user_id' => $event->getUserId()]));
+
+        // Notify listeners of the actual event.
         $this->notify($event->getkey(), $event);
     }
 

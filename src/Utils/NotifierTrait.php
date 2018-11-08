@@ -31,7 +31,7 @@ trait NotifierTrait
     }
 
     /**
-     * Uses the dispatcher to sent an event.
+     * Uses the dispatcher to send an event.
      * @param GenericEvent $e
      */
     public function notify($event_key, GenericEvent $e)
