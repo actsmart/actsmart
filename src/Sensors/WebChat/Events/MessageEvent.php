@@ -21,9 +21,6 @@ class MessageEvent extends WebChatEvent
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
-        $this->messageId = $subject->id;
-        $this->userId = $subject->user_id;
-        $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
         $this->data = $subject->data ?? null;
     }
