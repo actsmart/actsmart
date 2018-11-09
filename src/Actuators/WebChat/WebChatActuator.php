@@ -37,7 +37,7 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
      */
     public function perform(string $action, Map $arguments)
     {
-        if ($action != self::POST_MESSAGE || $arguments->hasKey('message')) {
+        if ($action != self::POST_MESSAGE || !$arguments->hasKey('message')) {
             return null;
         }
 

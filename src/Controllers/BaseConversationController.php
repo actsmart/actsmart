@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart\Controllers;
 
+use actsmart\actsmart\Conversations\Conversation;
 use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
 use actsmart\actsmart\Interpreters\Intent\Intent;
@@ -23,16 +24,19 @@ abstract class BaseConversationController implements ComponentInterface, Listene
     use ComponentTrait, LoggerAwareTrait, ListenerTrait;
 
     /**
+     * Gets a conversation matching the provided intent the intent that comes out of a custom intent interpreter for
+     * conversations that have one.
+     *
      * @param Map $utterance
      * @param $intent
-     * @return mixed
+     * @return Conversation
      */
-    protected function getMatchingConversationId(Map $utterance, $intent)
+    protected function getMatchingConversation(Map $utterance, $intent)
     {
         /** @var ConversationTemplateStore $store */
         $store = $this->getAgent()->getStore('store.conversation_templates');
-        $matchingConversationId = $store->getMatchingConversation($utterance, $intent);
-        return $matchingConversationId;
+        $matchingConversation = $store->getMatchingConversation($utterance, $intent);
+        return $matchingConversation;
     }
 
     /**
@@ -75,5 +79,22 @@ abstract class BaseConversationController implements ComponentInterface, Listene
     {
         $userId = $utterance->get(Literals::USER_ID);
         return $this->agent->getConversationInstanceStore()->retrieve($userId);
+    }
+
+    /**
+     * Stores the context of the current message
+     *
+     * @param Utterance $nextUtterance
+     * @param ConversationInstance $conversationInstance
+     */
+    protected function storeContext(Utterance $nextUtterance, ConversationInstance $conversationInstance)
+    {
+        $previousUtterance = $conversationInstance->getConversation()->getUtteranceWithSequence($nextUtterance->getSequence() - 1);
+        
+        $this->getAgent()->saveContextInformation('matched_intent', $previousUtterance->getIntent());
+
+        $this->getAgent()->saveContextInformation('scene_id', $conversationInstance->getCurrentSceneId());
+
+        $this->getAgent()->saveContextInformation('conversation_id', $conversationInstance->getConversationTemplateId());
     }
 }
