@@ -36,14 +36,12 @@ class MessageEvent extends WebChatEvent
     public function getUtterance() : Map
     {
         /* @var \Ds\Map */
-        $utterance = new Map();
+        $utterance = parent::getUtterance();
+
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_MESSAGE);
         $utterance->put(Literals::TEXT, $this->getTextMessage());
         $utterance->put(Literals::SOURCE_EVENT, $this);
-        $utterance->put(Literals::LOGGED_IN_USER, $this->isLoggedIn());
-        $utterance->put(Literals::USER, $this->getUser());
-        $utterance->put(Literals::USER_ID, $this->getUserId());
-        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
+
         return $utterance;
     }
 

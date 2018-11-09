@@ -51,16 +51,13 @@ class FormEvent extends WebChatEvent
     public function getUtterance() : Map
     {
         /* @var \Ds\Map */
-        $utterance = new Map();
+        $utterance = parent::getUtterance();
+
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_FORM);
         $utterance->put(Literals::TEXT, '');
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
         $utterance->put(Literals::FORM_VALUES, $this->formValues);
         $utterance->put(Literals::SOURCE_EVENT, $this);
-        $utterance->put(Literals::LOGGED_IN_USER, $this->isLoggedIn());
-        $utterance->put(Literals::USER, $this->getUser());
-        $utterance->put(Literals::USER_ID, $this->getUserId());
-        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
 
         return $utterance;
     }

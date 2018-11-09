@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Sensors\WebChat\Events;
 
 use actsmart\actsmart\Sensors\SensorEvent;
 use actsmart\actsmart\Sensors\UtteranceEvent;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 
 abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 {
@@ -53,5 +55,16 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
         }
 
         return false;
+    }
+
+    public function getUtterance() : Map
+    {
+        /* @var \Ds\Map */
+        $utterance = new Map();
+        $utterance->put(Literals::USER, $this->getUser());
+        $utterance->put(Literals::USER_ID, $this->getUserId());
+        $utterance->put(Literals::LOGGED_IN_USER, $this->isLoggedIn());
+        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
+        return $utterance;
     }
 }
