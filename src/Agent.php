@@ -11,6 +11,7 @@ use actsmart\actsmart\Interpreters\KnowledgeGraph\KnowledgeGraphInterpreter;
 use actsmart\actsmart\Interpreters\NLP\NLPAnalysis;
 use actsmart\actsmart\Interpreters\NLP\NLPInterpreter;
 use actsmart\actsmart\Sensors\SensorInterface;
+use actsmart\actsmart\Stores\ContextInformation;
 use actsmart\actsmart\Stores\ConversationInstanceStoreInterface;
 use actsmart\actsmart\Stores\StoreInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
@@ -284,7 +285,6 @@ class Agent
         return null;
     }
 
-
     /**
      * @param $conditions
      * @param Map $utterance
@@ -361,6 +361,58 @@ class Agent
             return new Response('', $status, ['content-type' => 'text/html']);
         }
         return $this->http_response;
+    }
+
+    /**
+     * Saves the context information against the given key. If a context store has not been bound to the agent, it raises
+     * an alert level log message
+     *
+     * @param $key
+     * @param $information
+     * @return bool
+     */
+    public function saveContextInformation($key, $information)
+    {
+        if (!$store = $this->getStore(Literals::CONTEXT_STORE)) {
+            $this->logger->alert(
+                sprintf(
+                    'Trying to save context information against key %s, but no context store has been bound',
+                    $key));
+
+            return false;
+        }
+
+        $information = new ContextInformation($key, '', $information);
+        $store->storeInformation($information);
+
+        return true;
+    }
+
+    /**
+     * Gets a piece of context information from the store. If a context store has not been bound to the agent, it raises
+     * an alert level log message
+     *
+     * @param $key
+     * @return bool
+     */
+    public function getContextInformation($key)
+    {
+        if (!$store = $this->getStore(Literals::CONTEXT_STORE)) {
+            $this->logger->alert(
+                sprintf(
+                    'Trying to save context information against key %s, but no context store has been bound',
+                    $key));
+
+            return false;
+        }
+
+        $information = $store->getInformation($key);
+
+        if ($information) {
+            return $information->getValue();
+        }
+
+        return false;
     }
 
     /**

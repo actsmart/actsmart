@@ -6,8 +6,10 @@ class WebChatImageMessage extends WebChatMessage
 {
     private $imgSrc = null;
 
+    private $imgLink = null;
+
     /**
-     * @param $submitText
+     * @param $imgSrc
      * @return $this
      */
     public function setImgSrc($imgSrc)
@@ -17,11 +19,29 @@ class WebChatImageMessage extends WebChatMessage
     }
 
     /**
-     * @return array
+     * @param $imgLink
+     * @return $this
+     */
+    public function setImgLink($imgLink)
+    {
+        $this->imgLink = $imgLink;
+        return $this;
+    }
+
+    /**
+     * @return null|string
      */
     public function getImgSrc()
     {
         return $this->imgSrc;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getImgLink()
+    {
+        return $this->imgLink;
     }
 
     public function getMessageToPost()
@@ -30,7 +50,8 @@ class WebChatImageMessage extends WebChatMessage
             'author' => 'them',
             'type' => 'image',
             'data' => [
-                'img_src' => $this->getImgSrc()
+                'img_src' => $this->getImgSrc(),
+                'img_link' => $this->getImgLink()
             ]
         ];
     }

@@ -57,6 +57,8 @@ class ConversationController extends BaseConversationController
             return false;
         }
 
+        $this->storeContext($nextUtterance, $ci);
+
         $this->sendMessage($utterance, $ci, $nextUtterance);
 
         $this->saveConversationInstance($ci, $nextUtterance);
@@ -74,14 +76,16 @@ class ConversationController extends BaseConversationController
      */
     public function handleNewConversation(Map $utterance, Intent $intent)
     {
-        $matchingConversationId = $this->getMatchingConversationId($utterance, $intent);
-        if (!$matchingConversationId) {
+        $matchingConversation = $this->getMatchingConversation($utterance, $intent);
+        if (!$matchingConversation) {
             return false;
         }
 
-        $ci = $this->createConversationInstance($utterance, $matchingConversationId);
+        $ci = $this->createConversationInstance($utterance, $matchingConversation->getId());
 
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
+
+        $this->storeContext($nextUtterance, $ci);
 
         $this->sendMessage($utterance, $ci, $nextUtterance);
 
@@ -98,15 +102,17 @@ class ConversationController extends BaseConversationController
     {
         $intent = $this->noMatchIntent($utterance);
 
-        $matchingConversationId = $this->getMatchingConversationId($utterance, $intent);
-        if (!$matchingConversationId) {
+        $matchingConversation = $this->getMatchingConversation($utterance, $intent);
+        if (!$matchingConversation) {
             $this->logger->debug('No support for NoMatch conversation.');
             return false;
         }
 
-        $ci = $this->createConversationInstance($utterance, $matchingConversationId);
+        $ci = $this->createConversationInstance($utterance, $matchingConversation->getId());
 
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
+
+        $this->storeContext($nextUtterance, $ci);
 
         $this->sendMessage($utterance, $ci, $nextUtterance);
 

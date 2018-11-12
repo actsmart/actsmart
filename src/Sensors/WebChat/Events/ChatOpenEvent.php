@@ -30,6 +30,8 @@ class ChatOpenEvent extends WebChatEvent
         $this->event_key = $key == null ? self::EVENT_NAME : $key;
         parent::__construct($subject, $arguments, $this->event_key);
 
+        $this->user = $subject->user ?? null;
+
         $this->userIPAddress = $subject->data->user->ip_address ?? null;
         $this->userCountry = $subject->data->user->country ?? null;
         $this->userBrowserLanguage = $subject->data->user->browser_language ?? null;
@@ -48,11 +50,10 @@ class ChatOpenEvent extends WebChatEvent
     public function getUtterance() : Map
     {
         /* @var \Ds\Map */
-        $utterance = new Map();
+        $utterance = parent::getUtterance();
+
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_OPEN);
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
-        $utterance->put(Literals::USER_ID, $this->getUserId());
-        $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
         $utterance->put(Literals::TEXT, '');
 
         return $utterance;
