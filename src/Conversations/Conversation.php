@@ -361,7 +361,10 @@ class Conversation extends Graph implements InformationInterface
         return array_pop($matching_utterances);
     }
 
-
+    /**
+     * @param $sequence
+     * @return bool|Utterance
+     */
     public function getUtteranceWithSequence($sequence)
     {
         $utterances = $this->getAllUtterancesKeyedBySequence();

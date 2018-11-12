@@ -10,6 +10,8 @@ use Ds\Map;
 
 abstract class ConversationTemplateStore extends EphemeralStore
 {
+    const CUSTOM_INTERPRETER = "custom_interpreter";
+    const DEFAULT_INTERPRETER = "default_interpreter";
 
     /**
      * @param Conversation $conversation
@@ -54,9 +56,23 @@ abstract class ConversationTemplateStore extends EphemeralStore
      * Returns the set of conversations whose opening utterance has an intent that
      * matches the $intent.
      *
+     * Will return matching conversations split by whether they used the default interpreter or a custom interpreter in
+     * the format:
+     *
+     * [
+     *   'custom_interpreter' => [
+     *      {conversation},
+     *      ...
+     *   ],
+     *   'default_interpreter' => [
+     *      {conversation},
+     *      ...
+     *   ]
+     * ]
+     *
      * @param Map $utterance
      * @param Intent $intent
-     * @return array | boolean
+     * @return array
      */
     public function getMatchingConversations(Map $utterance, Intent $intent)
     {
@@ -72,31 +88,33 @@ abstract class ConversationTemplateStore extends EphemeralStore
                 /** @var Utterance $u */
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
-                // TODO - we are overwriting the original Intent here and if the conversations that follow do not have their own interpreter, it doesn't get changed back
                 if ($u->hasIntentInterpreter()) {
                     $conversationIntent = $this->getAgent()->interpretIntent($u->getIntentInterpreter(), $utterance);
+                    $key = self::CUSTOM_INTERPRETER;
                 } else {
                     $conversationIntent = $intent;
+                    $key = self::DEFAULT_INTERPRETER;
                 }
 
                 if ($u->intentMatches($conversationIntent)) {
-                    $matches[$conversation->getConversationTemplateId()] = $conversation;
+                    $matches[$key][] = $conversation;
                 }
             }
         }
 
         if (count($matches) > 0) {
-            return array_keys($matches);
+            return $matches;
         }
 
         return false;
     }
 
     /**
-     * Returns a single match - the first conversation that matchs for now.
+     * Returns a single matching conversation using this logic:
      *
-     * @todo This should become more sophisticated than simply return the first
-     * conversation.
+     * If there are conversations that matched using a custom interpreter, discard conversations using the default
+     * interpreter.
+     * Return the conversation with the highest confidence score
      *
      * @param Map $utterance
      * @param Intent $intent
@@ -110,12 +128,24 @@ abstract class ConversationTemplateStore extends EphemeralStore
             return false;
         }
 
-        // Have to do below to avoid a PHP_STRICT error for variables passed by reference
-        // when operation happens in a single pass.
-        $reversed_matches = array_reverse($matches);
-        $match = array_pop($reversed_matches);
+        if (isset($matches[self::CUSTOM_INTERPRETER])) {
+            $matches = $matches[self::CUSTOM_INTERPRETER];
+        } else {
+            $matches = $matches[self::DEFAULT_INTERPRETER];
+        }
 
-        return $match;
+        usort($matches, function (Conversation $a, Conversation $b) {
+            $aConfidence = $a->getInitialScene()->getInitialUtterance()->getIntent()->getConfidence();
+            $bConfidence = $b->getInitialScene()->getInitialUtterance()->getIntent()->getConfidence();
+
+            if ($aConfidence == $bConfidence) {
+                return 0;
+            }
+
+            return ($aConfidence < $bConfidence) ? -1 : 1;
+        });
+
+        return array_shift($matches);
     }
 
     abstract public function buildConversations();

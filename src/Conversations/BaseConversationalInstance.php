@@ -251,7 +251,7 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
 
     /**
      * @param Agent $agent
-     * @param Map $source_utterance
+     * @param Map $sourceUtterance
      * @param Intent $defaultIntent
      * @param bool $ongoing
      * @return Utterance|false
