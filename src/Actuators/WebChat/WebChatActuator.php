@@ -38,6 +38,7 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
     public function perform(string $action, Map $arguments)
     {
         if ($action != self::POST_MESSAGE || !$arguments->hasKey('message')) {
+            $this->logger->debug('I did not get a message to send out!');
             return null;
         }
 

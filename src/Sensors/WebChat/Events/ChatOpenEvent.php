@@ -31,8 +31,6 @@ class ChatOpenEvent extends WebChatEvent
         parent::__construct($subject, $arguments, $this->event_key);
 
         $this->user = $subject->user ?? null;
-        $this->userId = $subject->user_id;
-        $this->timestamp = time();
 
         $this->userIPAddress = $subject->data->user->ip_address ?? null;
         $this->userCountry = $subject->data->user->country ?? null;
@@ -59,14 +57,6 @@ class ChatOpenEvent extends WebChatEvent
         $utterance->put(Literals::TEXT, '');
 
         return $utterance;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**

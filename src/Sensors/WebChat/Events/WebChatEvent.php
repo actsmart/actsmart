@@ -11,6 +11,8 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 {
     protected $user = null;
 
+    protected $messageId = null;
+
     protected $userId = null;
 
     protected $timestamp = null;
@@ -18,7 +20,19 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
     public function __construct($subject, $arguments, $event_key = 'event.webchat.generic')
     {
         parent::__construct($subject, $arguments);
+
+        $this->messageId = isset($subject->id) ? $subject->id : NULL;
+        $this->userId = isset($subject->user_id) ? $subject->user_id : NULL;
+        $this->timestamp = time();
         $this->event_key = $event_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageId()
+    {
+        return $this->messageId;
     }
 
     /**
@@ -57,7 +71,7 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
         return false;
     }
 
-    public function getUtterance() : Map
+    public function getUtterance(): Map
     {
         /* @var \Ds\Map */
         $utterance = new Map();
