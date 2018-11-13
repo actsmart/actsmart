@@ -89,12 +89,28 @@ abstract class BaseConversationController implements ComponentInterface, Listene
      */
     protected function storeContext(Utterance $nextUtterance, ConversationInstance $conversationInstance)
     {
-        $previousUtterance = $conversationInstance->getConversation()->getUtteranceWithSequence($nextUtterance->getSequence() - 1);
+        $previousUtterance = $this->getPreviousUtteranceWithIntent($nextUtterance, $conversationInstance);
         
         $this->getAgent()->saveContextInformation('matched_intent', $previousUtterance->getIntent());
 
         $this->getAgent()->saveContextInformation('scene_id', $conversationInstance->getCurrentSceneId());
 
         $this->getAgent()->saveContextInformation('conversation_id', $conversationInstance->getConversationTemplateId());
+    }
+
+    /**
+     * @param Utterance $nextUtterance
+     * @param ConversationInstance $conversationInstance
+     * @return Utterance|bool
+     */
+    protected function getPreviousUtteranceWithIntent(Utterance $nextUtterance, ConversationInstance $conversationInstance)
+    {
+        for ($i = $nextUtterance->getSequence(); $i >= 0; $i--) {
+            $previousUtterance = $conversationInstance->getConversation()->getUtteranceWithSequence($i);
+            if ($previousUtterance->getIntent() !== null) {
+                return $previousUtterance;
+            }
+        }
+        return null;
     }
 }
