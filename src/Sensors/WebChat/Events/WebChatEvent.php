@@ -23,6 +23,7 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 
         $this->messageId = isset($subject->id) ? $subject->id : NULL;
         $this->userId = isset($subject->user_id) ? $subject->user_id : NULL;
+        $this->author = isset($subject->author) ? $subject->author : NULL;
         $this->timestamp = time();
         $this->event_key = $event_key;
     }
@@ -41,6 +42,14 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthor()
+    {
+        return $this->author;
     }
 
     /**
