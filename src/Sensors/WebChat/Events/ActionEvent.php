@@ -34,7 +34,6 @@ class ActionEvent extends WebChatEvent
         $this->callbackData = $this->extractCallbackData($subject->data->callback_id);
         $this->user = $subject->user ?? null;
         $this->userId = $subject->user_id;
-        $this->timestamp = time();
         $this->text = $subject->data->text ?? null;
         $this->value = $subject->data->value ?? null;
     }

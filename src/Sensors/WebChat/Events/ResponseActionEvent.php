@@ -16,7 +16,6 @@ class ResponseActionEvent extends WebChatEvent
         parent::__construct($subject, $arguments);
 
         $this->userId = $arguments[Literals::USER_ID];
-        $this->timestamp = time();
         $this->text = $subject->getText();
     }
 

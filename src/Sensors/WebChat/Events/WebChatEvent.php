@@ -17,14 +17,19 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 
     protected $timestamp = null;
 
+    protected $author;
+
     public function __construct($subject, $arguments, $event_key = 'event.webchat.generic')
     {
+        // Set microtime precision.
+        ini_set('precision', 16);
+
         parent::__construct($subject, $arguments);
 
         $this->messageId = isset($subject->id) ? $subject->id : null;
         $this->userId = isset($subject->user_id) ? $subject->user_id : null;
         $this->author = isset($subject->author) ? $subject->author : null;
-        $this->timestamp = time();
+        $this->timestamp = microtime(true);
         $this->event_key = $event_key;
     }
 

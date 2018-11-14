@@ -21,7 +21,6 @@ class FormEvent extends WebChatEvent
         $this->formValues = $subject->data;
         $this->user = $subject->user ?? null;
         $this->userId = $subject->user_id;
-        $this->timestamp = time();
     }
 
     public function getKey()
