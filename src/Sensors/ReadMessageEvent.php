@@ -15,6 +15,7 @@ class ReadMessageEvent extends GenericEvent
         parent::__construct($subject, $arguments);
         $this->messageId = isset($arguments['message_id']) ? $arguments['message_id'] : null;
         $this->userId = isset($arguments['user_id']) ? $arguments['user_id'] : null;
+        $this->author = isset($arguments['author']) ? $arguments['author'] : null;
     }
 
     /**
@@ -31,6 +32,14 @@ class ReadMessageEvent extends GenericEvent
     public function getUserId()
     {
         return $this->userId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuthor()
+    {
+        return $this->author;
     }
 
     /**
