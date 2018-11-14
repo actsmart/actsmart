@@ -21,9 +21,9 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
     {
         parent::__construct($subject, $arguments);
 
-        $this->messageId = isset($subject->id) ? $subject->id : NULL;
-        $this->userId = isset($subject->user_id) ? $subject->user_id : NULL;
-        $this->author = isset($subject->author) ? $subject->author : NULL;
+        $this->messageId = isset($subject->id) ? $subject->id : null;
+        $this->userId = isset($subject->user_id) ? $subject->user_id : null;
+        $this->author = isset($subject->author) ? $subject->author : null;
         $this->timestamp = time();
         $this->event_key = $event_key;
     }
