@@ -13,6 +13,7 @@ class Literals
     const WEB_CHAT_FORM = 'web_chat_form';
     const WEB_CHAT_OPEN = 'web_chat_open';
     const WEB_CHAT_IMAGE = 'web_chat_image';
+    const WEB_CHAT_LIST = 'web_chat_list';
 
     /* Slack Utterance Types */
     const SLACK_MESSAGE_ACTION = 'slack_message_action';
