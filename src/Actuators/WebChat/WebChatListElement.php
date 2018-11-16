@@ -22,20 +22,12 @@ class WebChatListElement
      * @param $title
      * @param $subTitle
      * @param $image
-     * @param $buttonText
-     * @param $buttonCallback
-     * @param $buttonUrl
-     * @param $buttonLinkNewTab
      */
-    public function __construct($title, $subTitle, $image, $buttonText, $buttonCallback, $buttonUrl, $buttonLinkNewTab = true)
+    public function __construct($title, $subTitle, $image)
     {
         $this->title = $title;
         $this->subTitle = $subTitle;
         $this->image = $image;
-        $this->buttonText = $buttonText;
-        $this->buttonCallback = $buttonCallback;
-        $this->buttonUrl = $buttonUrl;
-        $this->buttonLinkNewTab = $buttonLinkNewTab;
     }
 
     /**
@@ -104,6 +96,32 @@ class WebChatListElement
      */
     public function setButtonLinkNewTab($buttonLinkNewTab)
     {
+        $this->buttonLinkNewTab = $buttonLinkNewTab;
+        return $this;
+    }
+
+    /**
+     * @param $buttonText
+     * @param $buttonCallback
+     * @return $this
+     */
+    public function addCallbackButton($buttonText, $buttonCallback)
+    {
+        $this->buttonText = $buttonText;
+        $this->buttonCallback = $buttonCallback;
+        return $this;
+    }
+
+    /**
+     * @param $buttonText
+     * @param $buttonUrl
+     * @param $buttonLinkNewTab
+     * @return $this
+     */
+    public function addLinkButton($buttonText, $buttonUrl, $buttonLinkNewTab = true)
+    {
+        $this->buttonText = $buttonText;
+        $this->buttonUrl = $buttonUrl;
         $this->buttonLinkNewTab = $buttonLinkNewTab;
         return $this;
     }
