@@ -8,6 +8,8 @@ class WebChatImageMessage extends WebChatMessage
 
     private $imgLink = null;
 
+    private $linkNewTab = true;
+
     /**
      * @param $imgSrc
      * @return $this
@@ -29,6 +31,16 @@ class WebChatImageMessage extends WebChatMessage
     }
 
     /**
+     * @param $linkNewTab
+     * @return $this
+     */
+    public function setLinkNewTab($linkNewTab)
+    {
+        $this->linkNewTab = $linkNewTab;
+        return $this;
+    }
+
+    /**
      * @return null|string
      */
     public function getImgSrc()
@@ -44,6 +56,14 @@ class WebChatImageMessage extends WebChatMessage
         return $this->imgLink;
     }
 
+    /**
+     * @return bool
+     */
+    public function getLinkNewTab()
+    {
+        return $this->linkNewTab;
+    }
+
     public function getMessageToPost()
     {
         return [
@@ -51,7 +71,8 @@ class WebChatImageMessage extends WebChatMessage
             'type' => 'image',
             'data' => [
                 'img_src' => $this->getImgSrc(),
-                'img_link' => $this->getImgLink()
+                'img_link' => $this->getImgLink(),
+                'link_new_tab' => $this->getLinkNewTab()
             ]
         ];
     }
