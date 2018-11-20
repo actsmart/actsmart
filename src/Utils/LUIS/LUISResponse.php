@@ -13,7 +13,7 @@ class LUISResponse
     private $topScoringIntent;
 
     /* @var array $entities - any entities identified in the intent */
-    private $entities;
+    private $entities = [];
 
     public function __construct($response)
     {
