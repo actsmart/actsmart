@@ -9,6 +9,7 @@ class WebChatEventCreator
     const MESSAGE            = 'message';
     const ACTION             = 'action';
     const FORM_RESPONSE      = 'webchat_form_response';
+    const LIST_RESPONSE      = 'webchat_list_response';
     const LONGTEXT_RESPONSE  = 'longtext_response';
     const CHAT_OPEN          = 'chat_open';
 
@@ -16,6 +17,7 @@ class WebChatEventCreator
         self::MESSAGE => MessageEvent::class,
         self::ACTION => ActionEvent::class,
         self::FORM_RESPONSE => FormEvent::class,
+        self::LIST_RESPONSE => ListEvent::class,
         self::LONGTEXT_RESPONSE => LongTextEvent::class,
         self::CHAT_OPEN => ChatOpenEvent::class
     ];
