@@ -7,6 +7,7 @@ class QnAResponse
 {
 
     const NO_MATCH = 'No good match found in KB.';
+    const DIALOG = 'dialog';
 
     private $matchFound = true;
 
@@ -22,6 +23,9 @@ class QnAResponse
     /* @var array $metadata - metadata associated with the answer. */
     private $metadata;
 
+    /* @var string $answer - the answer to the question */
+    private $answer;
+
     public function __construct($response)
     {
         foreach ($response->answers as $answer) {
@@ -34,6 +38,7 @@ class QnAResponse
             $this->questions = $answer->questions;
             $this->score = (float) $answer->score;
             $this->source = $answer->source;
+            $this->answer = $answer->answer;
 
             foreach ($answer->metadata as $metadata) {
                 $this->metadata[$metadata->name] = $metadata->value;
@@ -81,6 +86,10 @@ class QnAResponse
         return $this->metadata;
     }
 
+    public function getDialogToActivate(){
+        return isset($this->metadata[self::DIALOG]) ? $this->metadata[self::DIALOG] : false;
+    }
+
     /**
      * @param $key
      * @return string|null
@@ -89,4 +98,13 @@ class QnAResponse
     {
         return isset($this->metadata[$key]) ? $this->metadata[$key] : null;
     }
+
+    /**
+     * @return string
+     */
+    public function getAnswer(): string
+    {
+        return $this->answer;
+    }
+
 }
