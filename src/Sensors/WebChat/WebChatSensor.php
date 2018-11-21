@@ -11,7 +11,6 @@ use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInterface, LoggerAwareInterface
 {
@@ -31,11 +30,10 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
         $this->eventCreator = $eventCreator;
     }
 
-    public function receive(SymfonyRequest $message)
+    public function receive($message)
     {
-        $this->logger->debug('Got a message: ' . $message->getContent());
-
-        $message = json_decode($message->getContent());
+        $this->logger->debug('Got a message: ' . print_r($message,1));
+        $message = json_decode($message);
         $event = $this->process($message);
 
         // Generate a read receipt.
