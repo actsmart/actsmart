@@ -8,28 +8,28 @@ class LUISClient
 {
     private $client;
 
-    private $app_url;
+    private $appUrl;
 
-    private $app_id;
+    private $appId;
 
     private $subscription_key;
 
     private $staging = false;
 
-    private $timezone_offset;
+    private $timezoneOffset;
 
     private $verbose = true;
 
     private $spellcheck = true;
 
-    public function __construct($app_url, $app_id, $subscription_key, $staging = false, $timezone_offset = 0, $verbose = true, $spellcheck = true)
+    public function __construct($appUrl, $appId, $subscription_key, $staging = false, $timezoneOffset = 0, $verbose = true, $spellcheck = true)
     {
         $this->client = new Client();
-        $this->app_url = $app_url;
-        $this->app_id = $app_id;
+        $this->appUrl = $appUrl;
+        $this->appId = $appId;
         $this->staging = $staging;
-        $this->subscription_key = $subscription_key;
-        $this->timezone_offset = $timezone_offset;
+        $this->subscriptionKey = $subscriptionKey;
+        $this->timezoneOffset = $timezoneOffset;
         $this->verbose = $verbose;
         $this->spellcheck = $spellcheck;
     }
@@ -41,19 +41,19 @@ class LUISClient
     public function queryLUIS($message)
     {
         $query =  $this->client->request('GET',
-            $this->app_url . '/' . $this->app_id,
+            $this->appUrl . '/' . $this->appId,
             [
                 'query' =>
                     [
                         'staging' => $this->staging,
-                        'timezone-offset' => $this->timezone_offset,
+                        'timezone-offset' => $this->timezoneOffset,
                         'verbose' => $this->verbose,
                         'spellcheck' => $this->spellcheck,
                         'q' => $message,
                     ],
                 'headers' =>
                     [
-                        'Ocp-Apim-Subscription-Key' => $this->subscription_key
+                        'Ocp-Apim-Subscription-Key' => $this->subscriptionKey
                     ]
             ]
         );
