@@ -11,12 +11,15 @@ class ResponseImageEvent extends WebChatEvent
 
     private $imgSrc;
 
+    private $data;
+
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
 
         $this->userId = $arguments[Literals::USER_ID];
         $this->imgSrc = $subject->getImgSrc();
+        $this->data = $subject->getData();
     }
 
     public function getKey()
@@ -32,6 +35,7 @@ class ResponseImageEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_IMAGE);
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::TEXT, $this->imgSrc);
+        $utterance->put(Literals::DATA, $this->data);
 
         return $utterance;
     }

@@ -24,6 +24,13 @@ class WebChatListMessage extends WebChatMessage
         return $this->elements;
     }
 
+    public function getData()
+    {
+        return [
+            'elements' => $this->getElementsArray()
+        ];
+    }
+
     /**
      * @return array
      */
@@ -53,9 +60,7 @@ class WebChatListMessage extends WebChatMessage
         return [
             'author' => 'them',
             'type' => 'list',
-            'data' => [
-                'elements' => $this->getElementsArray()
-            ]
+            'data' => $this->getData()
         ];
     }
 }

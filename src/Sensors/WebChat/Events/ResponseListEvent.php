@@ -9,11 +9,14 @@ class ResponseListEvent extends WebChatEvent
 {
     const EVENT_NAME = 'event.webchat.response_list';
 
+    private $data;
+
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
 
         $this->userId = $arguments[Literals::USER_ID];
+        $this->data = $subject->getData();
     }
 
     public function getKey()
@@ -29,6 +32,7 @@ class ResponseListEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_LIST);
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::TEXT, '');
+        $utterance->put(Literals::DATA, $this->data);
 
         return $utterance;
     }
