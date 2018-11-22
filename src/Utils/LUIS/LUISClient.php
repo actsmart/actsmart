@@ -12,7 +12,7 @@ class LUISClient
 
     private $appId;
 
-    private $subscription_key;
+    private $subscriptionKey;
 
     private $staging = false;
 
@@ -22,7 +22,7 @@ class LUISClient
 
     private $spellcheck = true;
 
-    public function __construct($appUrl, $appId, $subscription_key, $staging = false, $timezoneOffset = 0, $verbose = true, $spellcheck = true)
+    public function __construct($appUrl, $appId, $subscriptionKey, $staging = false, $timezoneOffset = 0, $verbose = true, $spellcheck = true)
     {
         $this->client = new Client();
         $this->appUrl = $appUrl;
@@ -40,30 +40,34 @@ class LUISClient
      */
     public function queryLUIS($message)
     {
-        $query =  $this->client->request('GET',
-            $this->appUrl . '/' . $this->appId,
-            [
-                'query' =>
-                    [
-                        'staging' => $this->staging,
-                        'timezone-offset' => $this->timezoneOffset,
-                        'verbose' => $this->verbose,
-                        'spellcheck' => $this->spellcheck,
-                        'q' => $message,
-                    ],
-                'headers' =>
-                    [
-                        'Ocp-Apim-Subscription-Key' => $this->subscriptionKey
-                    ]
-            ]
-        );
+        try {
+
+            $query = $this->client->request('GET',
+                $this->appUrl . '/' . $this->appId,
+                [
+                    'query' =>
+                        [
+                            'staging' => $this->staging,
+                            'timezone-offset' => $this->timezoneOffset,
+                            'verbose' => $this->verbose,
+                            'spellcheck' => $this->spellcheck,
+                            'q' => $message,
+                        ],
+                    'headers' =>
+                        [
+                            'Ocp-Apim-Subscription-Key' => $this->subscriptionKey
+                        ]
+                ]
+            );
+        } catch (\Exception $e) {
+            throw new LUISRequestFailedException($e->getMessage());
+        }
 
         if ($query->getStatusCode() == '200') {
             return new LUISResponse(json_decode($query->getBody()->getContents()));
         } else {
-            return false;
+            return json_decode($query->getBody()->getContents());
         }
-
     }
 
 }

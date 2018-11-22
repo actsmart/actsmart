@@ -24,15 +24,19 @@ class QnAClient
 
     public function queryQnA($question)
     {
-        $query = $this->client->request('POST',
-            $this->uri.'/'. $this->KBId .'/generateAnswer', [
-                'headers' => [
-                    'Authorization' => 'EndpointKey ' . $this->authCode,
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => ['question' => $question
-                ]
-            ]);
+        try {
+            $query = $this->client->request('POST',
+                $this->uri . '/' . $this->KBId . '/generateAnswer', [
+                    'headers' => [
+                        'Authorization' => 'EndpointKey ' . $this->authCode,
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => ['question' => $question
+                    ]
+                ]);
+        } catch (\Exception $e) {
+            throw new QnARequestFailedException($e->getMessage());
+        }
 
         if ($query->getStatusCode() == '200') {
             return new QnAResponse(json_decode($query->getBody()->getContents()));
