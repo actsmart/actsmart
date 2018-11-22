@@ -64,16 +64,21 @@ class WebChatImageMessage extends WebChatMessage
         return $this->linkNewTab;
     }
 
+    public function getData()
+    {
+        return [
+            'img_src' => $this->getImgSrc(),
+            'img_link' => $this->getImgLink(),
+            'link_new_tab' => $this->getLinkNewTab()
+        ];
+    }
+
     public function getMessageToPost()
     {
         return [
             'author' => 'them',
             'type' => 'image',
-            'data' => [
-                'img_src' => $this->getImgSrc(),
-                'img_link' => $this->getImgLink(),
-                'link_new_tab' => $this->getLinkNewTab()
-            ]
+            'data' => $this->getData()
         ];
     }
 }

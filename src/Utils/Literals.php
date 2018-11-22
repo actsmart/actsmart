@@ -28,6 +28,9 @@ class Literals
     /* The text contained withing an utterance */
     const TEXT = 'text';
 
+    /* The data object contained within an utterance */
+    const DATA = 'data';
+
     /* The callback id contained within an utterance */
     const CALLBACK_ID = 'callback_id';
 

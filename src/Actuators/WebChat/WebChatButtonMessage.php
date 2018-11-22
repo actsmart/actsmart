@@ -28,6 +28,18 @@ class WebChatButtonMessage extends WebChatMessage
     /**
      * @return array
      */
+    public function getData()
+    {
+        return [
+            'text' => $this->getText(),
+            'buttons' => $this->getButtonsArray(),
+            'disable_text' => $this->getDisableText()
+        ];
+    }
+
+    /**
+     * @return array
+     */
     public function getButtonsArray()
     {
         $buttons = [];
@@ -48,11 +60,7 @@ class WebChatButtonMessage extends WebChatMessage
         return [
             'author' => 'them',
             'type' => 'button',
-            'data' => [
-                'text' => $this->getText(),
-                'buttons' => $this->getButtonsArray(),
-                'disable_text' => $this->getDisableText()
-            ]
+            'data' => $this->getData()
         ];
     }
 }

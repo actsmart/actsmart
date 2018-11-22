@@ -19,9 +19,9 @@ class ActionEvent extends WebChatEvent
      */
     private $callbackData = null;
 
-    private $text;
+    private $text = null;
 
-    private $value;
+    private $value = null;
 
     protected $event_key;
 
