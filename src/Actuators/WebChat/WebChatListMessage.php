@@ -27,7 +27,9 @@ class WebChatListMessage extends WebChatMessage
     public function getData()
     {
         return [
-            'elements' => $this->getElementsArray()
+            'elements' => $this->getElementsArray(),
+            'time' => $this->getTime(),
+            'date' => $this->getDate()
         ];
     }
 

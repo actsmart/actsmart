@@ -69,7 +69,9 @@ class WebChatImageMessage extends WebChatMessage
         return [
             'img_src' => $this->getImgSrc(),
             'img_link' => $this->getImgLink(),
-            'link_new_tab' => $this->getLinkNewTab()
+            'link_new_tab' => $this->getLinkNewTab(),
+            'time' => $this->getTime(),
+            'date' => $this->getDate()
         ];
     }
 
