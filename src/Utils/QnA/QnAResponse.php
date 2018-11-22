@@ -5,9 +5,8 @@ namespace actsmart\actsmart\Utils\Qna;
 
 class QnAResponse
 {
-
     const NO_MATCH = 'No good match found in KB.';
-    const DIALOG = 'dialog';
+    const DIALOG   = 'dialog';
 
     private $matchFound = true;
 
@@ -36,7 +35,7 @@ class QnAResponse
             }
 
             $this->questions = $answer->questions;
-            $this->score = (float) $answer->score;
+            $this->score = (float)$answer->score;
             $this->source = $answer->source;
             $this->answer = $answer->answer;
 
@@ -86,7 +85,8 @@ class QnAResponse
         return $this->metadata;
     }
 
-    public function getDialogToActivate(){
+    public function getDialogToActivate()
+    {
         return isset($this->metadata[self::DIALOG]) ? $this->metadata[self::DIALOG] : false;
     }
 

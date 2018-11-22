@@ -10,7 +10,7 @@ class QnAClient
 
     private $uri;
 
-    private $KBId;
+    private $kbId;
 
     private $authCode;
 
@@ -18,7 +18,7 @@ class QnAClient
     {
         $this->client = new Client();
         $this->uri = $uri;
-        $this->KBId = $KBId;
+        $this->kbId = $kbId;
         $this->authCode = $authCode;
     }
 
@@ -26,7 +26,7 @@ class QnAClient
     {
         try {
             $query = $this->client->request('POST',
-                $this->uri . '/' . $this->KBId . '/generateAnswer', [
+                $this->uri . '/' . $this->$kbId . '/generateAnswer', [
                     'headers' => [
                         'Authorization' => 'EndpointKey ' . $this->authCode,
                         'Content-Type' => 'application/json',
