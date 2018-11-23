@@ -11,8 +11,6 @@ class ResponseActionEvent extends WebChatEvent
 
     private $text;
 
-    private $data;
-
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments);
@@ -35,7 +33,6 @@ class ResponseActionEvent extends WebChatEvent
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_ACTION);
         $utterance->put(Literals::SOURCE_EVENT, $this);
         $utterance->put(Literals::TEXT, $this->text);
-        $utterance->put(Literals::DATA, $this->data);
 
         return $utterance;
     }

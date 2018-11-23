@@ -15,15 +15,13 @@ class ResponseMessageEvent extends WebChatEvent
 
     protected $text = null;
 
-    protected $data = null;
-
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
         $this->userId = $arguments[Literals::USER_ID];
         $this->text = $subject->getText();
-        $this->data = null;
+        $this->data = $subject->getData();
     }
 
     public function getKey()
