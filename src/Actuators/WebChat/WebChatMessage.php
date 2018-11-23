@@ -14,12 +14,17 @@ class WebChatMessage
      *
      * @param $format - main message text
      * @param array $args - replaced in format
+     * @param bool - skip special chars encoding
      * @return $this
      */
-    public function setText($format, $args = [])
+    public function setText($format, $args = [], bool $noSpecialChars = false)
     {
-        // Escape &, <, > characters
-        $this->text = vsprintf(htmlspecialchars($format, ENT_NOQUOTES), $args);
+        if ($noSpecialChars) {
+            $this->text = vsprintf($format, $args);
+        } else {
+            // Escape &, <, > characters
+            $this->text = vsprintf(htmlspecialchars($format, ENT_NOQUOTES), $args);
+        }
         return $this;
     }
 

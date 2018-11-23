@@ -66,10 +66,12 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
         $this->notifyMessageEvent($message, $user_id);
 
+        // We are explicitly taking over json encoding so as to control the encoding format
         $this->agent->setHttpReaction(
-            new JsonResponse($message->getMessageToPost(),
+            new JsonResponse(json_encode($message->getMessageToPost(), JSON_UNESCAPED_SLASHES),
                 Response::HTTP_OK,
-                $this->headers
+                $this->headers,
+                true
             )
         );
 
@@ -87,10 +89,12 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
             $this->notifyMessageEvent($message, $user_id);
         }
 
+        // We are explicitly taking over json encoding so as to control the encoding format
         $this->agent->setHttpReaction(
-            new JsonResponse($response,
+            new JsonResponse(json_encode($response, JSON_UNESCAPED_SLASHES),
                 Response::HTTP_OK,
-                $this->headers
+                $this->headers,
+            true
             )
         );
     }
