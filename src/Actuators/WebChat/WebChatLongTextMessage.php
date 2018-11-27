@@ -124,21 +124,31 @@ class WebChatLongTextMessage extends WebChatMessage
         return $this->confirmationText;
     }
 
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return [
+            'text' => $this->getText(),
+            'character_limit' => $this->getCharacterLimit(),
+            'submit_text' => $this->getSubmitText(),
+            'callback_id' => $this->getCallbackId(),
+            'initial_text' => $this->getInitialText(),
+            'placeholder' => $this->getPlaceholder(),
+            'confirmation_text' => $this->getConfirmationText(),
+            'disable_text' => $this->getDisableText(),
+            'time' => $this->getTime(),
+            'date' => $this->getDate()
+        ];
+    }
+
     public function getMessageToPost()
     {
         return [
             'author' => 'them',
             'type' => 'longtext',
-            'data' => [
-                'text' => $this->getText(),
-                'character_limit' => $this->getCharacterLimit(),
-                'submit_text' => $this->getSubmitText(),
-                'callback_id' => $this->getCallbackId(),
-                'initial_text' => $this->getInitialText(),
-                'placeholder' => $this->getPlaceholder(),
-                'confirmation_text' => $this->getConfirmationText(),
-                'disable_text' => $this->getDisableText()
-            ]
+            'data' => $this->getData()
         ];
     }
 }

@@ -17,6 +17,7 @@ class ResponseFormEvent extends WebChatEvent
 
         $this->userId = $arguments[Literals::USER_ID];
         $this->text = $subject->getText();
+        $this->data = $subject->getData();
     }
 
     public function getKey()

@@ -15,15 +15,12 @@ class MessageEvent extends WebChatEvent
 
     protected $text = null;
 
-    protected $data = null;
-
     public function __construct($subject, $arguments = [])
     {
         parent::__construct($subject, $arguments, self::EVENT_NAME);
 
         $this->user = $subject->user ?? null;
         $this->text = $subject->data->text ?? null;
-        $this->data = $subject->data ?? null;
     }
 
     public function getKey()

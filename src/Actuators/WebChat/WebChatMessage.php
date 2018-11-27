@@ -9,6 +9,16 @@ class WebChatMessage
 
     private $disable_text = false;
 
+    private $time;
+
+    private $date;
+
+    public function __construct()
+    {
+        $this->time = date('h:i A');
+        $this->date = date('D j M');
+    }
+
     /**
      * Sets text for a standard Web Chat message. The main text is escaped
      *
@@ -56,15 +66,41 @@ class WebChatMessage
         return $this->disable_text;
     }
 
+    /**
+     * @return string
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return [
+            'text' => $this->getText(),
+            'disable_text' => $this->getDisableText(),
+            'time' => $this->getTime(),
+            'date' => $this->getDate()
+        ];
+    }
+
     public function getMessageToPost()
     {
         return [
             'author' => 'them',
             'type' => 'text',
-            'data' => [
-                'text' => $this->getText(),
-                'disable_text' => $this->getDisableText()
-            ]
+            'data' => $this->getData()
         ];
     }
 }

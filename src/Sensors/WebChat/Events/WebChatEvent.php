@@ -17,6 +17,8 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
 
     protected $timestamp = null;
 
+    protected $data = null;
+
     protected $author;
 
     public function __construct($subject, $arguments, $event_key = 'event.webchat.generic')
@@ -31,6 +33,7 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
         $this->author = isset($subject->author) ? $subject->author : null;
         $this->timestamp = microtime(true);
         $this->event_key = $event_key;
+        $this->data = (isset($subject->data)) ? (array) $subject->data : null;
     }
 
     /**
@@ -93,6 +96,7 @@ abstract class WebChatEvent extends SensorEvent implements UtteranceEvent
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::LOGGED_IN_USER, $this->isLoggedIn());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
+        $utterance->put(Literals::DATA, $this->data);
         return $utterance;
     }
 }

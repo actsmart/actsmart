@@ -84,18 +84,28 @@ class WebChatFormMessage extends WebChatMessage
         return $elements;
     }
 
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return [
+            'callback_id' => $this->getCallbackId(),
+            'text' => $this->getText(),
+            'elements' => $this->getElementsArray(),
+            'submit_text' => $this->getSubmitText(),
+            'disable_text' => $this->getDisableText(),
+            'time' => $this->getTime(),
+            'date' => $this->getDate()
+        ];
+    }
+
     public function getMessageToPost()
     {
         return [
             'author' => 'them',
             'type' => 'webchat_form',
-            'data' => [
-                'callback_id' => $this->getCallbackId(),
-                'text' => $this->getText(),
-                'elements' => $this->getElementsArray(),
-                'submit_text' => $this->getSubmitText(),
-                'disable_text' => $this->getDisableText()
-            ]
+            'data' => $this->getData()
         ];
     }
 }
