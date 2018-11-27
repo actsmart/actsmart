@@ -52,14 +52,14 @@ class ConversationController extends BaseConversationController
             return false;
         }
 
-        $actionResult = $this->performAction($utterance, $ci);
-
-        $informationResponse = $this->performInformationRequest($utterance, $ci);
-
         if (!$nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent)) {
             $this->logger->debug('No next utterance within ongoing conversation');
             return false;
         }
+
+        $actionResult = $this->performAction($utterance, $ci);
+
+        $informationResponse = $this->performInformationRequest($utterance, $ci);
 
         $this->storeContext($nextUtterance, $ci);
 
