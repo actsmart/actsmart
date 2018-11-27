@@ -52,6 +52,10 @@ class ConversationController extends BaseConversationController
             return false;
         }
 
+        $actionResult = $this->performAction($utterance, $ci);
+
+        $informationResponse = $this->performInformationRequest($utterance, $ci);
+
         if (!$nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent)) {
             $this->logger->debug('No next utterance within ongoing conversation');
             return false;
@@ -59,7 +63,7 @@ class ConversationController extends BaseConversationController
 
         $this->storeContext($nextUtterance, $ci);
 
-        $this->sendMessage($utterance, $ci, $nextUtterance);
+        $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
 
         $this->saveConversationInstance($ci, $nextUtterance);
 
@@ -83,11 +87,15 @@ class ConversationController extends BaseConversationController
 
         $ci = $this->createConversationInstance($utterance, $matchingConversation->getId());
 
+        $actionResult = $this->performAction($utterance, $ci);
+
+        $informationResponse = $this->performInformationRequest($utterance, $ci);
+
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->storeContext($nextUtterance, $ci);
 
-        $this->sendMessage($utterance, $ci, $nextUtterance);
+        $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
 
         $this->saveConversationInstance($ci, $nextUtterance);
 
@@ -110,11 +118,15 @@ class ConversationController extends BaseConversationController
 
         $ci = $this->createConversationInstance($utterance, $matchingConversation->getId());
 
+        $actionResult = $this->performAction($utterance, $ci);
+
+        $informationResponse = $this->performInformationRequest($utterance, $ci);
+
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
 
         $this->storeContext($nextUtterance, $ci);
 
-        $this->sendMessage($utterance, $ci, $nextUtterance);
+        $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
 
         $this->saveConversationInstance($ci, $nextUtterance);
 
@@ -147,21 +159,12 @@ class ConversationController extends BaseConversationController
 
     /**
      * @param Map $utterance
-     * @param $ci ConversationInstance
      * @param $nextUtterance Utterance
+     * @param $actionResult
+     * @param $informationResponse
      */
-    private function sendMessage(Map $utterance, $ci, $nextUtterance): void
+    private function sendMessage(Map $utterance, $nextUtterance, $actionResult, $informationResponse): void
     {
-        $actionResult = null;
-        if ($action = $ci->getCurrentAction()) {
-            $actionResult = $this->getAgent()->performAction($action, $utterance);
-        }
-
-        $informationResponse = null;
-        if ($informationRequest = $ci->getCurrentInformationRequest()) {
-            $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
-        }
-
         $arguments = new Map();
         $arguments->put(Literals::MESSAGE, $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse));
         $arguments->put(Literals::USER_ID, $utterance->get(Literals::USER_ID));
@@ -195,5 +198,33 @@ class ConversationController extends BaseConversationController
     public function listensForEvents()
     {
         return [WebChatUtteranceEvent::KEY];
+    }
+
+    /**
+     * @param Map $utterance
+     * @param ConversationInstance $ci
+     * @return mixed|null
+     */
+    private function performAction(Map $utterance, $ci)
+    {
+        $actionResult = null;
+        if ($action = $ci->getCurrentAction()) {
+            $actionResult = $this->getAgent()->performAction($action, $utterance);
+        }
+        return $actionResult;
+    }
+
+    /**
+     * @param Map $utterance
+     * @param ConversationInstance $ci
+     * @return mixed|null
+     */
+    private function performInformationRequest(Map $utterance, $ci)
+    {
+        $informationResponse = null;
+        if ($informationRequest = $ci->getCurrentInformationRequest()) {
+            $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
+        }
+        return $informationResponse;
     }
 }
