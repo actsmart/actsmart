@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatImageMessage extends WebChatMessage
 {
+    protected $messageType = 'image';
+
     private $imgSrc = null;
 
     private $imgLink = null;
@@ -70,17 +72,11 @@ class WebChatImageMessage extends WebChatMessage
             'img_src' => $this->getImgSrc(),
             'img_link' => $this->getImgLink(),
             'link_new_tab' => $this->getLinkNewTab(),
+            'disable_text' => $this->getDisableText(),
+            'internal' => $this->getInternal(),
+            'hidetime' => $this->getHidetime(),
             'time' => $this->getTime(),
             'date' => $this->getDate()
-        ];
-    }
-
-    public function getMessageToPost()
-    {
-        return [
-            'author' => 'them',
-            'type' => 'image',
-            'data' => $this->getData()
         ];
     }
 }

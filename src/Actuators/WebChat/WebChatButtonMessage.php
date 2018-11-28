@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatButtonMessage extends WebChatMessage
 {
+    protected $messageType = 'button';
+
     /** The message buttons. @var WebChatButton[] */
     private $buttons = [];
 
@@ -30,12 +32,8 @@ class WebChatButtonMessage extends WebChatMessage
      */
     public function getData()
     {
-        return [
-            'text' => $this->getText(),
-            'buttons' => $this->getButtonsArray(),
-            'disable_text' => $this->getDisableText(),
-            'time' => $this->getTime(),
-            'date' => $this->getDate()
+        return parent::getData() + [
+            'buttons' => $this->getButtonsArray()
         ];
     }
 
@@ -55,14 +53,5 @@ class WebChatButtonMessage extends WebChatMessage
         }
 
         return $buttons;
-    }
-
-    public function getMessageToPost()
-    {
-        return [
-            'author' => 'them',
-            'type' => 'button',
-            'data' => $this->getData()
-        ];
     }
 }

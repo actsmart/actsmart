@@ -83,7 +83,14 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
         $this->logger->debug('Attempting a Web Chat response message.');
 
         $response = [];
-        foreach ($messages as $message) {
+        foreach ($messages as $i => $message) {
+            if ($i > 0) {
+                $message->setInternal(true);
+            }
+            if ($i < count($messages) - 1) {
+                $message->setHidetime(true);
+            }
+
             $response[] = $message->getMessageToPost();
 
             $this->notifyMessageEvent($message, $user_id);
