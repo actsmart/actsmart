@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatFormMessage extends WebChatMessage
 {
+    protected $messageType = 'webchat_form';
+
     private $text = null;
 
     private $submitText = 'Submit';
@@ -89,23 +91,10 @@ class WebChatFormMessage extends WebChatMessage
      */
     public function getData()
     {
-        return [
+        return parent::getData() + [
             'callback_id' => $this->getCallbackId(),
-            'text' => $this->getText(),
             'elements' => $this->getElementsArray(),
-            'submit_text' => $this->getSubmitText(),
-            'disable_text' => $this->getDisableText(),
-            'time' => $this->getTime(),
-            'date' => $this->getDate()
-        ];
-    }
-
-    public function getMessageToPost()
-    {
-        return [
-            'author' => 'them',
-            'type' => 'webchat_form',
-            'data' => $this->getData()
+            'submit_text' => $this->getSubmitText()
         ];
     }
 }

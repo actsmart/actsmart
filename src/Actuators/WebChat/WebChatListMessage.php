@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatListMessage extends WebChatMessage
 {
+    protected $messageType = 'list';
+
     private $elements = [];
 
     /**
@@ -28,6 +30,9 @@ class WebChatListMessage extends WebChatMessage
     {
         return [
             'elements' => $this->getElementsArray(),
+            'disable_text' => $this->getDisableText(),
+            'internal' => $this->getInternal(),
+            'hidetime' => $this->getHidetime(),
             'time' => $this->getTime(),
             'date' => $this->getDate()
         ];
@@ -55,14 +60,5 @@ class WebChatListMessage extends WebChatMessage
         }
 
         return $elements;
-    }
-
-    public function getMessageToPost()
-    {
-        return [
-            'author' => 'them',
-            'type' => 'list',
-            'data' => $this->getData()
-        ];
     }
 }

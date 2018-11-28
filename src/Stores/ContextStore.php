@@ -25,7 +25,7 @@ class ContextStore extends EphemeralStore
     {
         if ($e instanceof ActionEvent) {
             $subject = $e->getSubject();
-            foreach ($subject as $topic =>  $content) {
+            foreach ($subject as $topic => $content) {
                 foreach ($content as $key => $value) {
                     $this->storeInformation(new ContextInformation($subject, $topic, $content));
                 }

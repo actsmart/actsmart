@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatMessage
 {
+    protected $messageType = 'text';
+
     /** The message text. */
     private $text = null;
 
@@ -12,6 +14,10 @@ class WebChatMessage
     private $time;
 
     private $date;
+
+    private $hidetime = false;
+
+    private $internal = false;
 
     public function __construct()
     {
@@ -83,6 +89,46 @@ class WebChatMessage
     }
 
     /**
+     * @return bool
+     */
+    public function getInternal()
+    {
+        return $this->internal;
+    }
+
+    /**
+     * Set internal property
+     *
+     * @param $internal
+     * @return $this
+     */
+    public function setInternal($internal)
+    {
+        $this->internal = $internal;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHidetime()
+    {
+        return $this->hidetime;
+    }
+
+    /**
+     * Set hidetime property
+     *
+     * @param $hidetime
+     * @return $this
+     */
+    public function setHidetime($hidetime)
+    {
+        $this->hidetime = $hidetime;
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getData()
@@ -90,6 +136,8 @@ class WebChatMessage
         return [
             'text' => $this->getText(),
             'disable_text' => $this->getDisableText(),
+            'internal' => $this->getInternal(),
+            'hidetime' => $this->getHidetime(),
             'time' => $this->getTime(),
             'date' => $this->getDate()
         ];
@@ -99,7 +147,7 @@ class WebChatMessage
     {
         return [
             'author' => 'them',
-            'type' => 'text',
+            'type' => $this->messageType,
             'data' => $this->getData()
         ];
     }

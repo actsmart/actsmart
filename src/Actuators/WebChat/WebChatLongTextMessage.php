@@ -4,6 +4,8 @@ namespace actsmart\actsmart\Actuators\WebChat;
 
 class WebChatLongTextMessage extends WebChatMessage
 {
+    protected $messageType = 'longtext';
+
     private $characterLimit = null;
 
     private $submitText = null;
@@ -129,26 +131,13 @@ class WebChatLongTextMessage extends WebChatMessage
      */
     public function getData()
     {
-        return [
-            'text' => $this->getText(),
+        return parent::getData() + [
             'character_limit' => $this->getCharacterLimit(),
             'submit_text' => $this->getSubmitText(),
             'callback_id' => $this->getCallbackId(),
             'initial_text' => $this->getInitialText(),
             'placeholder' => $this->getPlaceholder(),
-            'confirmation_text' => $this->getConfirmationText(),
-            'disable_text' => $this->getDisableText(),
-            'time' => $this->getTime(),
-            'date' => $this->getDate()
-        ];
-    }
-
-    public function getMessageToPost()
-    {
-        return [
-            'author' => 'them',
-            'type' => 'longtext',
-            'data' => $this->getData()
+            'confirmation_text' => $this->getConfirmationText()
         ];
     }
 }
