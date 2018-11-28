@@ -4,5 +4,5 @@ namespace actsmart\actsmart\Conversations\WebChat;
 
 interface WebChatResponseInterface
 {
-    public function getWebChatResponse($action_data = null);
+    public function getWebChatResponse($actionData = null, $informationResponse = null);
 }
