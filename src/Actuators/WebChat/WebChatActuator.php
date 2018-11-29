@@ -49,11 +49,25 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
 
         $response = null;
 
-        if (is_array($arguments->get('message'))) {
-            return $this->postMultipleMessages($arguments->get('message'), $arguments->get('user_id'));
+        if (is_array($arguments->get(Literals::MESSAGE))) {
+            return $this->postMultipleMessages($arguments->get(Literals::MESSAGE), $arguments->get(Literals::USER_ID));
         }
 
-        return $this->postMessage($arguments->get('message'), $arguments->get('user_id'));
+        /* @var WebChatMessage $message */
+        $message = $arguments->get(Literals::MESSAGE);
+        if ($message->isEmpty()) {
+            $this->agent->setHttpReaction(
+                new JsonResponse(json_encode([]),
+                    Response::HTTP_OK,
+                    $this->headers,
+                    true
+                )
+            );
+
+            return $this->agent->httpReact();
+        }
+
+        return $this->postMessage($arguments->get(Literals::MESSAGE), $arguments->get(Literals::USER_ID));
     }
 
     /**

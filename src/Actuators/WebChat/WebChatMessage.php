@@ -19,6 +19,8 @@ class WebChatMessage
 
     private $internal = false;
 
+    private $isEmpty = false;
+
     public function __construct()
     {
         $this->time = date('h:i A');
@@ -129,6 +131,20 @@ class WebChatMessage
     }
 
     /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->isEmpty;
+    }
+
+    public function setAsEmpty(): void
+    {
+        $this->isEmpty = true;
+    }
+
+
+    /**
      * @return array
      */
     public function getData()
@@ -145,6 +161,9 @@ class WebChatMessage
 
     public function getMessageToPost()
     {
+        if ($this->isEmpty) {
+            return false;
+        }
         return [
             'author' => 'them',
             'type' => $this->messageType,
