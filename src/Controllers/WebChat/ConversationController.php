@@ -57,9 +57,19 @@ class ConversationController extends BaseConversationController
             return false;
         }
 
-        $actionResult = $this->performAction($utterance, $ci);
+        // Perform actions or information requests associated with the incoming utterance
+        $actionResult = $this->performCurrentAction($utterance, $ci);
+        $informationResponse = $this->performCurrentInformationRequest($utterance, $ci);
 
-        $informationResponse = $this->performInformationRequest($utterance, $ci);
+        /**
+         * Perform actions or information requests associated with the outgoing utterance.
+         * @note This will overwrite previous results right now.
+         */
+        $nextActionResult = $this->performUtteranceAction($nextUtterance, $utterance);
+        $actionResult = $nextActionResult ? $nextActionResult : $actionResult;
+        $nextInformationResponse = $this->performUtteranceInformationRequest($nextUtterance, $utterance);
+        $informationResponse = $nextInformationResponse ? $nextInformationResponse : $informationResponse;
+
 
         $this->storeContext($nextUtterance, $ci);
 
@@ -87,11 +97,20 @@ class ConversationController extends BaseConversationController
 
         $ci = $this->createConversationInstance($utterance, $matchingConversation->getId());
 
-        $actionResult = $this->performAction($utterance, $ci);
-
-        $informationResponse = $this->performInformationRequest($utterance, $ci);
+        // Perform actions or information requests associated with the incoming utterance
+        $actionResult = $this->performCurrentAction($utterance, $ci);
+        $informationResponse = $this->performCurrentInformationRequest($utterance, $ci);
 
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
+
+        /**
+         * Perform actions or information requests associated with the outgoing utterance.
+         * @note This will overwrite previous results right now.
+         */
+        $nextActionResult = $this->performUtteranceAction($nextUtterance, $utterance);
+        $actionResult = $nextActionResult ? $nextActionResult : $actionResult;
+        $nextInformationResponse = $this->performUtteranceInformationRequest($nextUtterance, $utterance);
+        $informationResponse = $nextInformationResponse ? $nextInformationResponse : $informationResponse;
 
         $this->storeContext($nextUtterance, $ci);
 
@@ -118,11 +137,20 @@ class ConversationController extends BaseConversationController
 
         $ci = $this->createConversationInstance($utterance, $matchingConversation->getId());
 
-        $actionResult = $this->performAction($utterance, $ci);
-
-        $informationResponse = $this->performInformationRequest($utterance, $ci);
+        // Perform actions or information requests associated with the incoming utterance
+        $actionResult = $this->performCurrentAction($utterance, $ci);
+        $informationResponse = $this->performCurrentInformationRequest($utterance, $ci);
 
         $nextUtterance = $ci->getNextUtterance($this->getAgent(), $utterance, $intent, false);
+
+        /**
+         * Perform actions or information requests associated with the outgoing utterance.
+         * @note This will overwrite previous results right now.
+         */
+        $nextActionResult = $this->performUtteranceAction($nextUtterance, $utterance);
+        $actionResult = $nextActionResult ? $nextActionResult : $actionResult;
+        $nextInformationResponse = $this->performUtteranceInformationRequest($nextUtterance, $utterance);
+        $informationResponse = $nextInformationResponse ? $nextInformationResponse : $informationResponse;
 
         $this->storeContext($nextUtterance, $ci);
 
@@ -201,11 +229,13 @@ class ConversationController extends BaseConversationController
     }
 
     /**
+     * This performs an action based on the current action set in the ConversationInstance.
+     *
      * @param Map $utterance
      * @param ConversationInstance $ci
      * @return mixed|null
      */
-    private function performAction(Map $utterance, $ci)
+    private function performCurrentAction(Map $utterance, $ci)
     {
         $actionResult = null;
         if ($action = $ci->getCurrentAction()) {
@@ -215,16 +245,41 @@ class ConversationController extends BaseConversationController
     }
 
     /**
+     * This performs an information request based on the current IR set in the ConversationInstance.
      * @param Map $utterance
      * @param ConversationInstance $ci
      * @return mixed|null
      */
-    private function performInformationRequest(Map $utterance, $ci)
+    private function performCurrentInformationRequest(Map $utterance, $ci)
     {
         $informationResponse = null;
         if ($informationRequest = $ci->getCurrentInformationRequest()) {
             $informationResponse = $this->getAgent()->performInformationRequest($informationRequest, $utterance);
         }
         return $informationResponse;
+    }
+
+    /**
+     * Performes an action
+     * @param Utterance $outgoingUtterance
+     * @param Map $incomingUtterance
+     * @return mixed
+     */
+    private function performUtteranceAction(Utterance $outgoingUtterance, Map $incomingUtterance)
+    {
+        $action = $outgoingUtterance->getAction();
+        if ($action) {
+            return $this->getAgent()->performAction($action, $incomingUtterance);
+        }
+
+    }
+
+    private function performUtteranceInformationRequest(Utterance $outgoingUtterance, Map $incomingUtterance)
+    {
+        $informationRequest = $outgoingUtterance->getInformationRequest();
+        if ($informationRequest) {
+            return $this->getAgent()->performInformationRequest($informationRequest, $incomingUtterance);
+        }
+
     }
 }
