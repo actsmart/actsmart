@@ -57,10 +57,9 @@ class WebChatActuator implements ComponentInterface, LoggerAwareInterface, Actua
         $message = $arguments->get(Literals::MESSAGE);
         if ($message->isEmpty()) {
             $this->agent->setHttpReaction(
-                new JsonResponse(json_encode([]),
+                new JsonResponse(null,
                     Response::HTTP_OK,
-                    $this->headers,
-                    true
+                    $this->headers
                 )
             );
 
