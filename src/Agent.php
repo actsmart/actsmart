@@ -24,6 +24,19 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class Agent
+ *
+ * The agent is a container class. It's task is to wire together all the
+ * different components as well as provide as standard out of the box defaults.
+ *
+ * Typically you should be subclassing this class to configure for your own needs.
+ *
+ * @see WebChatAgent
+ * @see SlackAgent
+ *
+ * @package actsmart\actsmart
+ */
 class Agent
 {
     /** @var  array */
