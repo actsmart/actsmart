@@ -95,4 +95,7 @@ class Literals
     /* Stores */
     const CONTEXT_STORE = 'store.context';
 
+    /* The language used in an utterance */
+    const LANGUAGE = 'language';
+
 }
