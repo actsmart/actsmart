@@ -11,7 +11,7 @@ class GenericWebChatMessage extends Message implements WebChatResponseInterface
      * @param null $action_data
      * @return WebChatMessage
      */
-    public function getWebChatResponse($action_data = null)
+    public function getWebChatResponse($action_data = null, $informationResponse = null)
     {
         $message = new WebChatMessage();
         $message->setText($this->getTextResponse());
