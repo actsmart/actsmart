@@ -5,9 +5,11 @@ namespace actsmart\actsmart\Actuators\Slack;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
-use GuzzleHttp\Client;
+use actsmart\actsmart\Utils\Literals;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use GuzzleHttp\Client;
+use Ds\Map;
 
 /**
  * Class SlackActuator
@@ -37,17 +39,19 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
      * The SlackActuator determines the type of Slack message so as to call the apporpriate Slack API endpoint.
      *
      * @param $action
-     * @param array $arguments
+     * @param Map $arguments
      * @return mixed
      */
-    public function perform(string $action, $arguments = [])
+    public function perform(string $action, Map $arguments = null)
     {
-        if ($action != 'action.slack.postmessage' || !isset($arguments['message'])) {
+        try {
+            $message = $arguments->get(Literals::MESSAGE);
+        } catch (\OutOfBoundsException $e) {
             return null;
         }
 
         $this->headers = [
-            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $arguments['message']->getWorkspace(), 'bot_token'),
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $message->getWorkspace(), 'bot_token'),
             'Content-Type' => 'application/json; charset=utf-8',
         ];
 
@@ -56,20 +60,20 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
         $response = null;
 
         // Determine the type
-        if ($arguments['message'] instanceof SlackEphemeralMessage) {
-            $response = $this->postMessage($arguments['message'], self::EPHEMERAL_MESSAGE);
+        if ($message instanceof SlackEphemeralMessage) {
+            $response = $this->postMessage($message, self::EPHEMERAL_MESSAGE);
         }
 
-        if ($arguments['message'] instanceof SlackStandardMessage) {
-            $response = $this->postMessage($arguments['message'], self::STANDARD_MESSAGE);
+        if ($message instanceof SlackStandardMessage) {
+            $response = $this->postMessage($message, self::STANDARD_MESSAGE);
         }
 
-        if ($arguments['message'] instanceof SlackUpdateMessage) {
-            $response = $this->postUpdate($arguments['message']);
+        if ($message instanceof SlackUpdateMessage) {
+            $response = $this->postUpdate($message);
         }
 
-        if ($arguments['message'] instanceof SlackDialog) {
-            $response = $this->postDialog($arguments['message']);
+        if ($message instanceof SlackDialog) {
+            $response = $this->postDialog($message);
         }
 
 

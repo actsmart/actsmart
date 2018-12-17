@@ -2,13 +2,11 @@
 
 namespace actsmart\actsmart\Conversations;
 
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Interpreters\Intent\IntentInterpreter;
+use Ds\Map;
 use Fhaculty\Graph\Edge\Directed as EdgeDirected;
 use Fhaculty\Graph\Vertex;
-use actsmart\actsmart\Interpreters\InterpreterInterface;
-use actsmart\actsmart\Actions\ActionInterface;
-use actsmart\actsmart\Conversations\ConditionInterface;
-use actsmart\actsmart\Sensors\SensorEvent;
 
 class Utterance extends EdgeDirected
 {
@@ -16,17 +14,24 @@ class Utterance extends EdgeDirected
 
     private $sequence;
 
+    /** @var Intent */
     private $intent;
 
-    private $completes;
+    /** @var bool - set to true if this Utterance completes a conversation */
+    private $completes = false;
 
     private $action;
 
+    private $informationRequest;
+
     private $preconditions = [];
 
-    private $interpreter;
+    private $intent_interpreter;
 
-    public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false)
+    /** @var bool - set to true if this utterance allows us to repeat the previous utterance that got us here */
+    private $repeating = false;
+
+    public function __construct(Vertex $from, Vertex $to, $sequence, $completes = false, $repeating = true)
     {
         parent::__construct($from, $to);
         $this->sequence = $sequence;
@@ -38,6 +43,9 @@ class Utterance extends EdgeDirected
         return $this;
     }
 
+    /**
+     * @return Message
+     */
     public function getMessage()
     {
         return $this->message;
@@ -72,7 +80,7 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function isCompleting()
     {
@@ -81,6 +89,7 @@ class Utterance extends EdgeDirected
 
     /**
      * @param mixed $completes
+     * @return Utterance
      */
     public function setCompletes($completes)
     {
@@ -89,7 +98,25 @@ class Utterance extends EdgeDirected
     }
 
     /**
-     * @return ActionInterface
+     * @return bool
+     */
+    public function isRepeating(): bool
+    {
+        return $this->repeating;
+    }
+
+    /**
+     * @param bool $repeating
+     */
+    public function setRepeating(bool $repeating): void
+    {
+        $this->repeating = $repeating;
+    }
+
+    
+
+    /**
+     * @return string
      */
     public function getAction()
     {
@@ -103,6 +130,24 @@ class Utterance extends EdgeDirected
     public function setAction($action)
     {
         $this->action = $action;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInformationRequest()
+    {
+        return $this->informationRequest;
+    }
+
+    /**
+     * @param mixed $informationRequest
+     * @return Utterance
+     */
+    public function setInformationRequest($informationRequest)
+    {
+        $this->informationRequest = $informationRequest;
         return $this;
     }
 
@@ -161,23 +206,26 @@ class Utterance extends EdgeDirected
         return false;
     }
 
-    public function setInterpreter($interpreter)
+    public function setInterpreter($intent_interpreter)
     {
-        $this->interpreter = $interpreter;
+        $this->intent_interpreter = $intent_interpreter;
     }
 
-    public function getInterpreter()
+    /**
+     * @return IntentInterpreter
+     */
+    public function getIntentInterpreter()
     {
-        return $this->interpreter;
+        return $this->intent_interpreter;
     }
 
-    public function hasInterpreter()
+    public function hasIntentInterpreter()
     {
-        return isset($this->interpreter);
+        return isset($this->intent_interpreter);
     }
 
-    public function interpret($e)
+    public function interpretIntent(Map $utterance)
     {
-        return $this->interpreter->interpret($e);
+        return $this->intent_interpreter->interpretIntent($utterance);
     }
 }

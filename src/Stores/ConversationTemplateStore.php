@@ -3,25 +3,22 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Conversations\Conversation;
-use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\SensorEvent;
-use actsmart\actsmart\Sensors\UtteranceEvent;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use actsmart\actsmart\Conversations\Scene;
+use actsmart\actsmart\Conversations\Utterance;
+use actsmart\actsmart\Interpreters\Intent\Intent;
+use Ds\Map;
 
-abstract class ConversationTemplateStore implements ConversationTemplateStoreInterface, ComponentInterface, StoreInterface
+abstract class ConversationTemplateStore extends EphemeralStore
 {
-    use ComponentTrait;
-
-    protected $conversations = [];
+    const CUSTOM_INTERPRETER = "custom_interpreter";
+    const DEFAULT_INTERPRETER = "default_interpreter";
 
     /**
      * @param Conversation $conversation
      */
     public function addConversation(Conversation $conversation)
     {
-        $this->conversations[$conversation->getConversationTemplateId()] = $conversation;
+        $this->storeInformation(new ContextInformation(Conversation::INFORMATION_TYPE, $conversation->getConversationTemplateId(), $conversation));
     }
 
     /**
@@ -29,73 +26,127 @@ abstract class ConversationTemplateStore implements ConversationTemplateStoreInt
      */
     public function addConversations($conversations)
     {
-        $this->conversations = $conversations;
+        foreach ($conversations as $conversation) {
+            $this->addConversation($conversation);
+        }
     }
 
+    /**
+     * Returns all conversations (assumes there is just a single type);
+     *
+     * @return mixed
+     */
+    public function getAllConversations()
+    {
+        return $this->store->get(Conversation::INFORMATION_TYPE);
+    }
+
+    /**
+     * @param $conversation_template_id
+     * @return Conversation | null
+     */
     public function getConversation($conversation_template_id)
     {
-        return $this->conversations[$conversation_template_id];
+        /* @var ContextInformation $information */
+        $information = $this->getInformation(Conversation::INFORMATION_TYPE, $conversation_template_id);
+        return $information->getValue();
     }
 
     /**
      * Returns the set of conversations whose opening utterance has an intent that
      * matches the $intent.
      *
+     * Will return matching conversations split by whether they used the default interpreter or a custom interpreter in
+     * the format:
+     *
+     * [
+     *   'custom_interpreter' => [
+     *      {conversation},
+     *      ...
+     *   ],
+     *   'default_interpreter' => [
+     *      {conversation},
+     *      ...
+     *   ]
+     * ]
+     *
+     * @param Map $utterance
      * @param Intent $intent
-     * @return array | boolean
+     * @return array
      */
-    public function getMatchingConversations(GenericEvent $e, Intent $intent)
+    public function getMatchingConversations(Map $utterance, Intent $intent)
     {
         $matches = [];
-        foreach ($this->conversations as $conversation) {
+        /** @var Conversation $conversation */
+        foreach ($this->getAllConversations() as $conversation_id => $conversation) {
+
+            /** @var Scene $scene */
             $scene = $conversation->getInitialScene();
 
             // Check preconditions and if good then check interpreter
-            if ($this->getAgent()->checkConditions($scene->getPreConditions(), $e)) {
+            if ($this->getAgent()->checkIntentConditions($scene->getPreconditions(), $utterance)) {
+                /** @var Utterance $u */
                 $u = $conversation->getInitialScene()->getInitialUtterance();
 
-                // TODO - we are overwriting the original Intent here and if the conversations that follow do not have their own interpreter, it doesn't get changed back
-                if ($u->hasInterpreter()) {
-                    $conversationIntent = $this->getAgent()->interpret($u->getInterpreter(), $e);
+                if ($u->hasIntentInterpreter()) {
+                    $conversationIntent = $this->getAgent()->interpretIntent($u->getIntentInterpreter(), $utterance);
+                    $key = self::CUSTOM_INTERPRETER;
                 } else {
                     $conversationIntent = $intent;
+                    $key = self::DEFAULT_INTERPRETER;
                 }
 
                 if ($u->intentMatches($conversationIntent)) {
-                    $matches[$conversation->getConversationTemplateId()] = $conversation;
+                    $matches[$key][] = $conversation;
                 }
             }
         }
 
         if (count($matches) > 0) {
-            return array_keys($matches);
+            return $matches;
         }
 
         return false;
     }
 
     /**
-     * Returns a single match - the first conversation that matchs for now.
+     * Returns a single matching conversation using this logic:
      *
-     * @todo This should become more sophisticated than simply return the first
-     * conversation.
+     * If there are conversations that matched using a custom interpreter, discard conversations using the default
+     * interpreter.
+     * Return the conversation with the highest confidence score
      *
+     * @param Map $utterance
      * @param Intent $intent
      * @return mixed
      */
-    public function getMatchingConversation(GenericEvent $e, Intent $intent)
+    public function getMatchingConversation(Map $utterance, Intent $intent)
     {
-        $matches = $this->getMatchingConversations($e, $intent);
+        $matches = $this->getMatchingConversations($utterance, $intent);
 
         if (!$matches) {
             return false;
         }
 
-        // Have to do below to avoid a PHP_STRICT error for variables passed by reference
-        // when operation happens in a single pass.
-        $reversed_matches = array_reverse($matches);
-        $match = array_pop($reversed_matches);
+        if (isset($matches[self::CUSTOM_INTERPRETER])) {
+            $matches = $matches[self::CUSTOM_INTERPRETER];
+        } else {
+            $matches = $matches[self::DEFAULT_INTERPRETER];
+        }
 
-        return $match;
+        usort($matches, function (Conversation $a, Conversation $b) {
+            $aConfidence = $a->getInitialScene()->getInitialUtterance()->getIntent()->getConfidence();
+            $bConfidence = $b->getInitialScene()->getInitialUtterance()->getIntent()->getConfidence();
+
+            if ($aConfidence == $bConfidence) {
+                return 0;
+            }
+
+            return ($aConfidence < $bConfidence) ? -1 : 1;
+        });
+
+        return array_shift($matches);
     }
+
+    abstract public function buildConversations();
 }

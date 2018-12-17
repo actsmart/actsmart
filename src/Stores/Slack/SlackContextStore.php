@@ -2,21 +2,22 @@
 namespace actsmart\actsmart\Stores\Slack;
 
 use actsmart\actsmart\Stores\ConfigRequestEvent;
-use actsmart\actsmart\Stores\ConfigStore;
+use actsmart\actsmart\Stores\ContextStore;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
 /**
- * Class SlackConfigStore
+ * Class SlackContextStore
  * @package actsmart\actsmart\Stores\Slack
  *
  * The Slack config store makes use of a specific actuator to retrieve information related to Slack when that information
  * has not already been set via different means.
  */
-class SlackConfigStore extends ConfigStore
+class SlackContextStore extends ContextStore
 {
     /**
      * Listens for ConfigRequest events and when it is about the slackworkspace it calls an
-     * action.slack.getbotinfo action on an implementic actuator. If you are not setting these values explicitly you
+     * action.slack.getbotinfo action on an implementing actuator. If you are not setting these values explicitly you
      * should provide an actuator that responds to this action request.
      *
      * @param GenericEvent $event
@@ -32,7 +33,10 @@ class SlackConfigStore extends ConfigStore
                     return;
                 } else {
                     $workspace_id = explode('_', $event->getArgument('topic'))[1];
-                    $this->getAgent()->performAction('action.slack.getbotinfo', ['workspace_id' => $workspace_id]);
+
+                    $arguments = new Map();
+                    $arguments->put('workspace_id', $workspace_id);
+                    $this->getAgent()->performAction('action.slack.getbotinfo', $arguments);
                 }
             }
         }

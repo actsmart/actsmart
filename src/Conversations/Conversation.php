@@ -3,12 +3,11 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Interpreters\Intent\Intent;
+use actsmart\actsmart\Stores\InformationInterface;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 use Fhaculty\Graph\Graph as Graph;
-use actsmart\actsmart\Interpreters\Intent;
-use actsmart\actsmart\Sensors\SensorEvent;
-use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * A conversation is a Graph structure that describes the possible utterances
@@ -23,7 +22,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * Class Conversation
  * @package actsmart\actsmart\Conversations
  */
-class Conversation extends Graph
+class Conversation extends Graph implements InformationInterface
 {
 
     //@todo Could use an attributebag for these.
@@ -35,6 +34,7 @@ class Conversation extends Graph
     const PARTICIPATING = 'participating';
     const ID = 'id';
     const INITIAL_SCENE = 'init';
+    const INFORMATION_TYPE = 'conversation';
 
     private $conversation_template_id;
 
@@ -86,11 +86,13 @@ class Conversation extends Graph
 
     /**
      * @param $scene_id
-     * @return \Fhaculty\Graph\Vertex
+     * @return Scene
      */
     public function getScene($scene_id)
     {
-        return $this->getVertex($scene_id);
+        /** @var Scene $vertex */
+        $vertex = $this->getVertex($scene_id);
+        return $vertex;
     }
 
     /**
@@ -136,7 +138,7 @@ class Conversation extends Graph
         // Get the scene and connect the participant to the scene
         $this->getScene($scene_id)
             ->createEdgeTo($participant)
-            ->setAttribute(SELF::TYPE, SELF::PARTICIPATING);
+            ->setAttribute(self::TYPE, self::PARTICIPATING);
 
         return $this;
     }
@@ -159,7 +161,7 @@ class Conversation extends Graph
             $sender = $this->getParticipantToScene($options['scene'], $options['sender']);
             $receiver = $this->getParticipantToScene($options['scene'], $options['receiver']);
 
-            /* @var actsmart\actsmart\Conversations\Utterance $utterance */
+            /* @var \actsmart\actsmart\Conversations\Utterance $utterance */
             $utterance = $sender->talksTo($receiver, $this->sequence);
             $this->sequence++;
         }
@@ -168,15 +170,15 @@ class Conversation extends Graph
             $sender = $this->getParticipantToScene($options['starting_scene'], $options['sender']);
             $receiver = $this->getParticipantToScene($options['ending_scene'], $options['receiver']);
 
-            /* @var actsmart\actsmart\Conversations\Utterance $utterance */
+            /* @var \actsmart\actsmart\Conversations\Utterance $utterance */
             $utterance = $sender->talksTo($receiver, $this->sequence);
             $this->sequence++;
         }
 
 
         if (isset($utterance)) {
-            if (isset($options['message'])) {
-                $utterance->setMessage($options['message']);
+            if (isset($options[Literals::MESSAGE])) {
+                $utterance->setMessage($options[Literals::MESSAGE]);
             }
 
             if (isset($options['intent'])) {
@@ -191,9 +193,18 @@ class Conversation extends Graph
                 $utterance->setAction($options['action']);
             }
 
+            if (isset($options['information_request'])) {
+                $utterance->setInformationRequest($options['information_request']);
+            }
+
             if (isset($options['completes'])) {
                 $utterance->setCompletes($options['completes']);
             }
+
+            if (isset($options['repeating'])) {
+                $utterance->setRepeating($options['repeating']);
+            }
+
 
             if (isset($options['preconditions'])) {
                 foreach ($options['preconditions'] as $precondition) {
@@ -215,11 +226,11 @@ class Conversation extends Graph
     }
 
     /**
-     * @return \Fhaculty\Graph\Vertex
+     * @return Scene
      */
     public function getInitialScene()
     {
-        return $this->getScene(SELF::INITIAL_SCENE);
+        return $this->getScene(self::INITIAL_SCENE);
     }
 
     /**
@@ -239,13 +250,12 @@ class Conversation extends Graph
      * Given a current utterance from a sender to a receiver the possible followups
      * are all the replies within the scene from the receiver to the sender.
      *
+     * @param Agent $agent
      * @param $current_sequence
      * @param $current_scene
-     * @param GenericEvent $e
-     * @param Agent $agent
-     * @return array
+     * @return Map source_utterance
      */
-    public function getPossibleFollowUps(Agent $agent, $current_sequence, $current_scene, GenericEvent $e)
+    public function getPossibleFollowUps(Agent $agent, $current_sequence, $current_scene, Map $source_utterance)
     {
         $current_utterance = $this->getUtteranceWithSequence($current_sequence);
 
@@ -258,6 +268,7 @@ class Conversation extends Graph
         $sender_receiver_tracker = $current_utterance->getReceiver() . $current_utterance->getSender();
 
         foreach ($this->getAllUtterancesKeyedBySequenceForScene($current_scene) as $utterance) {
+            /** @var Utterance $utterance */
             // If we are dealing with utterances before the current utterance just skip them
             // @todo There should be a better way to get all the utterances after a certain sequence number.
             if ($utterance->getSequence() <= $current_sequence) {
@@ -268,7 +279,7 @@ class Conversation extends Graph
 
             // If we reached utterances where the sender and receiver are not what we expect get out.
             if ($sender_receiver_control != $sender_receiver_tracker) {
-                break;
+                continue;
             }
 
             // Now we are dealing with utterances that are after the current utterance and the receiver of the
@@ -283,31 +294,37 @@ class Conversation extends Graph
 
         // Before sending followups onwards check their preconditions
         foreach ($possible_followups as $followup) {
-            if ($agent->checkConditions($followup->getPreconditions(), $e)) {
+            if ($agent->checkIntentConditions($followup->getPreconditions(), $source_utterance)) {
                 $followups_with_matching_preconditions[$followup->getSequence()] = $followup;
             }
         }
 
+        // TODO this is returning the wrong type
         return $followups_with_matching_preconditions;
     }
 
     /**
      * Matching utterances are the ones that are a possible followup and match the intention.
      *
+     * @param Agent $agent
+     * @param $current_scene
      * @param $current_sequence
-     * @param SensorEvent $e
+     * @param Map $source_utterance
      * @param Intent $default_intent
      * @return array
      */
-    public function getMatchingUtterances(Agent $agent, $current_scene, $current_sequence, GenericEvent $e, $default_intent = null)
+    public function getMatchingUtterances(Agent $agent, $current_scene, $current_sequence, Map $source_utterance, $default_intent = null)
     {
         // Check each possible followup for a match
         $matching_followups = [];
 
         //@todo if we are checking against what the bot should say then matching intents might not be useful
-        foreach ($this->getPossibleFollowUps($current_sequence, $current_scene, $e, $agent) as $followup) {
-            if ($followup->hasInterpreter()) {
-                if ($followup->intentMatches($followup->interpret($e))) {
+        /** @var Utterance $followup */
+        foreach ($this->getPossibleFollowUps($agent, $current_sequence, $current_scene, $source_utterance) as $followup) {
+            if ($followup->hasIntentInterpreter()) {
+                $intent = $agent->interpretIntent($followup->getIntentInterpreter(), $source_utterance);
+
+                if ($followup->intentMatches($intent)) {
                     $matching_followups[] = $followup;
                 }
             } else {
@@ -321,15 +338,18 @@ class Conversation extends Graph
     }
 
     /**
+     * @param Agent $agent
+     * @param $current_scene
      * @param $sequence
-     * @param SensorEvent $e
+     * @param Map $source_utterance
      * @param Intent $default_intent
-     * @return bool
+     * @param bool $ongoing
+     * @return Utterance|false
      */
-    public function getNextUtterance(Agent $agent, $current_scene, $sequence, SensorEvent $e, Intent $default_intent, $ongoing = true)
+    public function getNextUtterance(Agent $agent, $current_scene, $sequence, Map $source_utterance, Intent $default_intent, $ongoing = true)
     {
-        $matching_utterances = $ongoing ? $this->getMatchingUtterances($agent, $current_scene, $sequence, $e, $default_intent)
-            :$this->getPossibleFollowUps($agent, $sequence, $current_scene, $e);
+        $matching_utterances = $ongoing ? $this->getMatchingUtterances($agent, $current_scene, $sequence, $source_utterance, $default_intent)
+            :$this->getPossibleFollowUps($agent, $sequence, $current_scene, $source_utterance);
 
         // We couldn't find any matching intent. Get out.
         if (count($matching_utterances) == 0) {
@@ -341,7 +361,10 @@ class Conversation extends Graph
         return array_pop($matching_utterances);
     }
 
-
+    /**
+     * @param $sequence
+     * @return bool|Utterance
+     */
     public function getUtteranceWithSequence($sequence)
     {
         $utterances = $this->getAllUtterancesKeyedBySequence();
@@ -369,5 +392,22 @@ class Conversation extends Graph
     public function getAllUtterancesKeyedBySequenceForScene($scene_id)
     {
         return $this->getScene($scene_id)->getAllUtterancesKeyedBySequence();
+    }
+
+    //Support for InformationInterface implementation.
+
+    public function getType()
+    {
+        return self::INFORMATION_TYPE;
+    }
+
+    public function getId()
+    {
+        return $this->getConversationTemplateId();
+    }
+
+    public function getValue()
+    {
+        return $this;
     }
 }

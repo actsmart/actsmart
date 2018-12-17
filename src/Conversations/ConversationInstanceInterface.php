@@ -1,18 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: stuarthaigh
- * Date: 17/05/2018
- * Time: 11:52
- */
 
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
 use actsmart\actsmart\Conversations\Slack\ConversationInstance;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
 interface ConversationInstanceInterface
 {
@@ -25,6 +19,10 @@ interface ConversationInstanceInterface
 
     public function getConversation();
 
+    /**
+     * @param $current_utterance_sequence_id
+     * @return ConversationInstanceInterface
+     */
     public function setCurrentUtteranceSequenceId($current_utterance_sequence_id);
 
     public function getCurrentUtteranceSequenceId();
@@ -114,13 +112,15 @@ interface ConversationInstanceInterface
      */
     public function getCurrentSceneId();
 
+    public function isCompleting();
+    
+    public function setCompleting(bool $completing);
+    
     /**
      * @param mixed $current_scene_id
      * @return ConversationInstance
      */
     public function setCurrentSceneId($current_scene_id);
 
-    public function saveConversationInstance();
-
-    public function getNextUtterance(Agent $agent, GenericEvent $e, Intent $default_intent, $ongoing = true);
+    public function getNextUtterance(Agent $agent, Map $source_utterance, Intent $default_intent, $ongoing = true);
 }

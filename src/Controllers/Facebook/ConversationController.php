@@ -3,7 +3,7 @@
 namespace actsmart\actsmart\Controllers\Facebook;
 
 use actsmart\actsmart\Conversations\Facebook;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Sensors\Facebook\Events\FacebookEvent;
 use actsmart\actsmart\Sensors\Facebook\Events\FacebookMessageEvent;
 use actsmart\actsmart\Sensors\SensorEvent;
@@ -11,8 +11,6 @@ use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rules\In;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;

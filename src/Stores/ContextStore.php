@@ -3,55 +3,46 @@
 namespace actsmart\actsmart\Stores;
 
 use actsmart\actsmart\Actuators\ActionEvent;
-use actsmart\actsmart\Utils\ComponentInterface;
-use actsmart\actsmart\Utils\ComponentTrait;
-use actsmart\actsmart\Utils\ListenerInterface;
-use actsmart\actsmart\Utils\ListenerTrait;
+use actsmart\actsmart\Utils\Literals;
+use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
-class ContextStore implements ComponentInterface, ListenerInterface, StoreInterface
+/**
+ * Class ContextStore
+ * @package actsmart\actsmart\Stores
+ *
+ * Stores contextual information that various components may require using a simple structure of
+ * [topic][key][value]. The added topic level allows us to store multiple configuration settings
+ * relating to a specific group or context.
+ */
+class ContextStore extends EphemeralStore
 {
-    use ComponentTrait, ListenerTrait;
-
-    private $context_info = [];
-
-    public function listen(GenericEvent $a)
+    /**
+     * Listens to events and registers the required info.
+     * @param GenericEvent $e
+     */
+    public function listen(GenericEvent  $e)
     {
-        if ($a instanceof ActionEvent) {
-            foreach ($a->getSubject() as $key => $value) {
-                $this->context_info[$key] = $value;
+        if ($e instanceof ActionEvent) {
+            $subject = $e->getSubject();
+            foreach ($subject as $topic => $content) {
+                foreach ($content as $key => $value) {
+                    $this->storeInformation(new ContextInformation($subject, $topic, $content));
+                }
             }
         }
     }
 
-    /**
-     * Sets a value in the context store.
-     *
-     * @param $key
-     * @param $value
-     */
-    public function set($key, $value)
-    {
-        $this->context_info[$key] = $value;
-    }
-
-    /**
-     * Retrieve a value from the context store.
-     * @param $label
-     * @return mixed
-     */
-    public function retrieve($label)
-    {
-        return $this->context_info[$label];
-    }
-
-    public function getKey()
-    {
-        return 'store.context';
-    }
-
     public function listensForEvents()
     {
-        return ['event.action.generic'];
+        return ['event.action.config.info', 'config.store.request'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey()
+    {
+        return Literals::CONTEXT_STORE;
     }
 }

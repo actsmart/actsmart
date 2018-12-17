@@ -3,55 +3,63 @@
 namespace actsmart\actsmart\Conversations;
 
 use actsmart\actsmart\Agent;
-use actsmart\actsmart\Interpreters\Intent;
+use actsmart\actsmart\Interpreters\Intent\Intent;
 use actsmart\actsmart\Stores\ConversationTemplateStore;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Ds\Map;
 
 abstract class BaseConversationalInstance implements ConversationInstanceInterface
 {
     /* @var Conversation $conversation */
     protected $conversation;
 
-    /* @var ConversationTemplateStore $conversation_store */
-    protected $conversation_store;
+    /* @var ConversationTemplateStore $conversationStore */
+    protected $conversationStore;
 
     /**
      * @var string - an identified for the conversation template
      */
-    protected $conversation_template_id;
+    protected $conversationTemplateId;
 
     /**
      * When the conversation started.
      */
-    protected $start_ts;
+    protected $startTs;
 
     /**
      * When a conversation was updated.
      */
-    protected $update_ts;
+    protected $updateTs;
 
     /**
      * Current scene id.
      */
-    protected $current_scene_id;
+    protected $currentSceneId;
 
     /**
      * Current utterance id.
      */
-    protected $current_utterance_sequence_id;
+    protected $currentUtteranceSequenceId;
 
+    /**
+     * Previous utterance id.
+     */
+    protected $previousUtteranceId;
+    
     /**
      * The user id the bot is having the conversation with.
      */
-    protected $user_id;
+    protected $userId;
 
-    public function __construct($conversation_template_id = null, ConversationTemplateStore $conversation_store, $user_id, $start_ts = 0, $update_ts = 0)
+    /** @var bool Whether the next utterance is completing or not */
+    protected $completing = false;
+
+    public function __construct($conversationTemplateId = null, ConversationTemplateStore $conversationStore, $userId, $startTs = 0, $updateTs = 0)
     {
-        $this->conversation_template_id = $conversation_template_id;
-        $this->conversation_store = $conversation_store;
-        $this->start_ts = $start_ts;
-        $this->update_ts = $update_ts;
-        $this->user_id = $user_id;
+        $this->conversationTemplateId = $conversationTemplateId;
+        $this->conversationStore = $conversationStore;
+        $this->startTs = $startTs;
+        $this->updateTs = $updateTs;
+        $this->userId = $userId;
     }
 
     /**
@@ -60,19 +68,23 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
     public function initConversation()
     {
         // Get the relevant conversation template
-        $this->conversation = $this->conversation_store->getConversation($this->conversation_template_id);
+        $this->conversation = $this->conversationStore->getConversation($this->conversationTemplateId);
 
-        /* @var \actsmart\actsmart\Conversations\Scene $initial_scene */
-        $initial_scene = $this->conversation->getInitialScene();
+        /* @var \actsmart\actsmart\Conversations\Scene $initialScene */
+        $initialScene = $this->conversation->getInitialScene();
+
+        /* @var \actsmart\actsmart\Conversations\Utterance $initialUtterance */
+        $initialUtterance = $initialScene->getInitialUtterance();
 
         // Setup the current scene and the current utterance.
-        $this->setCurrentSceneId($initial_scene->getSceneId());
-        $this->setCurrentUtteranceSequenceId($initial_scene->getInitialUtterance()->getSequence());
+        $this->setCurrentSceneId($initialUtterance->getEndScene());
+        $this->setCurrentUtteranceSequenceId($initialUtterance->getSequence());
+        $this->setPreviousUtteranceId($initialUtterance->getSequence());
     }
 
     public function setConversation()
     {
-        $this->conversation = $this->conversation_store->getConversation($this->conversation_template_id);
+        $this->conversation = $this->conversationStore->getConversation($this->conversationTemplateId);
     }
 
     public function getConversation()
@@ -80,20 +92,42 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
         return $this->conversation;
     }
 
-    public function setCurrentUtteranceSequenceId($current_utterance_sequence_id)
+    /**
+     * @inheritdoc
+     */
+    public function setCurrentUtteranceSequenceId($currentUtteranceSequenceId)
     {
-        $this->current_utterance_sequence_id = $current_utterance_sequence_id;
+        $this->currentUtteranceSequenceId = $currentUtteranceSequenceId;
         return $this;
     }
 
     public function getCurrentUtteranceSequenceId()
     {
-        return $this->current_utterance_sequence_id;
+        return $this->currentUtteranceSequenceId;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPreviousUtteranceId()
+    {
+        return $this->previousUtteranceId;
+    }
+
+    /**
+     * @param mixed $previousUtteranceId
+     */
+    public function setPreviousUtteranceId($previousUtteranceId): void
+    {
+        $this->previousUtteranceId = $previousUtteranceId;
+    }
+
+    /**
+     * @return Utterance
+     */
     public function getCurrentUtterance()
     {
-        return $this->conversation->getUtteranceWithSequence($this->current_utterance_sequence_id);
+        return $this->conversation->getUtteranceWithSequence($this->currentUtteranceSequenceId);
     }
 
     public function getCurrentAction()
@@ -102,20 +136,28 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
     }
 
     /**
+     * Gets the information request on the current Utterance if there is one
+     */
+    public function getCurrentInformationRequest()
+    {
+        return $this->getCurrentUtterance()->getInformationRequest();
+    }
+
+    /**
      * @return ConversationTemplateStore
      */
     public function getConversationStore()
     {
-        return $this->conversation_store;
+        return $this->conversationStore;
     }
 
     /**
-     * @param ConversationTemplateStore $conversation_store
+     * @param ConversationTemplateStore $conversationStore
      * @return ConversationInstanceInterface
      */
-    public function setConversationStore($conversation_store)
+    public function setConversationStore($conversationStore)
     {
-        $this->conversation_store = $conversation_store;
+        $this->conversationStore = $conversationStore;
         return $this;
     }
 
@@ -124,16 +166,16 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
      */
     public function getConversationTemplateId()
     {
-        return $this->conversation_template_id;
+        return $this->conversationTemplateId;
     }
 
     /**
-     * @param string $conversation_template_id
+     * @param string $conversationTemplateId
      * @return ConversationInstanceInterface
      */
-    public function setConversationTemplateId($conversation_template_id)
+    public function setConversationTemplateId($conversationTemplateId)
     {
-        $this->conversation_template_id = $conversation_template_id;
+        $this->conversationTemplateId = $conversationTemplateId;
         return $this;
     }
 
@@ -142,16 +184,16 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
      */
     public function getStartTs()
     {
-        return $this->start_ts;
+        return $this->startTs;
     }
 
     /**
-     * @param mixed $start_ts
+     * @param mixed $startTs
      * @return ConversationInstanceInterface
      */
-    public function setStartTs($start_ts)
+    public function setStartTs($startTs)
     {
-        $this->start_ts = $start_ts;
+        $this->startTs = $startTs;
         return $this;
     }
 
@@ -160,16 +202,16 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
      */
     public function getUpdateTs()
     {
-        return $this->update_ts;
+        return $this->updateTs;
     }
 
     /**
-     * @param mixed $update_ts
+     * @param mixed $updateTs
      * @return ConversationInstanceInterface
      */
-    public function setUpdateTs($update_ts)
+    public function setUpdateTs($updateTs)
     {
-        $this->update_ts = $update_ts;
+        $this->updateTs = $updateTs;
         return $this;
     }
 
@@ -178,44 +220,67 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
      */
     public function getUserId()
     {
-        return $this->user_id;
+        return $this->userId;
     }
 
     /**
-     * @param mixed $user_id
+     * @param mixed $userId
      * @return ConversationInstanceInterface
      */
-    public function setUserId($user_id)
+    public function setUserId($userId)
     {
-        $this->user_id = $user_id;
+        $this->userId = $userId;
         return $this;
     }
 
-    public function getNextUtterance(Agent $agent, GenericEvent $e, Intent $default_intent, $ongoing = true)
+    /**
+     * @return bool
+     */
+    public function isCompleting(): bool
+    {
+        return $this->completing;
+    }
+
+    /**
+     * @param bool $completing
+     */
+    public function setCompleting(bool $completing)
+    {
+        $this->completing = $completing;
+    }
+
+    /**
+     * @param Agent $agent
+     * @param Map $sourceUtterance
+     * @param Intent $defaultIntent
+     * @param bool $ongoing
+     * @return Utterance|false
+     */
+    public function getNextUtterance(Agent $agent, Map $sourceUtterance, Intent $defaultIntent, $ongoing = true)
     {
         // If the conversation is not ongoing we are dealing with a new conversation and just need to get
         // the next thing the bot should say based on what the user just said.
         // @todo Variable names and structure of this is too confusing.
 
         if (!$ongoing) {
-            return $this->conversation->getNextUtterance($agent, $this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+            return $this->conversation->getNextUtterance($agent, $this->currentSceneId, $this->currentUtteranceSequenceId, $sourceUtterance, $defaultIntent, $ongoing);
         }
 
         // If we are dealing with an ongoing conversation we first attempt to identify what the user's next utterance was.
         // The conversation model could support the user saying any number of things - so we need to get all of them,
-        // interpret them, decide which one was actually said and the move the converation forward based on that.
-        $user_current_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, $ongoing);
+        // interpret them, decide which one was actually said and the move the conversation forward based on that.
+        $user_current_utterance = $this->conversation->getNextUtterance($agent, $this->currentSceneId, $this->currentUtteranceSequenceId, $sourceUtterance, $defaultIntent, $ongoing);
 
         if (!$user_current_utterance) {
             return false;
         }
 
         // Having determined what the user just said, let us move the conversation to point to that utterance.
-        $this->current_scene_id = $user_current_utterance->getEndScene();
-        $this->current_utterance_sequence_id = $user_current_utterance->getSequence();
+        $this->currentSceneId = $user_current_utterance->getEndScene();
+        $this->currentUtteranceSequenceId = $user_current_utterance->getSequence();
 
         // Now let us retrieve what the bot should reply given that user utterance. Treat this like a new conversation and just get the bot's next reply.
-        $bot_next_utterance = $this->conversation->getNextUtterance($this->current_scene_id, $this->current_utterance_sequence_id, $e, $default_intent, false);
+        $bot_next_utterance = $this->conversation->getNextUtterance($agent, $this->currentSceneId, $this->currentUtteranceSequenceId, $sourceUtterance, $defaultIntent, false);
         return $bot_next_utterance;
     }
 
@@ -224,21 +289,16 @@ abstract class BaseConversationalInstance implements ConversationInstanceInterfa
      */
     public function getCurrentSceneId()
     {
-        return $this->current_scene_id;
+        return $this->currentSceneId;
     }
 
     /**
-     * @param mixed $current_scene_id
+     * @param mixed $currentSceneId
      * @return ConversationInstanceInterface
      */
-    public function setCurrentSceneId($current_scene_id)
+    public function setCurrentSceneId($currentSceneId)
     {
-        $this->current_scene_id = $current_scene_id;
+        $this->currentSceneId = $currentSceneId;
         return $this;
-    }
-
-    public function saveConversationInstance()
-    {
-        $this->conversation_instance_store->save($this);
     }
 }
