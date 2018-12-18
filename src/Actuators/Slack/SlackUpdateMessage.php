@@ -88,11 +88,11 @@ class SlackUpdateMessage extends SlackMessage
      */
     public function rebuildOriginalMessage(Map $utterance)
     {
-        if ($utterance->hasKey(Literals::TEXT)) {
+        if ($utterance->hasKey(Literals::TEXT) && is_string($utterance->get(Literals::TEXT))) {
             $this->rebuildOriginalMessageText($utterance->get(Literals::TEXT));
         }
 
-        if ($utterance->hasKey(Literals::ATTACHMENTS)) {
+        if ($utterance->hasKey(Literals::ATTACHMENTS) && is_array($utterance->get(Literals::ATTACHMENTS))) {
             $this->rebuildOriginalMessageAttachments($utterance->get(Literals::ATTACHMENTS));
         }
     }

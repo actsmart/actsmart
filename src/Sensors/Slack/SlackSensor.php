@@ -9,6 +9,7 @@ use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
 
@@ -66,7 +67,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
         }
 
         if ($this->validateSlackMessage($slack_message)) {
-            if ($this->getAgent()->getStore('store.config')->get('slack', 'reply_early') && ($slack_message->type != 'url_verification')) {
+            if ($this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('slack', 'reply_early') && ($slack_message->type != 'url_verification')) {
                 // Reply to Slack so we don't get a retry unless it's a URL verification event.
                 $this->getAgent()->httpReact()->send();
             }
@@ -133,7 +134,7 @@ class SlackSensor implements SensorInterface, NotifierInterface, ComponentInterf
      */
     private function validateSlackMessage($slack_message)
     {
-        if ($slack_message->token != $this->agent->getStore('store.config')->get('slack', 'app.token')) {
+        if ($slack_message->token != $this->agent->getStore(Literals::CONTEXT_STORE)->getInformation('slack', 'app.token')->getValue()) {
             throw new SlackMessageInvalidException("Could not validate Slack Message");
         } else {
             return true;

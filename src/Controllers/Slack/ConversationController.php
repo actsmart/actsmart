@@ -95,9 +95,9 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var \actsmart\actsmart\Interpreters\intent $intent */
         $intent = $this->determineEventIntent($utterance);
 
-        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
+        $matching_conversation = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
 
-        if (!$matching_conversation_id) {
+        if (!$matching_conversation) {
             $this->logger->debug('No matching conversations.');
             return false;
         }
@@ -107,7 +107,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         $channel_id = $utterance->get(Literals::CHANNEL_ID);
         $timestamp = $utterance->get(Literals::TIMESTAMP);
 
-        $ci = new ConversationInstance($matching_conversation_id,
+        $ci = new ConversationInstance($matching_conversation->getConversationTemplateId(),
             $this->getAgent()->getStore('store.conversation_templates'),
             $workspace_id,
             $user_id,
@@ -158,7 +158,7 @@ class ConversationController implements ComponentInterface, ListenerInterface, L
         /* @var actsmart\actsmart\Interpreters\Intent $intent */
         $intent = new Intent('NoMatch', $utterance, 1);
 
-        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent);
+        $matching_conversation_id = $this->getAgent()->getStore('store.conversation_templates')->getMatchingConversation($utterance, $intent)->getConversationTemplateId();
 
         if (!$matching_conversation_id) {
             $this->logger->debug('No support for NoMatch conversation.');

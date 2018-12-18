@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Actuators\Slack;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use Psr\Log\LoggerAwareInterface;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerAwareTrait;
@@ -28,9 +29,9 @@ class SlackConversationsHistory implements ComponentInterface, LoggerAwareInterf
     public function perform(string $action, Map $arguments = null)
     {
         try {
-            $this->token = $this->getAgent()->getStore('store.config')->get('slackworkspace_' . $arguments->get('workspace'), 'bot_token');
+            $this->token = $this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('slackworkspace_' . $arguments->get('workspace'), 'bot_token')->getValue();
 
-            $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
+            $this->slack_base_uri = $this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('slack', 'uri.base')->getValue();
 
             $response = $this->getMessage($arguments->get('channel'), $arguments->get('timestamp'));
         } catch (\OutOfBoundsException $e) {

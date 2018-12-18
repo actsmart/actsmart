@@ -42,13 +42,13 @@ class FacebookAgent extends Agent
      */
     private function configureForFacebook()
     {
-        $config_store = new ContextStore();
-        $config_store->storeInformation(new ContextInformation('facebook', 'app.token', $this->facebook_verification_token));
-        $config_store->storeInformation(new ContextInformation('facebook', 'reply_early', $this->facebook_reply_early));
-        $config_store->storeInformation(new ContextInformation('facebook', 'uri.base', $this->facebook_base_uri));
-        $config_store->storeInformation(new ContextInformation('facebook', 'access.token', $this->facebook_access_token));
+        $contextStore = new ContextStore();
+        $contextStore->storeInformation(new ContextInformation('facebook', 'app.token', $this->facebook_verification_token));
+        $contextStore->storeInformation(new ContextInformation('facebook', 'reply_early', $this->facebook_reply_early));
+        $contextStore->storeInformation(new ContextInformation('facebook', 'uri.base', $this->facebook_base_uri));
+        $contextStore->storeInformation(new ContextInformation('facebook', 'access.token', $this->facebook_access_token));
 
-        $this->addComponent($config_store);
+        $this->addComponent($contextStore);
 
         $this->addComponent(new FacebookSensor(new FacebookEventCreator()));
 

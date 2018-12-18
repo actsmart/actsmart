@@ -10,7 +10,7 @@ use actsmart\actsmart\Interpreters\Slack\SlackEventInterpreter;
 use actsmart\actsmart\Sensors\Slack\Events\SlackEventCreator;
 use actsmart\actsmart\Sensors\Slack\SlackSensor;
 use actsmart\actsmart\Stores\ContextInformation;
-use actsmart\actsmart\Stores\ContextStore;
+use actsmart\actsmart\Stores\Slack\SlackContextStore;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -41,14 +41,13 @@ class SlackAgent extends Agent
      */
     private function configureForSlack()
     {
-        // We use a store to keep external config
-        $contextStore = new ContextStore();
+        // A simple key:value context store to share state.
+        $contextStore = new SlackContextStore();
+        $this->addComponent($contextStore);
 
         $contextStore->storeInformation(new ContextInformation('slack', 'app.token', $this->slack_verification_token));
         $contextStore->storeInformation(new ContextInformation('slack', 'uri.base', $this->slack_base_uri));
         $contextStore->storeInformation(new ContextInformation('slack', 'reply_early', $this->slack_reply_early));
-
-        $this->addComponent($contextStore);
 
         // We need to pickup Slack events so need to add a Slack sensor
         $this->addComponent(new SlackSensor(new SlackEventCreator()));
@@ -58,9 +57,6 @@ class SlackAgent extends Agent
 
         // A more complex controller that handles conversations.
         $this->addComponent(new ConversationController());
-
-        // A simple key:value context store to share state.
-        $this->addComponent(new ContextStore());
 
         // The Slack actuator that sends messages to Slack.
         $this->addComponent(new SlackActuator());
