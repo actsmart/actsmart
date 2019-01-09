@@ -55,6 +55,12 @@ class Literals
     /* The user id */
     const USER_ID = 'user_id';
 
+    /* Used by Alexa events */
+    const SESSION_ID = 'session_id';
+
+    /* Used by Alexa events */
+    const REQUEST_ID = 'request_id';
+
     const LOGGED_IN_USER = 'logged_in_user';
 
     /* The channel id */
@@ -98,4 +104,11 @@ class Literals
     /* The language used in an utterance */
     const LANGUAGE = 'language';
 
+    const INTENT = 'intent';
+
+    /* Alexa specific */
+    const DIALOG_STATE = 'diaglog_state';
+
+    /* Alexa Specific */
+    const SLOTS = 'slots';
 }

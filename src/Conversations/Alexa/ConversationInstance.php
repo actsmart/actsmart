@@ -1,0 +1,29 @@
+<?php
+
+namespace actsmart\actsmart\Conversations\Alexa;
+
+use actsmart\actsmart\Conversations\BaseConversationalInstance;
+
+class ConversationInstance extends BaseConversationalInstance
+{
+    public function getWorkspaceId()
+    {
+        // does nothing
+        return null;
+    }
+
+    public function setWorkspaceId($workspace_id)
+    {
+        // does nothing
+    }
+
+    public function getChannelId()
+    {
+        // does nothing
+    }
+
+    public function setChannelId($channel_id)
+    {
+        // does nothing
+    }
+}
