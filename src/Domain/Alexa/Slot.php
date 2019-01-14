@@ -49,34 +49,12 @@ class Slot
 
         return $slot;
     }
+
+    /**
+     * Will try to return the value of a yes/no slot as a boolean
+     */
+    public function getBooleanValue()
+    {
+        return strtolower($this->matchingSlot) === 'yes';
+    }
 }
-/*
-
-"slots": {
-    "player_sent_off": {
-        "name": "player_sent_off",
-					"value": "goal keeper",
-					"resolutions": {
-            "resolutionsPerAuthority": [
-							{
-                                "authority": "amzn1.er-authority.echo-sdk.amzn1.ask.skill.f1779828-4cd5-4342-91de-09aa59536871.player_sent_off",
-								"status": {
-                                "code": "ER_SUCCESS_MATCH"
-								},
-								"values": [
-									{
-                                        "value": {
-                                        "name": "goal keeper",
-											"id": "d42f51644ac301da305a647fe93e6e74"
-										}
-									}
-								]
-							}
-						]
-					},
-					"confirmationStatus": "NONE",
-					"source": "USER"
-				}
-			}
-
-*/
