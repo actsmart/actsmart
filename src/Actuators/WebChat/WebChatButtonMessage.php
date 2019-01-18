@@ -9,6 +9,26 @@ class WebChatButtonMessage extends WebChatMessage
     /** The message buttons. @var WebChatButton[] */
     private $buttons = [];
 
+    private $clearAfterInteraction = true;
+
+    /**
+     * @param $clearAfterInteraction
+     * @return $this
+     */
+    public function setClearAfterInteraction($clearAfterInteraction)
+    {
+        $this->clearAfterInteraction = $clearAfterInteraction;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getClearAfterInteraction()
+    {
+        return $this->clearAfterInteraction;
+    }
+
     /**
      * @param WebChatButton $button
      * @return $this
@@ -33,7 +53,8 @@ class WebChatButtonMessage extends WebChatMessage
     public function getData()
     {
         return parent::getData() + [
-            'buttons' => $this->getButtonsArray()
+            'buttons' => $this->getButtonsArray(),
+            'clear_after_interaction' => $this->getClearAfterInteraction()
         ];
     }
 
