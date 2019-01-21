@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Actuators\WebChat;
 
-class WebChatFormElement
+abstract class WebChatFormElement
 {
     private $name = null;
 
@@ -74,5 +74,17 @@ class WebChatFormElement
     public function getRequired()
     {
         return $this->required;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return [
+            'name' => $this->getName(),
+            'display' => $this->getDisplay(),
+            'required' => $this->getRequired()
+        ];
     }
 }

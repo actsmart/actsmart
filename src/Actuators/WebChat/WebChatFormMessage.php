@@ -76,11 +76,7 @@ class WebChatFormMessage extends WebChatMessage
         $elements = [];
 
         foreach ($this->elements as $element) {
-            $elements[] = [
-                'name' => $element->getName(),
-                'display' => $element->getDisplay(),
-                'required' => $element->getRequired()
-            ];
+            $elements[] = $element->getData();
         }
 
         return $elements;
