@@ -27,7 +27,7 @@ class ContextStore extends EphemeralStore
             $subject = $e->getSubject();
             foreach ($subject as $topic => $content) {
                 foreach ($content as $key => $value) {
-                    $this->storeInformation(new ContextInformation($subject, $topic, $content));
+                    $this->storeInformation(new ContextInformation($topic, $key, $value));
                 }
             }
         }

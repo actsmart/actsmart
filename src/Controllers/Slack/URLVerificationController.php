@@ -6,6 +6,7 @@ use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use actsmart\actsmart\Utils\ListenerInterface;
 use actsmart\actsmart\Utils\ListenerTrait;
+use actsmart\actsmart\Utils\Literals;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -17,7 +18,7 @@ class URLVerificationController implements ListenerInterface, ComponentInterface
 
     public function listen(GenericEvent $e)
     {
-        if ($e->getSubject()->token == $this->agent->getStore('store.config')->get('slack', 'app.token')) {
+        if ($e->getSubject()->token == $this->agent->getStore(Literals::CONTEXT_STORE)->getInformation('slack', 'app.token')) {
             $this->agent->setHttpReaction(
                 new Response($e->getSubject()->challenge,
                     Response::HTTP_OK,

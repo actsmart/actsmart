@@ -2,7 +2,7 @@
 
 namespace actsmart\actsmart\Stores;
 
-use actsmart\actsmart\Actuators\ActionEvent;
+use actsmart\actsmart\Stores\ConfigRequestEvent;
 use actsmart\actsmart\Utils\Literals;
 use Ds\Map;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -38,6 +38,8 @@ abstract class EphemeralStore extends BaseStore
 
     public function getInformation(string $type = '', string $id = '', Map $arguments = null)
     {
+        $this->notify('config.store.request', new ConfigRequestEvent(null, ['topic' => $type, 'key' => $id]));
+
         if ($this->informationExists($type, $id)) {
             $information = new ContextInformation($type, $id, $this->store->get($type)[$id]);
             return $information;

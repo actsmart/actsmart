@@ -5,6 +5,7 @@ namespace actsmart\actsmart\Actuators\Facebook;
 use actsmart\actsmart\Actuators\ActuatorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -128,8 +129,8 @@ class FacebookActuator implements ComponentInterface, LoggerAwareInterface, Actu
      */
     protected function getBaseUri()
     {
-        $baseUri = $this->getAgent()->getStore('store.config')->get('facebook', 'uri.base');
-        $accessToken = $this->getAgent()->getStore('store.config')->get('facebook', 'access.token');
+        $baseUri = $this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('facebook', 'uri.base');
+        $accessToken = $this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('facebook', 'access.token');
 
         return sprintf("%s?access_token=%s", $baseUri, $accessToken);
     }

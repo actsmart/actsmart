@@ -6,6 +6,7 @@ use actsmart\actsmart\Conversations\Slack\ConversationInstance;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
 use Aws\DynamoDb\DynamoDbClient;
+use Ds\Map;
 
 class DynamoConversationInstanceStore extends BaseStore implements ComponentInterface, StoreInterface
 {
@@ -126,6 +127,16 @@ class DynamoConversationInstanceStore extends BaseStore implements ComponentInte
     public function update(ConversationInstance $ci)
     {
         // Not sure we need an update.
+    }
+
+    public function getInformation(string $type, string $id = '', Map $arguments = null)
+    {
+
+    }
+
+    public function storeInformation(InformationInterface $information)
+    {
+
     }
 
     public function getKey()

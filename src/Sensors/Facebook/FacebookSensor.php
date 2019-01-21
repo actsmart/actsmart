@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use actsmart\actsmart\Sensors\SensorInterface;
 use actsmart\actsmart\Utils\ComponentInterface;
 use actsmart\actsmart\Utils\ComponentTrait;
+use actsmart\actsmart\Utils\Literals;
 use actsmart\actsmart\Utils\NotifierInterface;
 use actsmart\actsmart\Utils\NotifierTrait;
 
@@ -101,7 +102,7 @@ class FacebookSensor implements SensorInterface, NotifierInterface, ComponentInt
     private function validateFacebookMessage($facebook_message, $original_request)
     {
         if (isset($facebook_message->hub_verify_toke)) {
-            if ($facebook_message->hub_verify_token != $this->agent->getStore('store.config')->get('facebook', 'app.token')) {
+            if ($facebook_message->hub_verify_token != $this->agent->getStore(Literals::CONTEXT_STORE)->getInformation('facebook', 'app.token')) {
                 throw new FacebookMessageInvalidException("Could not validate Facebook Message");
             } else {
                 return true;

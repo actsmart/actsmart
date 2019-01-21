@@ -24,9 +24,6 @@ class WebChatAgent extends Agent
      */
     private function configure()
     {
-        $contextStore = new ContextStore();
-        $this->addComponent($contextStore);
-
         // We need to pickup WebChat events so need to add a WebChat sensor
         $this->addComponent(new WebChatSensor(new WebChatEventCreator()));
 

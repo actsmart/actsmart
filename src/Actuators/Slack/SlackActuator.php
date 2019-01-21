@@ -51,11 +51,11 @@ class SlackActuator implements ComponentInterface, LoggerAwareInterface, Actuato
         }
 
         $this->headers = [
-            'Authorization' => 'Bearer ' . $this->getAgent()->getStore('store.config')->get('slackworkspace_'. $message->getWorkspace(), 'bot_token'),
+            'Authorization' => 'Bearer ' . $this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('slackworkspace_'. $message->getWorkspace(), 'bot_token')->getValue(),
             'Content-Type' => 'application/json; charset=utf-8',
         ];
 
-        $this->slack_base_uri = $this->getAgent()->getStore('store.config')->get('slack', 'uri.base');
+        $this->slack_base_uri = $this->getAgent()->getStore(Literals::CONTEXT_STORE)->getInformation('slack', 'uri.base')->getValue();
 
         $response = null;
 

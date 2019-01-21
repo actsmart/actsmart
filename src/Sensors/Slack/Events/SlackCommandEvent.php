@@ -62,11 +62,13 @@ class SlackCommandEvent extends SlackEvent implements UtteranceEvent
         /* @var \Ds\Map */
         $utterance = new Map();
         $utterance->put(Literals::TYPE, Literals::SLACK_COMMAND);
-        $utterance->put(Literals::TEXT, '');
+        $utterance->put(Literals::TEXT, $this->getText());
         $utterance->put(Literals::WORKSPACE_ID, $this->getWorkspaceId());
         $utterance->put(Literals::USER_ID, $this->getUserId());
         $utterance->put(Literals::CHANNEL_ID, $this->getChannelId());
         $utterance->put(Literals::TIMESTAMP, $this->getTimestamp());
+        $utterance->put(Literals::TOKEN, $this->getToken());
+        $utterance->put(Literals::TRIGGER_ID, $this->getTriggerId());
         return $utterance;
     }
 
