@@ -15,6 +15,7 @@ class Literals
     const WEB_CHAT_IMAGE = 'web_chat_image';
     const WEB_CHAT_LIST = 'web_chat_list';
     const WEB_CHAT_URL_CLICK = 'web_chat_url_click';
+    const WEB_CHAT_TRIGGER = 'web_chat_trigger';
 
     /* Slack Utterance Types */
     const SLACK_MESSAGE_ACTION = 'slack_message_action';

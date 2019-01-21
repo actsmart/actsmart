@@ -13,6 +13,7 @@ class WebChatEventCreator
     const LONGTEXT_RESPONSE  = 'longtext_response';
     const URL_CLICK          = 'url_click';
     const CHAT_OPEN          = 'chat_open';
+    const TRIGGER            = 'trigger';
 
     public $eventMap = [
         self::MESSAGE => MessageEvent::class,
@@ -21,7 +22,8 @@ class WebChatEventCreator
         self::LIST_RESPONSE => ListEvent::class,
         self::LONGTEXT_RESPONSE => LongTextEvent::class,
         self::URL_CLICK => UrlClickEvent::class,
-        self::CHAT_OPEN => ChatOpenEvent::class
+        self::CHAT_OPEN => ChatOpenEvent::class,
+        self::TRIGGER => TriggerEvent::class
     ];
 
     /**
