@@ -14,6 +14,7 @@ class Literals
     const WEB_CHAT_OPEN = 'web_chat_open';
     const WEB_CHAT_IMAGE = 'web_chat_image';
     const WEB_CHAT_LIST = 'web_chat_list';
+    const WEB_CHAT_URL_CLICK = 'web_chat_url_click';
     const WEB_CHAT_TRIGGER = 'web_chat_trigger';
 
     /* Slack Utterance Types */
@@ -40,6 +41,8 @@ class Literals
 
     /* The value associated to an action performed */
     const VALUE = 'value';
+
+    const URL = 'url';
 
     /* The timestamp associated with an utterance */
     const TIMESTAMP = 'timestamp';

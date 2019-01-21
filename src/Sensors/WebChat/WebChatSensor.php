@@ -67,6 +67,8 @@ class WebChatSensor implements SensorInterface, NotifierInterface, ComponentInte
             $event_type = WebChatEventCreator::FORM_RESPONSE;
         } else if ($message->type === WebChatEventCreator::LIST_RESPONSE) {
             $event_type = WebChatEventCreator::LIST_RESPONSE;
+        } else if ($message->type == WebChatEventCreator::URL_CLICK) {
+            $event_type = WebChatEventCreator::URL_CLICK;
         } else if ($message->type == WebChatEventCreator::CHAT_OPEN) {
             $event_type = WebChatEventCreator::CHAT_OPEN;
         } else if ($message->type == WebChatEventCreator::TRIGGER) {
