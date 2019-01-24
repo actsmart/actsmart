@@ -2,6 +2,7 @@
 
 namespace actsmart\actsmart\Controllers\WebChat;
 
+use actsmart\actsmart\Actuators\WebChat\EmptyMessage;
 use actsmart\actsmart\Controllers\BaseConversationController;
 use actsmart\actsmart\Conversations\Utterance;
 use actsmart\actsmart\Conversations\WebChat\ConversationInstance;
@@ -73,9 +74,12 @@ class ConversationController extends BaseConversationController
 
         $this->storeContext($nextUtterance, $ci);
 
-        $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
+        $message = $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
 
-        $this->saveConversationInstance($ci, $nextUtterance);
+        // Don't update conversation instance for EmptyMessage.
+        if (!(is_object($message) && $message instanceof EmptyMessage)) {
+            $this->saveConversationInstance($ci, $nextUtterance);
+        }
 
         return true;
     }
@@ -114,9 +118,12 @@ class ConversationController extends BaseConversationController
 
         $this->storeContext($nextUtterance, $ci);
 
-        $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
+        $message = $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
 
-        $this->saveConversationInstance($ci, $nextUtterance);
+        // Don't update conversation instance for EmptyMessage.
+        if (!(is_object($message) && $message instanceof EmptyMessage)) {
+            $this->saveConversationInstance($ci, $nextUtterance);
+        }
 
         return true;
     }
@@ -154,9 +161,12 @@ class ConversationController extends BaseConversationController
 
         $this->storeContext($nextUtterance, $ci);
 
-        $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
+        $message = $this->sendMessage($utterance, $nextUtterance, $actionResult, $informationResponse);
 
-        $this->saveConversationInstance($ci, $nextUtterance);
+        // Don't update conversation instance for EmptyMessage.
+        if (!(is_object($message) && $message instanceof EmptyMessage)) {
+            $this->saveConversationInstance($ci, $nextUtterance);
+        }
 
         return true;
     }
@@ -190,14 +200,19 @@ class ConversationController extends BaseConversationController
      * @param $nextUtterance Utterance
      * @param $actionResult
      * @param $informationResponse
+     * @return mixed
      */
-    private function sendMessage(Map $utterance, $nextUtterance, $actionResult, $informationResponse): void
+    private function sendMessage(Map $utterance, $nextUtterance, $actionResult, $informationResponse)
     {
+        $message = $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse);
+
         $arguments = new Map();
-        $arguments->put(Literals::MESSAGE, $nextUtterance->getMessage()->getWebChatResponse($actionResult ?? $utterance, $informationResponse));
+        $arguments->put(Literals::MESSAGE, $message);
         $arguments->put(Literals::USER_ID, $utterance->get(Literals::USER_ID));
 
         $this->getAgent()->getActuator('actuator.webchat')->perform('action.webchat.postmessage', $arguments);
+
+        return $message;
     }
 
     /**
