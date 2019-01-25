@@ -6,6 +6,7 @@ abstract class WebChatFormElement
 {
     private $name = null;
 
+    /** @var string The display name of the form element */
     private $display = null;
 
     private $required = false;

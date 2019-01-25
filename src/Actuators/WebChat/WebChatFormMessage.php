@@ -6,10 +6,9 @@ class WebChatFormMessage extends WebChatMessage
 {
     protected $messageType = 'webchat_form';
 
-    private $text = null;
-
     private $submitText = 'Submit';
 
+    /** @var WebChatFormElement[] */
     private $elements = [];
 
     private $callbackId = null;
@@ -45,7 +44,7 @@ class WebChatFormMessage extends WebChatMessage
     }
 
     /**
-     * @return array
+     * @return WebChatFormElement[]
      */
     public function getElements()
     {

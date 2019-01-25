@@ -1,8 +1,10 @@
 <?php
 
-namespace actsmart\actsmart\Actuators\WebChat;
+namespace actsmart\actsmart\Actuators\WebChat\Form;
 
-class WebChatFormTextareaElement extends WebChatFormElement
+use actsmart\actsmart\Actuators\WebChat\WebChatFormElement;
+
+class WebChatFormTextAreaElement extends WebChatFormElement
 {
     /**
      * @return array

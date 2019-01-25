@@ -1,9 +1,14 @@
 <?php
 
-namespace actsmart\actsmart\Actuators\WebChat;
+namespace actsmart\actsmart\Actuators\WebChat\Form;
+
+use actsmart\actsmart\Actuators\WebChat\WebChatFormElement;
 
 class WebChatFormSelectElement extends WebChatFormElement
 {
+    /**
+     * @var array The options for the select element [name => value]
+     */
     private $options = [];
 
     /**
@@ -20,7 +25,7 @@ class WebChatFormSelectElement extends WebChatFormElement
     }
 
     /**
-     * @param $name
+     * @param $options
      * @return $this
      */
     public function setOptions($options)
