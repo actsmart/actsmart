@@ -2,6 +2,8 @@
 
 namespace actsmart\actsmart\Actuators\WebChat;
 
+use actsmart\actsmart\Actuators\WebChat\Form\WebChatFormElement;
+
 class WebChatFormMessage extends WebChatMessage
 {
     protected $messageType = 'webchat_form';

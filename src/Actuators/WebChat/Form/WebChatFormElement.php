@@ -1,6 +1,6 @@
 <?php
 
-namespace actsmart\actsmart\Actuators\WebChat;
+namespace actsmart\actsmart\Actuators\WebChat\Form;
 
 abstract class WebChatFormElement
 {

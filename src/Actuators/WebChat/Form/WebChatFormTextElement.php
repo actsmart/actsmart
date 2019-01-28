@@ -2,8 +2,6 @@
 
 namespace actsmart\actsmart\Actuators\WebChat\Form;
 
-use actsmart\actsmart\Actuators\WebChat\WebChatFormElement;
-
 class WebChatFormTextElement extends WebChatFormElement
 {
     /**
