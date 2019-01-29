@@ -10,6 +10,8 @@ class WebChatFormMessage extends WebChatMessage
 
     private $submitText = 'Submit';
 
+    private $autoSubmit = false;
+
     /** @var WebChatFormElement[] */
     private $elements = [];
 
@@ -46,6 +48,16 @@ class WebChatFormMessage extends WebChatMessage
     }
 
     /**
+     * @param $autoSubmit
+     * @return $this
+     */
+    public function setAutoSubmit($autoSubmit)
+    {
+        $this->autoSubmit = $autoSubmit;
+        return $this;
+    }
+
+    /**
      * @return WebChatFormElement[]
      */
     public function getElements()
@@ -70,6 +82,14 @@ class WebChatFormMessage extends WebChatMessage
     }
 
     /**
+     * @return bool
+     */
+    public function getAutoSubmit()
+    {
+        return $this->autoSubmit;
+    }
+
+    /**
      * @return array
      */
     public function getElementsArray()
@@ -91,6 +111,7 @@ class WebChatFormMessage extends WebChatMessage
         return parent::getData() + [
             'callback_id' => $this->getCallbackId(),
             'elements' => $this->getElementsArray(),
+            'auto_submit' => $this->getAutoSubmit(),
             'submit_text' => $this->getSubmitText()
         ];
     }
