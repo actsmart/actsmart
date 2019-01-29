@@ -9,6 +9,7 @@ use actsmart\actsmart\Sensors\WebChat\Events\FormEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\ListEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\LongTextEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\MessageEvent;
+use actsmart\actsmart\Sensors\WebChat\Events\TriggerEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatEvent;
 use actsmart\actsmart\Sensors\WebChat\Events\WebChatUtteranceEvent;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -28,7 +29,7 @@ class WebChatSensorEventInterpreter extends BaseEventInterpreter
     public function listensForEvents()
     {
 
-        return array(ActionEvent::EVENT_NAME, FormEvent::EVENT_NAME, ListEvent::EVENT_NAME, ChatOpenEvent::EVENT_NAME, MessageEvent::EVENT_NAME, LongTextEvent::EVENT_NAME);
+        return array(ActionEvent::EVENT_NAME, FormEvent::EVENT_NAME, ListEvent::EVENT_NAME, ChatOpenEvent::EVENT_NAME, MessageEvent::EVENT_NAME, LongTextEvent::EVENT_NAME, TriggerEvent::EVENT_NAME);
 
     }
 
