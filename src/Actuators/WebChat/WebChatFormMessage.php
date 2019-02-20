@@ -2,14 +2,17 @@
 
 namespace actsmart\actsmart\Actuators\WebChat;
 
+use actsmart\actsmart\Actuators\WebChat\Form\WebChatFormElement;
+
 class WebChatFormMessage extends WebChatMessage
 {
     protected $messageType = 'webchat_form';
 
-    private $text = null;
-
     private $submitText = 'Submit';
 
+    private $autoSubmit = false;
+
+    /** @var WebChatFormElement[] */
     private $elements = [];
 
     private $callbackId = null;
@@ -45,7 +48,17 @@ class WebChatFormMessage extends WebChatMessage
     }
 
     /**
-     * @return array
+     * @param $autoSubmit
+     * @return $this
+     */
+    public function setAutoSubmit($autoSubmit)
+    {
+        $this->autoSubmit = $autoSubmit;
+        return $this;
+    }
+
+    /**
+     * @return WebChatFormElement[]
      */
     public function getElements()
     {
@@ -69,6 +82,14 @@ class WebChatFormMessage extends WebChatMessage
     }
 
     /**
+     * @return bool
+     */
+    public function getAutoSubmit()
+    {
+        return $this->autoSubmit;
+    }
+
+    /**
      * @return array
      */
     public function getElementsArray()
@@ -76,11 +97,7 @@ class WebChatFormMessage extends WebChatMessage
         $elements = [];
 
         foreach ($this->elements as $element) {
-            $elements[] = [
-                'name' => $element->getName(),
-                'display' => $element->getDisplay(),
-                'required' => $element->getRequired()
-            ];
+            $elements[] = $element->getData();
         }
 
         return $elements;
@@ -94,6 +111,7 @@ class WebChatFormMessage extends WebChatMessage
         return parent::getData() + [
             'callback_id' => $this->getCallbackId(),
             'elements' => $this->getElementsArray(),
+            'auto_submit' => $this->getAutoSubmit(),
             'submit_text' => $this->getSubmitText()
         ];
     }
