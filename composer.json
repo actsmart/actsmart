@@ -23,7 +23,7 @@
         "aws/aws-sdk-php": "2.*",
         "clue/graph": "0.9.0",
         "euautomation/graphql-client": "0.2",
-        "google/cloud-language": "^0.15.5",
+        "google/cloud-language": "^0.19.3",
         "guzzlehttp/guzzle": "~6.3",
         "psr/log": "1.*",
         "symfony/cache": "~4.0",
