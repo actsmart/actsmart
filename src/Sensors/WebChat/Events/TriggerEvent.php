@@ -11,6 +11,8 @@ class TriggerEvent extends WebChatEvent
 
     private $callbackId = null;
 
+    private $value = null;
+
     protected $event_key;
 
     public function __construct($subject, $arguments = [], $key = null)
@@ -19,6 +21,7 @@ class TriggerEvent extends WebChatEvent
         parent::__construct($subject, $arguments, $this->event_key);
 
         $this->callbackId = $subject->data->callback_id ?? null;
+        $this->value = $subject->data->value ?? null;
     }
 
     public function getKey()
@@ -33,6 +36,7 @@ class TriggerEvent extends WebChatEvent
 
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_TRIGGER);
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
+        $utterance->put(Literals::VALUE, $this->value);
         $utterance->put(Literals::TEXT, '');
 
         return $utterance;
