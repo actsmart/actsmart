@@ -18,7 +18,7 @@ abstract class BaseConversationInstanceStore implements ConversationInstanceStor
 
     abstract public function save(ConversationInstanceInterface $conversationInstance);
 
-    abstract public function retrieve($userId);
+    abstract public function retrieve($userId, $completingConversations = false);
     
     abstract public function delete($userId);
 }
