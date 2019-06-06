@@ -19,7 +19,7 @@ interface ConversationInstanceStoreInterface extends ComponentInterface
      */
     public function save(ConversationInstanceInterface $conversationInstance);
 
-    public function retrieve($userId);
+    public function retrieve($userId, $completingConversations = false);
 
     public function delete($userId);
 }
