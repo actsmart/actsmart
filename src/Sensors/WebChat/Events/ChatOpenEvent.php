@@ -23,6 +23,8 @@ class ChatOpenEvent extends WebChatEvent
 
     private $callbackId = null;
 
+    private $parentPageUrl = null;
+
     protected $event_key;
 
     public function __construct($subject, $arguments = [], $key = null)
@@ -39,6 +41,7 @@ class ChatOpenEvent extends WebChatEvent
         $this->userBrowser = $subject->data->user->browser ?? null;
         $this->userTimezone = $subject->data->user->timezone ?? null;
         $this->callbackId = $subject->data->callback_id ?? null;
+        $this->parentPageUrl = $subject->data->parent_url ?? null;
     }
 
     public function getKey()
@@ -113,6 +116,14 @@ class ChatOpenEvent extends WebChatEvent
     public function getCallbackId()
     {
         return $this->callbackId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParentPageUrl()
+    {
+        return $this->parentPageUrl;
     }
 
     /**
