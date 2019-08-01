@@ -23,6 +23,8 @@ class ChatOpenEvent extends WebChatEvent
 
     private $callbackId = null;
 
+    private $value = null;
+
     private $parentPageUrl = null;
 
     protected $event_key;
@@ -41,6 +43,7 @@ class ChatOpenEvent extends WebChatEvent
         $this->userBrowser = $subject->data->user->browser ?? null;
         $this->userTimezone = $subject->data->user->timezone ?? null;
         $this->callbackId = $subject->data->callback_id ?? null;
+        $this->value = $subject->data->value ?? null;
         $this->parentPageUrl = $subject->data->parent_url ?? null;
     }
 
@@ -57,6 +60,7 @@ class ChatOpenEvent extends WebChatEvent
 
         $utterance->put(Literals::TYPE, Literals::WEB_CHAT_OPEN);
         $utterance->put(Literals::CALLBACK_ID, $this->callbackId);
+        $utterance->put(Literals::VALUE, $this->value);
         $utterance->put(Literals::TEXT, '');
 
         return $utterance;
